@@ -5,7 +5,7 @@
                 "key": "example.page",
                 "name": "Web Page",
                 "glyph": "\u00EA",
-                "description": "A component to display a web page or image with a valid URL. Can be added to a Display Layout.",
+                "description": "Embed any web page or web-based image in a resizeable window component. Can be added to Display Layouts.",
                 "features": [ "creation" ],
                 "properties": [
                     {

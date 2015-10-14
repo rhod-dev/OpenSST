@@ -15,7 +15,7 @@
                 "key": "eventGenerator",
                 "name": "Event Message Generator",
                 "glyph": "f",
-                "description": "An event message generator",
+                "description": "For development use. Creates sample event message data that mimics a live data stream.",
                 "features": "creation",
                 "model": {
                     "telemetry": {}

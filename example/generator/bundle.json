@@ -1,6 +1,6 @@
 {
     "name": "Sine Wave Generator",
-    "description": "Example of a component that produces dataa.",
+    "description": "Example of a component that produces data.",
     "extensions": {
         "components": [
             {
@@ -21,7 +21,7 @@
                 "key": "generator",
                 "name": "Sine Wave Generator",
                 "glyph": "T",
-                "description": "A sine wave generator",
+                "description": "For development use. Generates example streaming telemetry data using a simple sine wave algorithm.",
                 "features": "creation",
                 "model": {
                     "telemetry": {

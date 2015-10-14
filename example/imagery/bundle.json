@@ -14,6 +14,7 @@
             {
                 "key": "imagery",
                 "name": "Example Imagery",
+                "description": "For development use. Creates example imagery data that mimics a live imagery stream.",
                 "glyph": "T",
                 "features": "creation",
                 "model": {

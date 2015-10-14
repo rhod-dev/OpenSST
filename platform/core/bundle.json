@@ -136,7 +136,7 @@
                 "name": "Folder",
                 "glyph": "F",
                 "features": "creation",
-                "description": "Useful for storing and organizing domain objects.",
+                "description": "Create folders to organize other objects or links to objects.",
                 "model": { "composition": [] }
             },
             {
