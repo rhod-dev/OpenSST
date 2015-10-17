@@ -55,6 +55,16 @@
         left: $bodyMargin !important;
     }
 
+    // Hide the Create button by default. example/mobile bundle will un-hide this.
+    .browse-mode {
+        .t-create-btn {
+            display: none;
+        }
+        .search-holder {
+            top: 0;
+        }
+    }
+
     // When the tree is hidden, these are the
     // classes used for the left menu and the
     // right representation.

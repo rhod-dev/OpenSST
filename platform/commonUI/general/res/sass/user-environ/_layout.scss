@@ -230,20 +230,32 @@
 .pane {
     position: absolute;
     &.treeview.left {
+        @include display-flex(column nowrap);
+        > .holder {
+            @include test(#0af);
+            margin-top: $interiorMarginLg;
+            &:first-child {
+                margin-top: 0;
+            }
+        }
+
 	    .create-btn-holder {
-		    bottom: auto; top: 0;
+		    //bottom: auto; top: 0;
+            @include flex(0 0 auto);
 		    height: $ueTopBarH;
-		    .wrapper.menu-element {
-			    position: absolute;
-			    bottom: $interiorMargin;
-		    }
+		    //.wrapper.menu-element {
+			 //   position: absolute;
+			 //   bottom: $interiorMargin;
+		    //}
 	    }
 	    .search-holder {
-		    top: $ueTopBarH + $interiorMarginLg;
+		    //top: $ueTopBarH + $interiorMarginLg;
+            @include flex(0 0 auto);
 	    }
 	    .tree-holder {
 		    overflow: auto;
-			top: $ueTopBarH + $interiorMarginLg + $treeSearchInputBarH + $interiorMargin;
+            @include flex(1 0 auto);
+			//top: $ueTopBarH + $interiorMarginLg + $treeSearchInputBarH + $interiorMargin;
 	    }
     }
     &.items {

@@ -20,7 +20,7 @@
  * at runtime from the About dialog for additional information.
  *****************************************************************************/
 
-.abs.search-holder {
+.search-holder {
 	//@include test(#990000);
 	height: $treeSearchInputBarH;
 	bottom: 0;
@@ -39,11 +39,8 @@
 	$iconWidth: 20px;
 	$leftMargin: 6px;
 	$rightPadding: 5px;
-	@include webkitVal(display, flex);
-	//display: flex;
-	@include webkitProp(flex-direction, column);
-	//flex-direction: column;
-	height: 100%;
+    @include display-flex(column nowrap);
+	//height: 100%;
 
 	.search-bar {
 		$textInputHeight: 19px; // This is equal to the default value, 19px
