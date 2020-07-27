@@ -68,7 +68,7 @@ function (
             this.listenTo(this.config.series, 'add', this.onSeriesAdd, this);
             this.listenTo(this.config.series, 'remove', this.onSeriesRemove, this);
             this.listenTo(this.config.yAxis, 'change:key', this.clearOffset, this);
-            this.listenTo(this.config.xAxis, 'resetSeries', this.clearOffset, this);
+            this.listenTo(this.config.xAxis, 'resetSeries', this.resetSeries, this);
             this.listenTo(this.config.yAxis, 'change', this.scheduleDraw);
             this.listenTo(this.config.xAxis, 'change', this.scheduleDraw);
             this.$scope.$watch('highlights', this.scheduleDraw);
@@ -80,6 +80,11 @@ function (
     eventHelpers.extend(MCTChartController.prototype);
 
     MCTChartController.$inject = ['$scope'];
+
+    MCTChartController.prototype.resetSeries = function (series) {
+        this.clearOffset();
+        this.scheduleDraw();
+    };
 
     MCTChartController.prototype.onSeriesAdd = function (series) {
         this.listenTo(series, 'change:interpolate', this.changeInterpolate, this);
