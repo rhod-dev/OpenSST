@@ -69,6 +69,9 @@ define([
             this.plot.series.forEach(function (plotSeries) {
                 plotSeries.set('xKey', newKey);
             });
+            this.plot.series.forEach(function (plotSeries) {
+                plotSeries.changeMetadata();
+            });
         },
         resetSeries: function () {
             this.plot.series.forEach(function (plotSeries) {

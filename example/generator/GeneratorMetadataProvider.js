@@ -29,15 +29,15 @@ define([
                     }
                 },
                 // Need to enable "LocalTimeSystem" plugin to make use of this
-                // {
-                //     key: "local",
-                //     name: "Time",
-                //     format: "local-format",
-                //     source: "utc",
-                //     hints: {
-                //         domain: 3
-                //     }
-                // },
+                {
+                    key: "local",
+                    name: "Local Time",
+                    format: "local-format",
+                    source: "utc",
+                    hints: {
+                        domain: 3
+                    }
+                },
                 {
                     key: "sin",
                     name: "Sine",

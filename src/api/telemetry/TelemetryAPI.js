@@ -271,6 +271,7 @@ define([
      *          telemetry data
      */
     TelemetryAPI.prototype.request = function (domainObject) {
+        console.log('request');
         if (arguments.length === 1) {
             arguments.length = 2;
             arguments[1] = {};

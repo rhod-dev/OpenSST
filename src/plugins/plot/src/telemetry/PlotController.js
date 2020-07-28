@@ -130,6 +130,9 @@ define([
     };
 
     PlotController.prototype.addSeries = function (series) {
+        this.listenTo(series, 'changeView', function () {
+            this.setDisplayRange(series);
+        }, this);
         this.listenTo(series, 'change:yKey', function () {
             this.loadSeriesData(series);
         }, this);
@@ -139,6 +142,18 @@ define([
         }, this);
 
         this.loadSeriesData(series);
+    };
+
+    PlotController.prototype.setDisplayRange = function (series) {
+        const timeSystemKey = this.openmct.time.timeSystem().key;
+        const bounds = this.openmct.time.bounds();
+        const currentRange = {
+            min: bounds.start,
+            max: bounds.end
+        };
+        const displayRange = series.getDisplayRange(timeSystemKey, currentRange);
+        console.log(displayRange);
+        this.config.xAxis.set('range', displayRange);
     };
 
     PlotController.prototype.removeSeries = function (plotSeries) {
@@ -197,6 +212,7 @@ define([
      * Track latest display bounds.  Forces update when not receiving ticks.
      */
     PlotController.prototype.updateDisplayBounds = function (bounds, isTick) {
+        console.log('update');
         var newRange = {
             min: bounds.start,
             max: bounds.end

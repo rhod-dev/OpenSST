@@ -68,7 +68,7 @@ function (
             this.listenTo(this.config.series, 'add', this.onSeriesAdd, this);
             this.listenTo(this.config.series, 'remove', this.onSeriesRemove, this);
             this.listenTo(this.config.yAxis, 'change:key', this.clearOffset, this);
-            this.listenTo(this.config.xAxis, 'resetSeries', this.resetSeries, this);
+            this.listenTo(this.config.xAxis, 'change:key', this.resetSeries, this);
             this.listenTo(this.config.yAxis, 'change', this.scheduleDraw);
             this.listenTo(this.config.xAxis, 'change', this.scheduleDraw);
             this.$scope.$watch('highlights', this.scheduleDraw);
@@ -82,7 +82,14 @@ function (
     MCTChartController.$inject = ['$scope'];
 
     MCTChartController.prototype.resetSeries = function (series) {
+        console.log('reset');
         this.clearOffset();
+        this.lines.forEach(function (line) {
+            line.reset();
+        });
+        this.pointSets.forEach(function (pointSet) {
+            pointSet.reset();
+        });
         this.scheduleDraw();
     };
 
@@ -114,6 +121,7 @@ function (
     };
 
     MCTChartController.prototype.changeAlarmMarkers = function (mode, o, series) {
+        console.log('change alamrs');
         if (mode === o) {
             return;
         }
@@ -160,6 +168,7 @@ function (
     };
 
     MCTChartController.prototype.clearOffset = function () {
+        console.log('clear');
         delete this.offset.x;
         delete this.offset.y;
         delete this.offset.xVal;
@@ -359,6 +368,7 @@ function (
 
     MCTChartController.prototype.drawSeries = function () {
         this.lines.forEach(this.drawLine, this);
+        console.log(this.pointSets);
         this.pointSets.forEach(this.drawPoints, this);
         this.alarmSets.forEach(this.drawAlarmPoints, this);
     };

@@ -567,8 +567,13 @@ define([
         return this.$scope.xKeyOptions.find(option => option.key === key);
     };
 
-    MCTPlotController.prototype.toggleXKeyOption = function () {
-        this.config.xAxis.set('key', this.$scope.selectedXKeyOption.key);
+    MCTPlotController.prototype.toggleXKeyOption = function (newXKeyOption, oldXKey, series) {
+        const newXKey = newXKeyOption.key;
+        series.emit('changeView');
+        this.config.xAxis.set('key', newXKey);
+        // const displayRange = series.getXMinMaxRange(newXKey, oldXkey, );
+        // this.config.xAxis.set('displayRange', displayRange);
+        // this.$scope.$emit('user:viewport:change:end');
     };
 
     MCTPlotController.prototype.toggleYAxisLabel = function (label, options, series) {

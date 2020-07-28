@@ -178,6 +178,25 @@ define([
                 }.bind(this));
             /* eslint-enable you-dont-need-lodash-underscore/concat */
         },
+        getDisplayRange: function (timeSystemKey, range) {
+            const xKey = this.get('xKey');
+            const timeSystemFormatter = this.formats[timeSystemKey];
+            const getTimeSystemXValue = timeSystemFormatter.parse.bind(timeSystemFormatter);
+            const minIndex = this.sortedIndexBy(range.min, getTimeSystemXValue);
+            const maxIndex = this.sortedIndexBy(range.max, getTimeSystemXValue) - 1;
+            const minValue = this.data[minIndex][xKey]
+                ? this.getXVal(this.data[minIndex][xKey])
+                : this.getXVal(this.data[minIndex]);
+            const maxValue = this.data[maxIndex][xKey]
+                ? this.getXVal(this.data[maxIndex][xKey])
+                : this.getXVal(this.data[maxIndex]);
+            const displayRange = {
+                min: minValue,
+                max: maxValue
+            }
+
+            return displayRange;
+        },
         /**
          * Update x formatter on x change.
          */
@@ -238,6 +257,15 @@ define([
                 }, this);
             }
         },
+        changeMetadata: function (newData) {
+            this.resetStats();
+            this.emit('reset');
+            if (newData) {
+                newData.forEach(function (point) {
+                    this.add(point, true);
+                }, this);
+            }
+        },
         /**
          * Return the point closest to a given x value.
          */
@@ -277,6 +305,13 @@ define([
          */
         sortedIndex: function (point) {
             return _.sortedIndexBy(this.data, point, this.getXVal);
+        },
+        /**
+         * Find the insert index for a given point to maintain sort order.
+         * @private
+         */
+        sortedIndexBy: function (point, sortFunction) {
+            return _.sortedIndexBy(this.data, point, sortFunction);
         },
         /**
          * Update min/max stats for the series.
