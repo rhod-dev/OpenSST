@@ -17,6 +17,7 @@ const config = {
         browserName: "chromium",
         baseURL: 'http://localhost:8080/',
         headless: true,
+        acceptDownloads: true,
         ignoreHTTPSErrors: true,
         screenshot: 'on',
         trace: 'off',

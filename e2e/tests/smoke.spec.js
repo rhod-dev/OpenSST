@@ -22,7 +22,7 @@
 
 /*
 This test suite is dedicated to tests which can quickly verify that any openmct installation is
-operable and that any type of testing can proceed.
+operable and that *any* type of testing can proceed.
 
 Ideally, smoke tests should make zero assumptions about how and where they are run. This makes them
 more resilient to change and therefor a better indicator of failure. Smoke tests will also run quickly
