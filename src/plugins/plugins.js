@@ -74,6 +74,7 @@ define([
     './clock/plugin',
     './DeviceClassifier/plugin',
     './timer/plugin',
+    './annotations/plugin',
     './localStorage/plugin',
     './legacySupport/plugin.js',
     '../adapter/indicators/legacy-indicators-plugin'
@@ -131,6 +132,7 @@ define([
     Clock,
     DeviceClassifier,
     Timer,
+    Annotations,
     LocalStorage,
     LegacySupportPlugin,
     LegacyIndicatorsPlugin
@@ -239,6 +241,7 @@ define([
     plugins.Hyperlink = Hyperlink.default;
     plugins.Clock = Clock.default;
     plugins.Timer = Timer.default;
+    plugins.Annotations = Annotations.default;
     plugins.DeviceClassifier = DeviceClassifier.default;
     plugins.LocalStorage = LocalStorage.default;
     plugins.LegacySupport = LegacySupportPlugin.default;
