@@ -28,6 +28,7 @@ define([
     './ISOTimeFormat/plugin',
     './myItems/plugin',
     '../../example/generator/plugin',
+    '../../example/eventGenerator/plugin',
     './autoflow/AutoflowTabularPlugin',
     './timeConductor/plugin',
     '../../example/imagery/plugin',
@@ -86,6 +87,7 @@ define([
     ISOTimeFormat,
     MyItems,
     GeneratorPlugin,
+    EventGeneratorPlugin,
     AutoflowPlugin,
     TimeConductorPlugin,
     ExampleImagery,
@@ -198,6 +200,7 @@ define([
         return GeneratorPlugin;
     };
 
+    plugins.EventGeneratorPlugin = EventGeneratorPlugin.default;
     plugins.ExampleImagery = ExampleImagery.default;
     plugins.ImageryPlugin = ImageryPlugin;
     plugins.Plot = PlotPlugin.default;
