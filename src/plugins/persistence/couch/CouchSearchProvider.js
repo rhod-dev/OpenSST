@@ -1,6 +1,5 @@
-
 /*****************************************************************************
- * Open MCT, Copyright (c) 2014-2022, United States Government
+ * Open MCT, Copyright (c) 2014-2021, United States Government
  * as represented by the Administrator of the National Aeronautics and Space
  * Administration. All rights reserved.
  *
@@ -21,21 +20,30 @@
  * at runtime from the About dialog for additional information.
  *****************************************************************************/
 
-export default function ClockPlugin(options) {
-    return function install(openmct) {
-        openmct.types.addType('annotation', {
-            name: 'Annotations',
-            description: 'A user created note or comment about time ranges, pixel space, and geospatial features.',
-            creatable: true,
-            cssClass: 'icon-notebook',
-            initialize: function (domainObject) {
-                domainObject.targets = [];
-                domainObject.contextPath = {};
-                domainObject.tags = [];
-                domainObject.contentText = '';
-                domainObject.annotationType = null;
-            }
-        });
-    };
-}
+// This provider exists because due to legacy reasons, we need to install
+// two plugins for two namespaces for CouchDB: one for "mct", and one for "".
+// Because of this, we need to separate out the search provider from the object
+// provider so we don't return two results for each found object.
+// If the above namespace is ever resolved, we can fold this search provider
+// back into the object provider.
 
+class CouchSearchProvider {
+    constructor(couchObjectProvider) {
+        this.couchObjectProvider = couchObjectProvider;
+    }
+
+    search(query, abortSignal) {
+        const filter = {
+            "selector": {
+                "model": {
+                    "name": {
+                        "$regex": `(?i)${query}`
+                    }
+                }
+            }
+        };
+
+        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
+    }
+}
+export default CouchSearchProvider;

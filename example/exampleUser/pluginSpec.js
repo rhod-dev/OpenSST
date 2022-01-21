@@ -1,6 +1,5 @@
-
 /*****************************************************************************
- * Open MCT, Copyright (c) 2014-2022, United States Government
+ * Open MCT, Copyright (c) 2014-2021, United States Government
  * as represented by the Administrator of the National Aeronautics and Space
  * Administration. All rights reserved.
  *
@@ -21,21 +20,36 @@
  * at runtime from the About dialog for additional information.
  *****************************************************************************/
 
-export default function ClockPlugin(options) {
-    return function install(openmct) {
-        openmct.types.addType('annotation', {
-            name: 'Annotations',
-            description: 'A user created note or comment about time ranges, pixel space, and geospatial features.',
-            creatable: true,
-            cssClass: 'icon-notebook',
-            initialize: function (domainObject) {
-                domainObject.targets = [];
-                domainObject.contextPath = {};
-                domainObject.tags = [];
-                domainObject.contentText = '';
-                domainObject.annotationType = null;
-            }
-        });
-    };
-}
+import {
+    createOpenMct,
+    resetApplicationState
+} from '../../src/utils/testing';
+import ExampleUserProvider from './ExampleUserProvider';
 
+describe("The Example User Plugin", () => {
+    let openmct;
+
+    beforeEach(() => {
+        openmct = createOpenMct();
+    });
+
+    afterEach(() => {
+        return resetApplicationState(openmct);
+    });
+
+    it('is not installed by default', () => {
+        expect(openmct.user.hasProvider()).toBeFalse();
+    });
+
+    it('can be installed', () => {
+        openmct.user.on('providerAdded', (provider) => {
+            expect(provider).toBeInstanceOf(ExampleUserProvider);
+        });
+        openmct.install(openmct.plugins.example.ExampleUser());
+    });
+
+    // The rest of the functionality of the ExampleUser Plugin is
+    // tested in both the UserAPISpec.js and in the UserIndicatorPlugin spec.
+    // If that changes, those tests can be moved here.
+
+});

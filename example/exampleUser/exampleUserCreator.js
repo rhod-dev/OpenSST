@@ -1,6 +1,5 @@
-
 /*****************************************************************************
- * Open MCT, Copyright (c) 2014-2022, United States Government
+ * Open MCT, Copyright (c) 2014-2021, United States Government
  * as represented by the Administrator of the National Aeronautics and Space
  * Administration. All rights reserved.
  *
@@ -21,21 +20,17 @@
  * at runtime from the About dialog for additional information.
  *****************************************************************************/
 
-export default function ClockPlugin(options) {
-    return function install(openmct) {
-        openmct.types.addType('annotation', {
-            name: 'Annotations',
-            description: 'A user created note or comment about time ranges, pixel space, and geospatial features.',
-            creatable: true,
-            cssClass: 'icon-notebook',
-            initialize: function (domainObject) {
-                domainObject.targets = [];
-                domainObject.contextPath = {};
-                domainObject.tags = [];
-                domainObject.contentText = '';
-                domainObject.annotationType = null;
-            }
-        });
+export default function createExampleUser(UserClass) {
+    return class ExampleUser extends UserClass {
+        constructor(id, name, roles) {
+            super(id, name);
+
+            this.roles = roles;
+            this.getRoles = this.getRoles.bind(this);
+        }
+
+        getRoles() {
+            return this.roles;
+        }
     };
 }
-
