@@ -76,10 +76,12 @@
         const ONE_DAY = ONE_HOUR * 24;
 
 
-        openmct.install(openmct.plugins.LocalStorage());
+        openmct.install(openmct.plugins.CouchDB("http://localhost:5984/openmct"));
+        //openmct.install(openmct.plugins.LocalStorage());
       
         openmct.install(openmct.plugins.example.Generator());
         openmct.install(openmct.plugins.example.EventGeneratorPlugin());
+        openmct.install(openmct.plugins.example.ObjectGeneratorPlugin());
         openmct.install(openmct.plugins.example.ExampleImagery());
 
         openmct.install(openmct.plugins.Espresso());

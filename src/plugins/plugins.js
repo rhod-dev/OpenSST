@@ -29,6 +29,7 @@ define([
     './myItems/plugin',
     '../../example/generator/plugin',
     '../../example/eventGenerator/plugin',
+    '../../example/objectGenerator/plugin',
     './autoflow/AutoflowTabularPlugin',
     './timeConductor/plugin',
     '../../example/imagery/plugin',
@@ -90,6 +91,7 @@ define([
     MyItems,
     GeneratorPlugin,
     EventGeneratorPlugin,
+    ObjectGeneratorPlugin,
     AutoflowPlugin,
     TimeConductorPlugin,
     ExampleImagery,
@@ -159,6 +161,7 @@ define([
     plugins.example.ExampleUser = ExampleUser.default;
     plugins.example.ExampleImagery = ExampleImagery.default;
     plugins.example.EventGeneratorPlugin = EventGeneratorPlugin.default;
+    plugins.example.ObjectGeneratorPlugin = ObjectGeneratorPlugin.default;
     plugins.example.Generator = () => GeneratorPlugin;
 
     plugins.UTCTimeSystem = UTCTimeSystem.default;

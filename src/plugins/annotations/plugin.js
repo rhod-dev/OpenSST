@@ -30,7 +30,7 @@ export default function ClockPlugin(options) {
             cssClass: 'icon-notebook',
             initialize: function (domainObject) {
                 domainObject.targets = [];
-                domainObject.contextPath = {};
+                domainObject.originalContextPath = '';
                 domainObject.tags = [];
                 domainObject.contentText = '';
                 domainObject.annotationType = null;
