@@ -62,7 +62,7 @@ export default {
             console.debug('Generating objects');
             const parentObject = await this.openmct.objects.get(this.domainObject.location);
             const promiseArray = [];
-            for (let i = 0; i < 200; i += 1) {
+            for (let i = 0; i < 10000; i += 1) {
                 promiseArray.push(new Promise(resolve => {
                     resolve(this.generateObject('annotation', parentObject, i));
                 }));
@@ -122,18 +122,20 @@ export default {
                 definition.initialize(createdObject);
             }
 
-            createdObject.contentText = `${this.getRandomAdjective()} ${this.getRandomAdjective()} ${this.getRandomNoun()}`;
-            createdObject.targets = [this.getRandomTarget(), this.getRandomTarget()];
-            createdObject.modified = Date.now();
-            createdObject.location = this.domainObject.location;
-            createdObject.targetTimes = [];
+            createdObject.tags = [this.getRandomAdjective(), this.getRandomAdjective(), this.getRandomAdjective()];
             const start = this.getRandomInteger(1, 8000);
             const end = this.getRandomInteger(start, 8000);
-            const targetTime = {
-                start,
-                end
+            const targetID = this.getRandomTarget();
+            createdObject.targets[targetID] = {
+                targetTime: {
+                    start,
+                    end
+                }
             };
-            createdObject.targetTimes.push(targetTime);
+
+            createdObject.contentText = `${this.getRandomAdjective()} ${this.getRandomAdjective()} ${this.getRandomNoun()}`;
+            createdObject.modified = Date.now();
+            createdObject.location = this.domainObject.location;
             const success = await this.openmct.objects.save(createdObject);
             if (success) {
                 console.debug(`Save successful of ${createdObject.name}`);
