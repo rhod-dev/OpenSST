@@ -52,13 +52,17 @@ export default {
         }
     },
     mounted() {
+        this.targets = [];
+        for (let i = 0; i < 100; i += 1) {
+            this.targets.push(`${this.domainObject.identifier.namespace}:${uuid()}`);
+        }
     },
     methods: {
         async generateObjects() {
             console.debug('Generating objects');
             const parentObject = await this.openmct.objects.get(this.domainObject.location);
             const promiseArray = [];
-            for (let i = 0; i < 5000; i += 1) {
+            for (let i = 0; i < 200; i += 1) {
                 promiseArray.push(new Promise(resolve => {
                     resolve(this.generateObject('annotation', parentObject, i));
                 }));
@@ -94,6 +98,15 @@ export default {
         getRandomAdjective() {
             return adjectives[Math.floor(Math.random() * adjectives.length)];
         },
+        getRandomTarget() {
+            return this.targets[Math.floor(Math.random() * this.targets.length)];
+        },
+        getRandomInteger(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        },
         async generateObject(type, parentObject, iteration) {
             const typeDefinition = this.openmct.types.get(type);
             const definition = typeDefinition.definition;
@@ -110,9 +123,17 @@ export default {
             }
 
             createdObject.contentText = `${this.getRandomAdjective()} ${this.getRandomAdjective()} ${this.getRandomNoun()}`;
-
+            createdObject.targets = [this.getRandomTarget(), this.getRandomTarget()];
             createdObject.modified = Date.now();
             createdObject.location = this.domainObject.location;
+            createdObject.targetTimes = [];
+            const start = this.getRandomInteger(1, 8000);
+            const end = this.getRandomInteger(start, 8000);
+            const targetTime = {
+                start,
+                end
+            };
+            createdObject.targetTimes.push(targetTime);
             const success = await this.openmct.objects.save(createdObject);
             if (success) {
                 console.debug(`Save successful of ${createdObject.name}`);

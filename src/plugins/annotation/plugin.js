@@ -24,7 +24,7 @@
 export default function ClockPlugin(options) {
     return function install(openmct) {
         openmct.types.addType('annotation', {
-            name: 'Annotations',
+            name: 'Annotation',
             description: 'A user created note or comment about time ranges, pixel space, and geospatial features.',
             creatable: true,
             cssClass: 'icon-notebook',
