@@ -26,7 +26,7 @@
         <div class="u-style-receiver js-style-receiver">
             <button class="c-button icon-reset"
                     title="Generate Objcts"
-                    @click="generateObjects()"
+                    @click="generateObjects(5, 100, 100)"
             >
                 <span class="c-button__label">Generate Objcts</span>
             </button>
@@ -52,24 +52,31 @@ export default {
         }
     },
     mounted() {
-        this.targets = [];
-        for (let i = 0; i < 100; i += 1) {
-            this.targets.push(`${this.domainObject.identifier.namespace}:${uuid()}`);
-        }
     },
     methods: {
-        async generateObjects() {
+        async generateObjects(targetsPerSet, annotationsPerSet, setsOfTargets) {
             console.debug('Generating objects');
             const parentObject = await this.openmct.objects.get(this.domainObject.location);
             const promiseArray = [];
-            for (let i = 0; i < 10000; i += 1) {
-                promiseArray.push(new Promise(resolve => {
-                    resolve(this.generateObject('annotation', parentObject, i));
-                }));
+            for (let targetIndex = 0; targetIndex < setsOfTargets; targetIndex += 1) {
+                const targetList = this.generateTargets(targetsPerSet);
+                for (let annotationIndex = 0; annotationIndex < annotationsPerSet; annotationIndex += 1) {
+                    promiseArray.push(new Promise(resolve => {
+                        resolve(this.generateObject('annotation', targetList, parentObject, annotationIndex));
+                    }));
+                }
             }
 
             this.throttlePromises(promiseArray);
             console.log(`Promise array size is ${promiseArray.length}`);
+        },
+        generateTargets(numberOfTargets) {
+            const targets = [];
+            for (let i = 0; i < numberOfTargets; i += 1) {
+                targets.push(`${this.domainObject.identifier.namespace}:${uuid()}`);
+            }
+
+            return targets;
         },
         async throttlePromises(promiseArray) {
             const MAX_IN_PROCESS = 100;
@@ -93,13 +100,13 @@ export default {
             return results;
         },
         getRandomNoun() {
-            return nouns[Math.floor(Math.random() * nouns.length)];
+            return this.getRandomElement(nouns);
         },
         getRandomAdjective() {
-            return adjectives[Math.floor(Math.random() * adjectives.length)];
+            return this.getRandomElement(adjectives);
         },
-        getRandomTarget() {
-            return this.targets[Math.floor(Math.random() * this.targets.length)];
+        getRandomElement(list) {
+            return list[Math.floor(Math.random() * list.length)];
         },
         getRandomInteger(min, max) {
             min = Math.ceil(min);
@@ -107,7 +114,7 @@ export default {
 
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-        async generateObject(type, parentObject, iteration) {
+        async generateObject(type, targetList, parentObject, iteration) {
             const typeDefinition = this.openmct.types.get(type);
             const definition = typeDefinition.definition;
             const createdObject = {
@@ -125,7 +132,7 @@ export default {
             createdObject.tags = [this.getRandomAdjective(), this.getRandomAdjective(), this.getRandomAdjective()];
             const start = this.getRandomInteger(1, 8000);
             const end = this.getRandomInteger(start, 8000);
-            const targetID = this.getRandomTarget();
+            const targetID = this.getRandomElement(targetList);
             createdObject.targets[targetID] = {
                 targetTime: {
                     start,

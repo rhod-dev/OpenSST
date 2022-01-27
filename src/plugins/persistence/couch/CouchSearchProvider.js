@@ -45,5 +45,92 @@ class CouchSearchProvider {
 
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
+
+    searchForAnnotationsForDomainObject(keyString, abortSignal) {
+        const filter = {
+            "selector": {
+                "model": {
+                    "targets": {
+                    }
+                }
+            }
+        };
+        filter.selector.model.targets[keyString] = {
+            "$exists": true
+        };
+
+        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
+    }
+
+    searchForAnnotationsTargetByIDAndTimestampRange(keyString, start, end, abortSignal) {
+        const filter = {
+            "selector": {
+                "model": {
+                    "targets": {
+                    }
+                }
+            }
+        };
+        filter.selector.model.targets[keyString] = {
+            "targetTime": {
+                "start": {
+                    "$gt": start
+                },
+                "end": {
+                    "$lt": end
+                }
+            }
+        };
+
+        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
+    }
+
+    searchForAnnotationsByTextQuery(query, abortSignal) {
+        const filter = {
+            "selector": {
+                "$and": [
+                    {
+                        "$and": [
+                            {
+                                "model.contentText": {
+                                    "$regex": `(?i)${query}`
+                                }
+                            },
+                            {
+                                "model.tags": {
+                                    "$elemMatch": {
+                                        "": {
+                                            "$regex": `(?i)${query}`
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "model.type": {
+                            "$eq": "annotation"
+                        }
+                    }
+                ]
+            }
+        };
+
+        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
+    }
+
+    searchForAnnotationsByPath(path, abortSignal) {
+        const filter = {
+            "selector": {
+                "model": {
+                    "originalContextPath": {
+                        "${eq}": path
+                    }
+                }
+            }
+        };
+
+        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
+    }
 }
 export default CouchSearchProvider;

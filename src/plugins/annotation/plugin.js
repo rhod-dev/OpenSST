@@ -21,7 +21,7 @@
  * at runtime from the About dialog for additional information.
  *****************************************************************************/
 
-export default function ClockPlugin(options) {
+export default function AnnotationPlugin(options) {
     return function install(openmct) {
         openmct.types.addType('annotation', {
             name: 'Annotation',
