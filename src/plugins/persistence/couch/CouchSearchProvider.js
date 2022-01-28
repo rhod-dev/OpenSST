@@ -49,10 +49,19 @@ class CouchSearchProvider {
     searchForAnnotationsForDomainObject(keyString, abortSignal) {
         const filter = {
             "selector": {
-                "model": {
-                    "targets": {
+                "$and": [
+                    {
+                        "model": {
+                            "targets": {
+                            }
+                        }
+                    },
+                    {
+                        "model.type": {
+                            "$eq": "annotation"
+                        }
                     }
-                }
+                ]
             }
         };
         filter.selector.model.targets[keyString] = {
@@ -62,22 +71,31 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForAnnotationsTargetByIDAndTimestampRange(keyString, start, end, abortSignal) {
+    searchForAnnotationsTargetByIDAndTimestampRange(keyString, startInclusive, endInclusive, abortSignal) {
         const filter = {
             "selector": {
-                "model": {
-                    "targets": {
+                "$and": [
+                    {
+                        "model": {
+                            "targets": {
+                            }
+                        }
+                    },
+                    {
+                        "model.type": {
+                            "$eq": "annotation"
+                        }
                     }
-                }
+                ]
             }
         };
         filter.selector.model.targets[keyString] = {
             "targetTime": {
                 "start": {
-                    "$gt": start
+                    "$gte": startInclusive
                 },
                 "end": {
-                    "$lt": end
+                    "$lte": endInclusive
                 }
             }
         };
@@ -122,11 +140,20 @@ class CouchSearchProvider {
     searchForAnnotationsByPath(path, abortSignal) {
         const filter = {
             "selector": {
-                "model": {
-                    "originalContextPath": {
-                        "${eq}": path
+                "$and": [
+                    {
+                        "model": {
+                            "originalContextPath": {
+                                "${eq}": path
+                            }
+                        }
+                    },
+                    {
+                        "model.type": {
+                            "$eq": "annotation"
+                        }
                     }
-                }
+                ]
             }
         };
 

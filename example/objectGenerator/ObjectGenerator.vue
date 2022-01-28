@@ -52,6 +52,7 @@ export default {
         }
     },
     mounted() {
+        this.annotationTypes = ['geospatial', 'temporal', 'pixel-spatial'];
     },
     methods: {
         async generateObjects(targetsPerSet, annotationsPerSet, setsOfTargets) {
@@ -105,6 +106,9 @@ export default {
         getRandomAdjective() {
             return this.getRandomElement(adjectives);
         },
+        getRandomAnnotationType() {
+            return this.getRandomElement(this.annotationTypes);
+        },
         getRandomElement(list) {
             return list[Math.floor(Math.random() * list.length)];
         },
@@ -130,6 +134,7 @@ export default {
             }
 
             createdObject.tags = [this.getRandomAdjective(), this.getRandomAdjective(), this.getRandomAdjective()];
+            createdObject.annotationType = this.getRandomAnnotationType();
             const start = this.getRandomInteger(1, 8000);
             const end = this.getRandomInteger(start, 8000);
             const targetID = this.getRandomElement(targetList);
@@ -142,6 +147,7 @@ export default {
 
             createdObject.contentText = `${this.getRandomAdjective()} ${this.getRandomAdjective()} ${this.getRandomNoun()}`;
             createdObject.modified = Date.now();
+            createdObject.originalContextPath = '/mine/8e488d26-5fc2-4b30-9947-8e9eba3bda20';
             createdObject.location = this.domainObject.location;
             const success = await this.openmct.objects.save(createdObject);
             if (success) {
