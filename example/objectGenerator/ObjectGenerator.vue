@@ -28,7 +28,7 @@
                     title="Generate Objcts"
                     @click="generateObjects(5, 100, 100)"
             >
-                <span class="c-button__label">Generate Objcts</span>
+                <span class="c-button__label">Generate Objects</span>
             </button>
         </div>
     </div>
