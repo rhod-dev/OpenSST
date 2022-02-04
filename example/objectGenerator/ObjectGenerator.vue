@@ -26,7 +26,7 @@
         <div class="u-style-receiver js-style-receiver">
             <button class="c-button icon-reset"
                     title="Generate Objcts"
-                    @click="generateObjects(5, 100, 100)"
+                    @click="generateObjects(5, 10, 10)"
             >
                 <span class="c-button__label">Generate Objects</span>
             </button>
@@ -60,10 +60,10 @@ export default {
             const parentObject = await this.openmct.objects.get(this.domainObject.location);
             const promiseArray = [];
             for (let targetIndex = 0; targetIndex < setsOfTargets; targetIndex += 1) {
-                const targetList = this.generateTargets(targetsPerSet);
+                const targetList = await this.generateTargets(parentObject, targetsPerSet);
                 for (let annotationIndex = 0; annotationIndex < annotationsPerSet; annotationIndex += 1) {
                     promiseArray.push(new Promise(resolve => {
-                        resolve(this.generateObject('annotation', targetList, parentObject, annotationIndex));
+                        resolve(this.generateAnnotation(targetList, annotationIndex));
                     }));
                 }
             }
@@ -71,10 +71,11 @@ export default {
             this.throttlePromises(promiseArray);
             console.log(`Promise array size is ${promiseArray.length}`);
         },
-        generateTargets(numberOfTargets) {
+        async generateTargets(parentObject, numberOfTargets) {
             const targets = [];
             for (let i = 0; i < numberOfTargets; i += 1) {
-                targets.push(`${this.domainObject.identifier.namespace}:${uuid()}`);
+                const newTargetObject = await this.generateTargetObject(parentObject, numberOfTargets);
+                targets.push(newTargetObject);
             }
 
             return targets;
@@ -118,45 +119,46 @@ export default {
 
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-        async generateObject(type, targetList, parentObject, iteration) {
+        async generateTargetObject(parentObject) {
+            const type = 'clock';
             const typeDefinition = this.openmct.types.get(type);
             const definition = typeDefinition.definition;
             const createdObject = {
-                name: `${this.getRandomAdjective()} ${this.getRandomNoun()} ${iteration} ${definition.name}`,
+                name: `${this.getRandomAdjective()} ${type}`,
                 type,
                 identifier: {
                     key: uuid(),
                     namespace: parentObject.identifier.namespace
-                }
+                },
+                location: parentObject.location
             };
             if (definition.initialize) {
                 definition.initialize(createdObject);
             }
 
-            createdObject.tags = [this.getRandomAdjective(), this.getRandomAdjective(), this.getRandomAdjective()];
-            createdObject.annotationType = this.getRandomAnnotationType();
-            const start = this.getRandomInteger(1, 8000);
-            const end = this.getRandomInteger(start, 8000);
-            const targetID = this.getRandomElement(targetList);
-            createdObject.targets[targetID] = {
-                targetTime: {
-                    start,
-                    end
-                }
-            };
-
-            createdObject.contentText = `${this.getRandomAdjective()} ${this.getRandomAdjective()} ${this.getRandomNoun()}`;
-            createdObject.modified = Date.now();
-            createdObject.originalContextPath = '/mine/8e488d26-5fc2-4b30-9947-8e9eba3bda20';
-            createdObject.location = this.domainObject.location;
             const success = await this.openmct.objects.save(createdObject);
             if (success) {
-                console.debug(`Save successful of ${createdObject.name}`);
+                console.debug(`Created ${type} named ${createdObject.name}`);
                 const compositionCollection = await this.openmct.composition.get(parentObject);
                 compositionCollection.add(createdObject);
             } else {
                 console.error('Error saving objects');
             }
+
+            return createdObject;
+        },
+        async generateAnnotation(targetList, iteration) {
+            const name = `${this.getRandomAdjective()} ${this.getRandomNoun()} ${iteration} annotation`;
+            const tags = [this.getRandomAdjective(), this.getRandomAdjective(), this.getRandomAdjective()];
+            const annotationType = this.getRandomAnnotationType();
+            const contentText = `${this.getRandomAdjective()} ${this.getRandomAdjective()} ${this.getRandomNoun()}`;
+            // const start = this.getRandomInteger(1, 8000);
+            // const end = this.getRandomInteger(start, 8000);
+            const targetDomainObject = this.getRandomElement(targetList);
+            const originalContextPath = '/mine/8e488d26-5fc2-4b30-9947-8e9eba3bda20';
+
+            await this.openmct.annotation.create(targetDomainObject, name, annotationType,
+                tags, contentText, originalContextPath);
         }
     }
 };

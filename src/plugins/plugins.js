@@ -76,7 +76,6 @@ define([
     './clock/plugin',
     './DeviceClassifier/plugin',
     './timer/plugin',
-    './annotation/plugin',
     './userIndicator/plugin',
     '../../example/exampleUser/plugin',
     './localStorage/plugin',
@@ -138,7 +137,6 @@ define([
     Clock,
     DeviceClassifier,
     Timer,
-    Annotation,
     UserIndicator,
     ExampleUser,
     LocalStorage,
@@ -251,7 +249,6 @@ define([
     plugins.Hyperlink = Hyperlink.default;
     plugins.Clock = Clock.default;
     plugins.Timer = Timer.default;
-    plugins.Annotation = Annotation.default;
     plugins.DeviceClassifier = DeviceClassifier.default;
     plugins.UserIndicator = UserIndicator.default;
     plugins.LocalStorage = LocalStorage.default;
