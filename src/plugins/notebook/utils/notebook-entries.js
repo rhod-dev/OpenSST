@@ -125,7 +125,7 @@ export function addNotebookEntry(openmct, domainObject, notebookStorage, embed =
     return id;
 }
 
-export function getNotebookEntries(domainObject, selectedSection, selectedPage) {
+export function getNotebookEntries(openmct, domainObject, selectedSection, selectedPage) {
     if (!domainObject || !selectedSection || !selectedPage) {
         return;
     }
@@ -143,15 +143,26 @@ export function getNotebookEntries(domainObject, selectedSection, selectedPage) 
         return;
     }
 
-    return entries[selectedSection.id][selectedPage.id];
+    const specificEntries = entries[selectedSection.id][selectedPage.id];
+    const specificEntriesWithAnnotations = Object.keys(specificEntries).map(entryKey => {
+        const entry = specificEntries[entryKey];
+        const annotation = openmct.annotation.getNotebookAnnotation(entry);
+
+        return {
+            ...entry,
+            annotation: annotation
+        };
+    });
+
+    return specificEntriesWithAnnotations;
 }
 
-export function getEntryPosById(entryId, domainObject, selectedSection, selectedPage) {
+export function getEntryPosById(openmct, entryId, domainObject, selectedSection, selectedPage) {
     if (!domainObject || !selectedSection || !selectedPage) {
         return;
     }
 
-    const entries = getNotebookEntries(domainObject, selectedSection, selectedPage);
+    const entries = getNotebookEntries(openmct, domainObject, selectedSection, selectedPage);
     let foundId = -1;
     entries.forEach((element, index) => {
         if (element.id === entryId) {

@@ -125,6 +125,7 @@
                                :selected-section="selectedSection"
                                :read-only="false"
                                @deleteEntry="deleteEntry"
+                               @tagEntry="tagEntry"
                                @updateEntry="updateEntry"
                 />
             </div>
@@ -182,7 +183,7 @@ export default {
     computed: {
         filteredAndSortedEntries() {
             const filterTime = Date.now();
-            const pageEntries = getNotebookEntries(this.domainObject, this.selectedSection, this.selectedPage) || [];
+            const pageEntries = getNotebookEntries(this.openmct, this.domainObject, this.selectedSection, this.selectedPage) || [];
 
             const hours = parseInt(this.showTime, 10);
             const filteredPageEntriesByTime = hours
@@ -345,7 +346,7 @@ export default {
             };
         },
         deleteEntry(entryId) {
-            const entryPos = getEntryPosById(entryId, this.domainObject, this.selectedSection, this.selectedPage);
+            const entryPos = getEntryPosById(this.openmct, entryId, this.domainObject, this.selectedSection, this.selectedPage);
             if (entryPos === -1) {
                 this.openmct.notifications.alert('Warning: unable to delete entry');
                 console.error(`unable to delete entry ${entryId} from section ${this.selectedSection}, page ${this.selectedPage}`);
@@ -361,9 +362,38 @@ export default {
                         label: "Ok",
                         emphasis: true,
                         callback: () => {
-                            const entries = getNotebookEntries(this.domainObject, this.selectedSection, this.selectedPage);
+                            const entries = getNotebookEntries(this.openmct, this.domainObject, this.selectedSection, this.selectedPage);
                             entries.splice(entryPos, 1);
                             this.updateEntries(entries);
+                            dialog.dismiss();
+                        }
+                    },
+                    {
+                        label: "Cancel",
+                        callback: () => dialog.dismiss()
+                    }
+                ]
+            });
+        },
+        tagEntry(entryId) {
+            const entryPos = getEntryPosById(this.openmct, entryId, this.domainObject, this.selectedSection, this.selectedPage);
+            if (entryPos === -1) {
+                this.openmct.notifications.alert('Warning: unable to tag entry');
+                console.error(`unable to tag entry ${entryId} from section ${this.selectedSection}, page ${this.selectedPage}`);
+
+                return;
+            }
+
+            const dialog = this.openmct.overlays.dialog({
+                iconClass: 'alert',
+                message: 'This action would tag this entry. Do you wish to continue?',
+                buttons: [
+                    {
+                        label: "Ok",
+                        emphasis: true,
+                        callback: () => {
+                            console.debug('Would have tagged an entry 🍊');
+                            console.debug('Available tags', this.openmct.annotation.getAvailableTags());
                             dialog.dismiss();
                         }
                     },
@@ -679,8 +709,8 @@ export default {
             setDefaultNotebookSectionId(defaultNotebookSectionId);
         },
         updateEntry(entry) {
-            const entries = getNotebookEntries(this.domainObject, this.selectedSection, this.selectedPage);
-            const entryPos = getEntryPosById(entry.id, this.domainObject, this.selectedSection, this.selectedPage);
+            const entries = getNotebookEntries(this.openmct, this.domainObject, this.selectedSection, this.selectedPage);
+            const entryPos = getEntryPosById(this.openmct, entry.id, this.domainObject, this.selectedSection, this.selectedPage);
             entries[entryPos] = entry;
 
             this.updateEntries(entries);

@@ -71,6 +71,17 @@
     <div v-if="!readOnly"
          class="c-ne__local-controls--hidden"
     >
+        <select
+            @change="addedTags()"
+        >
+            <option value="">- No Tag -</option>
+            <option v-for="tag in availableTags"
+                    :key="tag.key"
+                    :value="tag.key"
+            >
+                {{ tag.label }}
+            </option>
+        </select>
         <button class="c-icon-button c-icon-button--major icon-trash"
                 title="Delete this entry"
                 tabindex="-1"
@@ -168,6 +179,9 @@ export default {
 
             return text;
         },
+        addedTags() {
+            return "";
+        },
         highlightText() {
             let text = '';
 
@@ -176,6 +190,9 @@ export default {
             }
 
             return text;
+        },
+        availableTags() {
+            return this.openmct.annotation.getAvailableTags();
         }
     },
     mounted() {
@@ -205,6 +222,9 @@ export default {
         },
         deleteEntry() {
             this.$emit('deleteEntry', this.entry.id);
+        },
+        setTagValue() {
+            this.$emit('tagEntry', this.entry.id);
         },
         dropOnEntry($event) {
             event.stopImmediatePropagation();

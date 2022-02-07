@@ -140,13 +140,13 @@ describe('Notebook Entries:', () => {
 
     it('getEntryPosById returns valid position', () => {
         const entryId1 = NotebookEntries.addNotebookEntry(openmct, notebookDomainObject, notebookStorage);
-        const position1 = NotebookEntries.getEntryPosById(entryId1, notebookDomainObject, selectedSection, selectedPage);
+        const position1 = NotebookEntries.getEntryPosById(openmct, entryId1, notebookDomainObject, selectedSection, selectedPage);
 
         const entryId2 = NotebookEntries.addNotebookEntry(openmct, notebookDomainObject, notebookStorage);
-        const position2 = NotebookEntries.getEntryPosById(entryId2, notebookDomainObject, selectedSection, selectedPage);
+        const position2 = NotebookEntries.getEntryPosById(openmct, entryId2, notebookDomainObject, selectedSection, selectedPage);
 
         const entryId3 = NotebookEntries.addNotebookEntry(openmct, notebookDomainObject, notebookStorage);
-        const position3 = NotebookEntries.getEntryPosById(entryId3, notebookDomainObject, selectedSection, selectedPage);
+        const position3 = NotebookEntries.getEntryPosById(openmct, entryId3, notebookDomainObject, selectedSection, selectedPage);
 
         const success = position1 === 0
                 && position2 === 1

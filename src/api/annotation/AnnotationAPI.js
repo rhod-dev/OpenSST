@@ -21,6 +21,7 @@
  *****************************************************************************/
 
 import uuid from 'uuid';
+import tags from '../../../example/tags/tags.json';
 
 export default class AnnotationAPI {
 
@@ -84,5 +85,17 @@ export default class AnnotationAPI {
         } else {
             throw new Error('Failed to create object');
         }
+    }
+
+    getAvailableTags() {
+        return tags.tags;
+    }
+
+    getNotebookAnnotation(entry) {
+        const garbage = {
+            foo: "foo"
+        };
+
+        return garbage;
     }
 }
