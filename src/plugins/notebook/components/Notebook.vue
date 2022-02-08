@@ -375,7 +375,7 @@ export default {
                 ]
             });
         },
-        tagEntry(entryId) {
+        tagEntry(emittedObject) {
             const entryPos = getEntryPosById(this.openmct, entryId, this.domainObject, this.selectedSection, this.selectedPage);
             if (entryPos === -1) {
                 this.openmct.notifications.alert('Warning: unable to tag entry');
@@ -384,25 +384,8 @@ export default {
                 return;
             }
 
-            const dialog = this.openmct.overlays.dialog({
-                iconClass: 'alert',
-                message: 'This action would tag this entry. Do you wish to continue?',
-                buttons: [
-                    {
-                        label: "Ok",
-                        emphasis: true,
-                        callback: () => {
-                            console.debug('Would have tagged an entry 🍊');
-                            console.debug('Available tags', this.openmct.annotation.getAvailableTags());
-                            dialog.dismiss();
-                        }
-                    },
-                    {
-                        label: "Cancel",
-                        callback: () => dialog.dismiss()
-                    }
-                ]
-            });
+            this.openmct.annotation.setNotebookAnnotationTag(entryId, this.domainObject, selectedTag, '');
+
         },
         dragOver(event) {
             event.preventDefault();

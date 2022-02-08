@@ -21,12 +21,18 @@
  *****************************************************************************/
 
 import uuid from 'uuid';
-import tags from '../../../example/tags/tags.json';
+import availableTags from '../../../example/tags/tags.json';
 
 export default class AnnotationAPI {
 
     constructor(openmct) {
         this.openmct = openmct;
+        this.ANNOTATION_TYPES = Object.freeze({
+            NOTEBOOK: 'notebook',
+            GEOSPATIAL: 'geospatial',
+            PIXEL_SPATIAL: 'pixelspatial',
+            TEMPORAL: 'temporal'
+        });
 
         this.openmct.types.addType('annotation', {
             name: 'Annotation',
@@ -52,7 +58,11 @@ export default class AnnotationAPI {
     * @returns {Promise} a promise which will resolve when the domain object
     *          has been created, or be rejected if it cannot be saved
     */
-    async create(targetDomainObject, name, annotationType, tags, contentText, originalContextPath, options) {
+    async create(targetDomainObject, name, annotationType, tags, contentText, originalContextPath) {
+        if (Object.keys(this.ANNOTATION_TYPES).includes(annotationType)) {
+            throw new Error(`Unknown annotation type: ${annotationType}`);
+        }
+
         const type = 'annotation';
         const typeDefinition = this.openmct.types.get(type);
         const definition = typeDefinition.definition;
@@ -79,7 +89,6 @@ export default class AnnotationAPI {
         createdObject.targets[targetKeyString] = {};
 
         const success = await this.openmct.objects.save(createdObject);
-
         if (success) {
             return createdObject;
         } else {
@@ -88,14 +97,20 @@ export default class AnnotationAPI {
     }
 
     getAvailableTags() {
-        return tags.tags;
+        return availableTags.tags;
     }
 
     getNotebookAnnotation(entry) {
-        const garbage = {
-            foo: "foo"
-        };
+        return null;
+    }
 
-        return garbage;
+    setNotebookAnnotationTag(entry, targetDomainObject, tag, originalContextPath) {
+        let existingAnnotation = this.getNotebookAnnotation(entry);
+        if (!existingAnnotation) {
+            existingAnnotation = this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [tag], '', originalContextPath);
+            this.openmct.objects.save(existingAnnotation);
+        } else {
+            this.openmct.objects.mutate(existingAnnotation, 'tags', [tag]);
+        }
     }
 }

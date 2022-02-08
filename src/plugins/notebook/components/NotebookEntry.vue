@@ -72,7 +72,8 @@
          class="c-ne__local-controls--hidden"
     >
         <select
-            @change="addedTags()"
+            v-model="selectedTag"
+            @change="setTagValue()"
         >
             <option value="">- No Tag -</option>
             <option v-for="tag in availableTags"
@@ -179,9 +180,6 @@ export default {
 
             return text;
         },
-        addedTags() {
-            return "";
-        },
         highlightText() {
             let text = '';
 
@@ -193,6 +191,11 @@ export default {
         },
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
+        },
+        selectedTag() {
+                let annotationTag = '';
+                if (this.entry.annotation && this.entry.annotation.tags) {
+                annotationTag = this.entry.annotation.tags[0];
         }
     },
     mounted() {
@@ -224,7 +227,11 @@ export default {
             this.$emit('deleteEntry', this.entry.id);
         },
         setTagValue() {
-            this.$emit('tagEntry', this.entry.id);
+            const valueToEmit = {
+                entryID: this.entry.id,
+                selectedTag: this.selectedTag
+            };
+            this.$emit('tagEntry', valueToEmit);
         },
         dropOnEntry($event) {
             event.stopImmediatePropagation();
