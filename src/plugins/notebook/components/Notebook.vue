@@ -120,6 +120,7 @@
                 <NotebookEntry v-for="entry in filteredAndSortedEntries"
                                :key="entry.id"
                                :entry="entry"
+                               :annotation="entry.annotation"
                                :domain-object="domainObject"
                                :selected-page="selectedPage"
                                :selected-section="selectedSection"
@@ -375,16 +376,16 @@ export default {
                 ]
             });
         },
-        tagEntry(emittedObject) {
-            const entryPos = getEntryPosById(this.openmct, entryId, this.domainObject, this.selectedSection, this.selectedPage);
+        tagEntry({entry, tag}) {
+            const entryPos = getEntryPosById(this.openmct, entry.id, this.domainObject, this.selectedSection, this.selectedPage);
             if (entryPos === -1) {
                 this.openmct.notifications.alert('Warning: unable to tag entry');
-                console.error(`unable to tag entry ${entryId} from section ${this.selectedSection}, page ${this.selectedPage}`);
+                console.error(`unable to tag entry ${entry} from section ${this.selectedSection}, page ${this.selectedPage}`);
 
                 return;
             }
 
-            this.openmct.annotation.setNotebookAnnotationTag(entryId, this.domainObject, selectedTag, '');
+            this.openmct.annotation.setNotebookAnnotationTag(entry, this.domainObject, tag, '');
 
         },
         dragOver(event) {

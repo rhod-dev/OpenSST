@@ -72,10 +72,11 @@
          class="c-ne__local-controls--hidden"
     >
         <select
-            v-model="selectedTag"
-            @change="setTagValue()"
+            ref="tagSelection"
+            :v-model="annotation"
+            @change="persistTag"
         >
-            <option value="">- No Tag -</option>
+            <option :value="null">No Tag</option>
             <option v-for="tag in availableTags"
                     :key="tag.key"
                     :value="tag.key"
@@ -157,12 +158,22 @@ export default {
                 return {};
             }
         },
+        annotation: {
+            type: Object,
+            default() {
+                return {};
+            }
+        },
         readOnly: {
             type: Boolean,
             default() {
                 return true;
             }
         }
+    },
+    data() {
+        return {
+        };
     },
     computed: {
         createdOnDate() {
@@ -191,11 +202,6 @@ export default {
         },
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
-        },
-        selectedTag() {
-                let annotationTag = '';
-                if (this.entry.annotation && this.entry.annotation.tags) {
-                annotationTag = this.entry.annotation.tags[0];
         }
     },
     mounted() {
@@ -225,13 +231,6 @@ export default {
         },
         deleteEntry() {
             this.$emit('deleteEntry', this.entry.id);
-        },
-        setTagValue() {
-            const valueToEmit = {
-                entryID: this.entry.id,
-                selectedTag: this.selectedTag
-            };
-            this.$emit('tagEntry', valueToEmit);
         },
         dropOnEntry($event) {
             event.stopImmediatePropagation();
@@ -282,6 +281,18 @@ export default {
             this.$emit('changeSectionPage', {
                 sectionId: this.result.section.id,
                 pageId: null
+            });
+        },
+        persistTag($event) {
+            const selectedIndex = $event.target.selectedIndex;
+            let selectedTag = null;
+            if (selectedIndex) {
+                selectedTag = Object.keys(this.availableTags)[selectedIndex - 1];
+            }
+
+            this.$emit('tagEntry', {
+                entry: this.entry,
+                tag: selectedTag
             });
         },
         removeEmbed(id) {
