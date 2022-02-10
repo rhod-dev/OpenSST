@@ -1,4 +1,5 @@
 import objectLink from '../../../ui/mixins/object-link';
+import uuid from 'uuid';
 
 export const DEFAULT_CLASS = 'notebook-default';
 const TIME_BOUNDS = {
@@ -109,7 +110,7 @@ export function addNotebookEntry(openmct, domainObject, notebookStorage, embed =
         ? [embed]
         : [];
 
-    const id = `entry-${date}`;
+    const id = uuid();
     const entry = {
         id,
         createdOn: date,

@@ -385,7 +385,7 @@ export default {
                 return;
             }
 
-            this.openmct.annotation.setNotebookAnnotationTag(entry, this.domainObject, tag, '');
+            this.openmct.annotation.setNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
 
         },
         dragOver(event) {

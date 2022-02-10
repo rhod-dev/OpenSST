@@ -58,7 +58,7 @@ export default class AnnotationAPI {
     * @returns {Promise} a promise which will resolve when the domain object
     *          has been created, or be rejected if it cannot be saved
     */
-    async create(targetDomainObject, name, annotationType, tags, contentText, originalContextPath) {
+    async create(targetDomainObject, name, annotationType, tags, contentText, originalContextPath, targetOptions) {
         if (Object.keys(this.ANNOTATION_TYPES).includes(annotationType)) {
             throw new Error(`Unknown annotation type: ${annotationType}`);
         }
@@ -86,8 +86,7 @@ export default class AnnotationAPI {
         }
 
         const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
-
-        createdObject.targets[targetKeyString] = {};
+        createdObject.targets[targetKeyString] = targetOptions || {};
 
         const success = await this.openmct.objects.save(createdObject);
         if (success) {
@@ -101,15 +100,18 @@ export default class AnnotationAPI {
         return availableTags.tags;
     }
 
-    getNotebookAnnotation(entry, targetDomainObject) {
+    getNotebookAnnotation(entryId, targetDomainObject) {
 
         return null;
     }
 
-    setNotebookAnnotationTag(entry, targetDomainObject, tag, originalContextPath) {
-        let existingAnnotation = this.getNotebookAnnotation(entry, targetDomainObject);
+    setNotebookAnnotationTag(entryId, targetDomainObject, tag, originalContextPath) {
+        let existingAnnotation = this.getNotebookAnnotation(entryId, targetDomainObject);
         if (!existingAnnotation) {
-            existingAnnotation = this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [tag], '', originalContextPath);
+            const targetOptions = {
+                entryId: entryId
+            };
+            existingAnnotation = this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [tag], '', originalContextPath, targetOptions);
         } else {
             this.openmct.objects.mutate(existingAnnotation, 'tags', [tag]);
         }
