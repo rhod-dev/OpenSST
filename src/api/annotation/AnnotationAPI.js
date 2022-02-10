@@ -40,11 +40,11 @@ export default class AnnotationAPI {
             creatable: true,
             cssClass: 'icon-notebook',
             initialize: function (domainObject) {
-                domainObject.targets = {};
-                domainObject.originalContextPath = '';
-                domainObject.tags = [];
-                domainObject.contentText = '';
-                domainObject.annotationType = null;
+                domainObject.targets = domainObject.targets || {};
+                domainObject.originalContextPath = domainObject.originalContextPath || '';
+                domainObject.tags = domainObject.tags || [];
+                domainObject.contentText = domainObject.contentText || '';
+                domainObject.annotationType = domainObject.annotationType || this.ANNOTATION_TYPES.TEMPORAL;
             }
         });
     }
@@ -66,7 +66,7 @@ export default class AnnotationAPI {
         const type = 'annotation';
         const typeDefinition = this.openmct.types.get(type);
         const definition = typeDefinition.definition;
-        tags = tags || [];
+
         const createdObject = {
             name,
             type,
@@ -80,6 +80,7 @@ export default class AnnotationAPI {
             originalContextPath,
             location: targetDomainObject.location
         };
+
         if (definition.initialize) {
             definition.initialize(createdObject);
         }
@@ -100,15 +101,15 @@ export default class AnnotationAPI {
         return availableTags.tags;
     }
 
-    getNotebookAnnotation(entry) {
+    getNotebookAnnotation(entry, targetDomainObject) {
+
         return null;
     }
 
     setNotebookAnnotationTag(entry, targetDomainObject, tag, originalContextPath) {
-        let existingAnnotation = this.getNotebookAnnotation(entry);
+        let existingAnnotation = this.getNotebookAnnotation(entry, targetDomainObject);
         if (!existingAnnotation) {
             existingAnnotation = this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [tag], '', originalContextPath);
-            this.openmct.objects.save(existingAnnotation);
         } else {
             this.openmct.objects.mutate(existingAnnotation, 'tags', [tag]);
         }
