@@ -240,24 +240,13 @@ export default {
         this.getSearchResults = debounce(this.getSearchResults, 500);
         this.syncUrlWithPageAndSection = debounce(this.syncUrlWithPageAndSection, 100);
     },
-    async mounted() {
+    mounted() {
         this.formatSidebar();
         this.setSectionAndPageFromUrl();
 
         window.addEventListener('orientationchange', this.formatSidebar);
         window.addEventListener('hashchange', this.setSectionAndPageFromUrl);
-
-        const filterTime = Date.now();
-        const pageEntries = await getNotebookEntries(this.openmct, this.domainObject, this.selectedSection, this.selectedPage) || [];
-
-        const hours = parseInt(this.showTime, 10);
-        const filteredPageEntriesByTime = hours
-            ? pageEntries.filter(entry => (filterTime - entry.createdOn) <= hours * 60 * 60 * 1000)
-            : pageEntries;
-
-        this.filteredAndSortedEntries = this.defaultSort === 'oldest'
-            ? filteredPageEntriesByTime
-            : [...filteredPageEntriesByTime].reverse();
+        this.filterAndSortEntries();
     },
     beforeDestroy() {
         if (this.unlisten) {
@@ -294,6 +283,19 @@ export default {
                     });
                 }
             });
+        },
+        async filterAndSortEntries() {
+            const filterTime = Date.now();
+            const pageEntries = await getNotebookEntries(this.openmct, this.domainObject, this.selectedSection, this.selectedPage) || [];
+
+            const hours = parseInt(this.showTime, 10);
+            const filteredPageEntriesByTime = hours
+                ? pageEntries.filter(entry => (filterTime - entry.createdOn) <= hours * 60 * 60 * 1000)
+                : pageEntries;
+
+            this.filteredAndSortedEntries = this.defaultSort === 'oldest'
+                ? filteredPageEntriesByTime
+                : [...filteredPageEntriesByTime].reverse();
         },
         changeSelectedSection({ sectionId, pageId }) {
             const sections = this.sections.map(s => {
@@ -366,12 +368,15 @@ export default {
                             const entries = await getNotebookEntries(this.openmct, this.domainObject, this.selectedSection, this.selectedPage);
                             entries.splice(entryPos, 1);
                             this.updateEntries(entries);
+                            this.filterAndSortEntries();
                             dialog.dismiss();
                         }
                     },
                     {
                         label: "Cancel",
-                        callback: () => dialog.dismiss()
+                        callback: () => {
+                            dialog.dismiss();
+                        }
                     }
                 ]
             });
@@ -611,6 +616,7 @@ export default {
             this.updateDefaultNotebook(notebookStorage);
             const id = addNotebookEntry(this.openmct, this.domainObject, notebookStorage, embed);
             this.focusEntryId = id;
+            this.filterAndSortEntries();
         },
         orientationChange() {
             this.formatSidebar();

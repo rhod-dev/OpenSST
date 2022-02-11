@@ -110,7 +110,7 @@ export function addNotebookEntry(openmct, domainObject, notebookStorage, embed =
         ? [embed]
         : [];
 
-    const id = uuid();
+    const id = `entry-${uuid()}`;
     const entry = {
         id,
         createdOn: date,
