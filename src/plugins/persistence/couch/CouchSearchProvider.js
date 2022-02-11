@@ -71,6 +71,38 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
+    searchForAnnotationsByTargetByIDAndNotebookEntry(keyString, entryId, abortSignal) {
+        const filter = {
+            "selector": {
+                "$and": [
+                    {
+                        "model.type": {
+                            "$eq": "annotation"
+                        }
+                    },
+                    {
+                        "model.annotationType": {
+                            "$eq": "notebook"
+                        }
+                    },
+                    {
+                        "model": {
+                            "targets": {
+                            }
+                        }
+                    }
+                ]
+            }
+        };
+        filter.selector.$and[2].model.targets[keyString] = {
+            "entryId": {
+                "$eq": entryId
+            }
+        };
+
+        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
+    }
+
     searchForAnnotationsTargetByIDAndTimestampRange(keyString, startInclusive, endInclusive, abortSignal) {
         const filter = {
             "selector": {

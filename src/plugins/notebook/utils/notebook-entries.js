@@ -126,7 +126,7 @@ export function addNotebookEntry(openmct, domainObject, notebookStorage, embed =
     return id;
 }
 
-export function getNotebookEntries(openmct, domainObject, selectedSection, selectedPage) {
+export async function getNotebookEntries(openmct, domainObject, selectedSection, selectedPage) {
     if (!domainObject || !selectedSection || !selectedPage) {
         return;
     }
@@ -145,25 +145,25 @@ export function getNotebookEntries(openmct, domainObject, selectedSection, selec
     }
 
     const specificEntries = entries[selectedSection.id][selectedPage.id];
-    const specificEntriesWithAnnotations = Object.keys(specificEntries).map(entryKey => {
+    const specificEntriesWithAnnotations = await Promise.all(Object.keys(specificEntries).map(async entryKey => {
         const entry = specificEntries[entryKey];
-        const annotation = openmct.annotation.getNotebookAnnotation(entry);
+        const annotation = await openmct.annotation.getNotebookAnnotation(entry.id, domainObject);
 
         return {
             ...entry,
             annotation: annotation
         };
-    });
+    }));
 
     return specificEntriesWithAnnotations;
 }
 
-export function getEntryPosById(openmct, entryId, domainObject, selectedSection, selectedPage) {
+export async function getEntryPosById(openmct, entryId, domainObject, selectedSection, selectedPage) {
     if (!domainObject || !selectedSection || !selectedPage) {
         return;
     }
 
-    const entries = getNotebookEntries(openmct, domainObject, selectedSection, selectedPage);
+    const entries = await getNotebookEntries(openmct, domainObject, selectedSection, selectedPage);
     let foundId = -1;
     entries.forEach((element, index) => {
         if (element.id === entryId) {

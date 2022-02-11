@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+
 function byTargetEndTime(doc) {
     if (doc.model.type === "annotation") {
         const targetKeys = Object.keys(doc.model.targets);
