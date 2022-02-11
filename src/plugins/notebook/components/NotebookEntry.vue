@@ -204,7 +204,6 @@ export default {
         },
         tagModel: {
             get() {
-                console.debug('original tag', this.annotation.tags[0]);
                 if (this.annotation && this.annotation.tags) {
                     return this.annotation.tags[0];
                 } else {
