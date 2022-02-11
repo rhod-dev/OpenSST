@@ -73,13 +73,12 @@
     >
         <select
             ref="tagSelection"
-            :v-model="annotation"
-            @change="persistTag"
+            v-model="tagModel"
         >
             <option :value="null">No Tag</option>
             <option v-for="tag in availableTags"
-                    :key="tag.key"
-                    :value="tag.key"
+                    :key="tag.id"
+                    :value="tag.id"
             >
                 {{ tag.label }}
             </option>
@@ -202,6 +201,22 @@ export default {
         },
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
+        },
+        tagModel: {
+            get() {
+                console.debug('original tag', this.annotation.tags[0]);
+                if (this.annotation && this.annotation.tags) {
+                    return this.annotation.tags[0];
+                } else {
+                    return null;
+                }
+            },
+            set(selectedTag) {
+                this.$emit('tagEntry', {
+                    entry: this.entry,
+                    tag: selectedTag
+                });
+            }
         }
     },
     mounted() {
@@ -281,18 +296,6 @@ export default {
             this.$emit('changeSectionPage', {
                 sectionId: this.result.section.id,
                 pageId: null
-            });
-        },
-        persistTag($event) {
-            const selectedIndex = $event.target.selectedIndex;
-            let selectedTag = null;
-            if (selectedIndex) {
-                selectedTag = Object.keys(this.availableTags)[selectedIndex - 1];
-            }
-
-            this.$emit('tagEntry', {
-                entry: this.entry,
-                tag: selectedTag
             });
         },
         removeEmbed(id) {

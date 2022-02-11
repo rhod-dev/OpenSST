@@ -97,7 +97,14 @@ export default class AnnotationAPI {
     }
 
     getAvailableTags() {
-        return availableTags.tags;
+        const rearrangedToArray = Object.keys(availableTags.tags).map(tagKey => {
+            return {
+                id: tagKey,
+                ...availableTags.tags[tagKey]
+            };
+        });
+
+        return rearrangedToArray;
     }
 
     getSearchProvider() {
