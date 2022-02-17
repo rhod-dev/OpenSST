@@ -133,15 +133,20 @@ export default class AnnotationAPI {
         return foundAnnotation;
     }
 
-    async setNotebookAnnotationTag(entryId, targetDomainObject, tag, originalContextPath) {
+    async addNotebookAnnotationTag(entryId, targetDomainObject, tag, originalContextPath) {
         let existingAnnotation = await this.getNotebookAnnotation(entryId, targetDomainObject);
-        const tagArray = tag ? [tag] : [];
+
         if (!existingAnnotation) {
             const targetOptions = {
                 entryId: entryId
             };
+            const tagArray = tag ? [tag] : [];
             existingAnnotation = await this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, tagArray, '', originalContextPath, targetOptions);
+        } else if (existingAnnotation.tags.includes(tag)) {
+            return;
         } else {
+            const tagArray = existingAnnotation.tags;
+            tagArray.push(tag);
             this.openmct.objects.mutate(existingAnnotation, 'tags', tagArray);
         }
     }

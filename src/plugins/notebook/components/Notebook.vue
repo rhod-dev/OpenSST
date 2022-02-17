@@ -390,7 +390,7 @@ export default {
                 return;
             }
 
-            await this.openmct.annotation.setNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
+            await this.openmct.annotation.addNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
         },
         dragOver(event) {
             event.preventDefault();

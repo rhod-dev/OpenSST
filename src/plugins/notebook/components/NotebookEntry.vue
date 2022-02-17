@@ -72,8 +72,20 @@
          class="c-ne__local-controls--hidden"
     >
         <select
-            ref="tagSelection"
-            v-model="tagModel"
+            ref="tagSelection`"
+            v-model="tagModel1"
+        >
+            <option :value="null">No Tag</option>
+            <option v-for="tag in availableTags"
+                    :key="tag.id"
+                    :value="tag.id"
+            >
+                {{ tag.label }}
+            </option>
+        </select>
+        <select
+            ref="tagSelection2"
+            v-model="tagModel2"
         >
             <option :value="null">No Tag</option>
             <option v-for="tag in availableTags"
@@ -202,10 +214,25 @@ export default {
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
         },
-        tagModel: {
+        tagModel1: {
             get() {
                 if (this.annotation && this.annotation.tags) {
                     return this.annotation.tags[0];
+                } else {
+                    return null;
+                }
+            },
+            set(selectedTag) {
+                this.$emit('tagEntry', {
+                    entry: this.entry,
+                    tag: selectedTag
+                });
+            }
+        },
+        tagModel2: {
+            get() {
+                if (this.annotation && this.annotation.tags && this.annotation.tags.length > 1) {
+                    return this.annotation.tags[1];
                 } else {
                     return null;
                 }
