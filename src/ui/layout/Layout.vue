@@ -19,7 +19,7 @@
     >
         <CreateButton class="l-shell__create-button" />
         <GrandSearch
-            ref="shell-search"
+            ref="grand-search"
             class="c-search"
         />
         <indicators class="l-shell__head-section l-shell__indicators" />

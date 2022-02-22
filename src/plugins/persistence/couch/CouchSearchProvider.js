@@ -135,27 +135,16 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForAnnotationsByTextQuery(query, abortSignal) {
+    searchForTagsByTextQuery(tagsArray, abortSignal) {
         const filter = {
             "selector": {
                 "$and": [
                     {
-                        "$and": [
-                            {
-                                "model.contentText": {
-                                    "$regex": `(?i)${query}`
-                                }
-                            },
-                            {
-                                "model.tags": {
-                                    "$elemMatch": {
-                                        "": {
-                                            "$regex": `(?i)${query}`
-                                        }
-                                    }
-                                }
+                        "model.tags": {
+                            "$elemMatch": {
+                                "$eq": `${tagsArray[0]}`
                             }
-                        ]
+                        }
                     },
                     {
                         "model.type": {

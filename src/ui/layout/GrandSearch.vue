@@ -21,7 +21,9 @@ export default {
     },
     data() {
         return {
-            searchValue: ''
+            searchValue: '',
+            searchLoading: false,
+            searchResultItems: []
         };
     },
     computed: {
@@ -47,28 +49,22 @@ export default {
                 this.searchLoading = false;
             }
         },
-        getSearchResults() {
+        async getSearchResults() {
             // an abort controller will be passed in that will be used
             // to cancel an active searches if necessary
+            console.debug(`🖲 Would be searching for ${this.searchValue}`);
             this.abortSearchController = new AbortController();
             const abortSignal = this.abortSearchController.signal;
-            const searchPromises = this.openmct.objects.search(this.searchValue, abortSignal);
-
-            searchPromises.map(promise => promise
-                .then(results => {
-                    return;
-                }
-                ));
-
-            Promise.all(searchPromises).catch(reason => {
-                // search aborted
-            }).finally(() => {
+            try {
+                const results = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
+                console.debug('results have returned', results);
+            } catch (error) {
                 this.searchLoading = false;
 
                 if (this.abortSearchController) {
                     delete this.abortSearchController;
                 }
-            });
+            }
         }
     }
 };

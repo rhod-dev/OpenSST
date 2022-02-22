@@ -150,4 +150,27 @@ export default class AnnotationAPI {
             this.openmct.objects.mutate(existingAnnotation, 'tags', tagArray);
         }
     }
+
+    getMatchingTags(query) {
+        const allTags = availableTags.tags;
+        const matchingTags = Object.keys(allTags).filter(tagKey => {
+            return allTags[tagKey].label.includes(query);
+        }).map(tagKey => {
+            return tagKey;
+        });
+
+        return matchingTags;
+    }
+
+    async searchForTags(query, abortController) {
+        // get matching tags first
+        const matchingTags = this.getMatchingTags(query);
+        // being "expedient" here and just assuming we've got the couch provider
+        const searchProvider = this.getSearchProvider();
+        if (searchProvider) {
+            const searchResults = await searchProvider.searchForTagsByTextQuery(matchingTags, abortController);
+
+            return searchResults;
+        }
+    }
 }
