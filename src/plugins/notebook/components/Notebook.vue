@@ -381,7 +381,7 @@ export default {
                 ]
             });
         },
-        async tagEntry({entry, tag}) {
+        async tagEntry({tagSlot, entry, tag}) {
             const entryPos = await getEntryPosById(this.openmct, entry.id, this.domainObject, this.selectedSection, this.selectedPage);
             if (entryPos === -1) {
                 this.openmct.notifications.alert('Warning: unable to tag entry');

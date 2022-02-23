@@ -21,158 +21,43 @@
  *****************************************************************************/
 
 <template>
-<div class="c-notebook__entry c-ne has-local-controls"
-     @dragover="changeCursor"
-     @drop.capture="cancelEditMode"
-     @drop.prevent="dropOnEntry"
->
-    <div class="c-ne__time-and-content">
-        <div class="c-ne__time">
-            <template v-if="entry.createdBy">
-                <span class="c-icon icon-person">{{ entry.createdBy }}</span>
-            </template>
-            <span>{{ createdOnDate }}</span>
-            <span>{{ createdOnTime }}</span>
-        </div>
-        <div class="c-ne__content">
-            <template v-if="readOnly && result">
-                <div
-                    :id="entry.id"
-                    class="c-ne__text highlight"
-                    tabindex="0"
-                >
-                    <TextHighlight
-                        :text="entryText"
-                        :highlight="highlightText"
-                        :highlight-class="'search-highlight'"
-                    />
-                </div>
-            </template>
-            <template v-else>
-                <div
-                    :id="entry.id"
-                    class="c-ne__text c-ne__input"
-                    tabindex="0"
-                    contenteditable
-                    @blur="updateEntryValue($event)"
-                    @keydown.enter.exact.prevent
-                    @keyup.enter.exact.prevent="forceBlur($event)"
-                    v-text="entry.text"
-                >
-                </div>
-            </template>
-            <div class="c-snapshots c-ne__embeds">
-                <NotebookEmbed v-for="embed in entry.embeds"
-                               :key="embed.id"
-                               :embed="embed"
-                               @removeEmbed="removeEmbed"
-                               @updateEmbed="updateEmbed"
-                />
-            </div>
-        </div>
-    </div>
-    <div v-if="!readOnly"
-         class="c-ne__local-controls--hidden"
+<div class="c-tag-selection">
+    <select
+        ref="tagSelection"
+        v-model="tagModel"
     >
-        <TagSelection
-            v-for="addedTag in addedTags"
-            :key="addedTag.key"
-            ref="addedTag"
-            :value="addedTag.value"
-            @annotation="annotation"
-            @selectedTag="addedTag.key"
-        />
-        <button class="c-icon-button c-icon-button--major icon-plus"
-                title="Add tag"
-                @click="addTag"
+        <option :value="null">No Tag</option>
+        <option v-for="tag in availableTags"
+                :key="tag.id"
+                :value="tag.id"
         >
-        </button>
-        <button class="c-icon-button c-icon-button--major icon-trash"
-                title="Delete this entry"
-                tabindex="-1"
-                @click="deleteEntry"
-        >
-        </button>
-    </div>
-    <div v-if="readOnly"
-         class="c-ne__section-and-page"
-    >
-        <a
-            class="c-click-link"
-            :class="{ 'search-highlight': result.metadata.sectionHit }"
-            @click="navigateToSection()"
-        >
-            {{ result.section.name }}
-        </a>
-        <span class="icon-arrow-right"></span>
-        <a
-            class="c-click-link"
-            :class="{ 'search-highlight': result.metadata.pageHit }"
-            @click="navigateToPage()"
-        >
-            {{ result.page.name }}
-        </a>
-    </div>
+            {{ tag.label }}
+        </option>
+    </select>
 </div>
 </template>
 
 <script>
-import NotebookEmbed from './NotebookEmbed.vue';
-import TagSelection from './TagSelection.vue';
-import TextHighlight from '../../../utils/textHighlight/TextHighlight.vue';
-import { createNewEmbed } from '../utils/notebook-entries';
-import { saveNotebookImageDomainObject, updateNamespaceOfDomainObject } from '../utils/notebook-image';
-
-import Moment from 'moment';
 
 export default {
-    components: {
-        NotebookEmbed,
-        TextHighlight,
-        TagSelection
-    },
-    inject: ['openmct', 'snapshotContainer'],
+    inject: ['openmct'],
     props: {
-        domainObject: {
-            type: Object,
-            default() {
-                return {};
-            }
-        },
-        entry: {
-            type: Object,
-            default() {
-                return {};
-            }
-        },
-        result: {
-            type: Object,
-            default() {
-                return {};
-            }
-        },
-        selectedPage: {
-            type: Object,
-            default() {
-                return {};
-            }
-        },
-        selectedSection: {
-            type: Object,
-            default() {
-                return {};
-            }
-        },
         annotation: {
             type: Object,
             default() {
                 return {};
             }
         },
-        readOnly: {
-            type: Boolean,
+        selectedTag: {
+            type: String,
             default() {
-                return true;
+                return "";
+            }
+        },
+        entry: {
+            type: Object,
+            default() {
+                return {};
             }
         }
     },
@@ -181,38 +66,19 @@ export default {
         };
     },
     computed: {
-        createdOnDate() {
-            return this.formatTime(this.entry.createdOn, 'YYYY-MM-DD');
-        },
-        createdOnTime() {
-            return this.formatTime(this.entry.createdOn, 'HH:mm:ss');
-        },
-        entryText() {
-            let text = this.entry.text;
-
-            if (!this.result.metadata.entryHit) {
-                text = `[ no result for '${this.result.metadata.originalSearchText}' in entry ]`;
-            }
-
-            return text;
-        },
-        highlightText() {
-            let text = '';
-
-            if (this.result.metadata.entryHit) {
-                text = this.result.metadata.originalSearchText;
-            }
-
-            return text;
-        },
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
         },
-        addedTags() {
-            if (this.annotation) {
-                return this.annotation.tags;
-            } else {
-                return null;
+        tagModel: {
+            get() {
+                return this.selectedTag;
+            },
+            set(newTag) {
+                this.$emit('tagEntry', {
+                    tagSlot: 0,
+                    entry: this.entry,
+                    tag: newTag
+                });
             }
         }
     },
