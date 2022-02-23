@@ -74,7 +74,7 @@ export default {
                 return this.selectedTag;
             },
             set(newTag) {
-                this.$emit('tagEntry', {
+                this.$emit('tagAdded', {
                     tagSlot: 0,
                     entry: this.entry,
                     tag: newTag
