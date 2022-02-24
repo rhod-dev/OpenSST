@@ -128,6 +128,7 @@
                                @deleteEntry="deleteEntry"
                                @tagAdded="tagAdded"
                                @tagRemoved="tagRemoved"
+                               @tagChanged="tagChanged"
                                @updateEntry="updateEntry"
                 />
             </div>
@@ -394,20 +395,28 @@ export default {
             return true;
         },
         async tagAdded({entry, tag}) {
+            console.debug(`🥥 adding tag ${tag}`);
             if (!await this.checkEntryPos(entry)) {
                 return;
             }
 
-            console.debug(`🥥 addding tag`);
-
             await this.openmct.annotation.addNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
         },
         async tagRemoved({entry, tag}) {
+            console.debug(`removing tag ${tag}`);
             if (!await this.checkEntryPos(entry)) {
                 return;
             }
 
             await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
+        },
+        async tagChanged({entry, oldTag, newTag}) {
+            console.debug(`Changing tag from ${oldTag} to ${newTag}`);
+            if (!await this.checkEntryPos(entry)) {
+                return;
+            }
+
+            await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, oldTag, newTag, '');
         },
         dragOver(event) {
             event.preventDefault();

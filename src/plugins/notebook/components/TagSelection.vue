@@ -61,6 +61,7 @@ export default {
     },
     data() {
         return {
+            previousTag: null
         };
     },
     computed: {
@@ -78,6 +79,12 @@ export default {
                     this.$emit('tagRemoved', {
                         entry: this.entry,
                         tag: this.selectedTag
+                    });
+                } else if (this.selectedTag) {
+                    this.$emit('tagChanged', {
+                        entry: this.entry,
+                        oldTag: this.selectedTag,
+                        newTag: tagValue
                     });
                 } else {
                     this.$emit('tagAdded', {

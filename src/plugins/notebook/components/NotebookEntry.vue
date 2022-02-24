@@ -82,6 +82,7 @@
             :entry="entry"
             @tagAdded="tagAdded"
             @tagRemoved="tagRemoved"
+            @tagChanged="tagChanged"
         />
         <button class="c-icon-button c-icon-button--major icon-plus"
                 title="Add new tag"
@@ -167,7 +168,7 @@ export default {
         annotation: {
             type: Object,
             default() {
-                return {};
+                return null;
             }
         },
         readOnly: {
@@ -182,6 +183,13 @@ export default {
         };
     },
     computed: {
+        addedTags() {
+            if (this.annotation) {
+                return this.annotation.tags;
+            } else {
+                return null;
+            }
+        },
         createdOnDate() {
             return this.formatTime(this.entry.createdOn, 'YYYY-MM-DD');
         },
@@ -208,19 +216,32 @@ export default {
         },
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
-        },
-        addedTags() {
-            if (this.annotation) {
-                return this.annotation.tags;
-            } else {
-                return null;
-            }
+        }
+    },
+    watch: {
+        annotation: {
+            handler() {
+                this.tagsChanged();
+            },
+            deep: true
         }
     },
     mounted() {
         this.dropOnEntry = this.dropOnEntry.bind(this);
+        if (this.annotation) {
+            this.removeTagsListener = this.openmct.objects.observe(this.annotation, 'tags', this.tagsChanged);
+            this.tagsChanged();
+        }
+    },
+    destroyed() {
+        if (this.removeTagsListener) {
+            this.removeTagsListener();
+        }
     },
     methods: {
+        tagsChanged(newAnnotation) {
+            console.debug(`🍇🍇🍇 new tags 🍇🍇🍇`);
+        },
         async addNewEmbed(objectPath) {
             const bounds = this.openmct.time.bounds();
             const snapshotMeta = {
@@ -250,6 +271,9 @@ export default {
         },
         tagRemoved(event) {
             this.$emit('tagRemoved', event);
+        },
+        tagChanged(event) {
+            this.$emit('tagChanged', event);
         },
         async dropOnEntry($event) {
             event.stopImmediatePropagation();
