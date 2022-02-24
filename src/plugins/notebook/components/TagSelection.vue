@@ -21,20 +21,18 @@
  *****************************************************************************/
 
 <template>
-<div class="c-tag-selection">
-    <select
-        ref="tagSelection"
-        v-model="tagModel"
+<select
+    ref="tagSelection"
+    v-model="tagModel"
+>
+    <option v-for="tag in availableTags"
+            :key="tag.id"
+            :value="tag.id"
     >
-        <option :value="null">No Tag</option>
-        <option v-for="tag in availableTags"
-                :key="tag.id"
-                :value="tag.id"
-        >
-            {{ tag.label }}
-        </option>
-    </select>
-</div>
+        {{ tag.label }}
+    </option>
+    <option value="remove">*Remove Tag*</option>
+</select>
 </template>
 
 <script>
@@ -73,120 +71,26 @@ export default {
             get() {
                 return this.selectedTag;
             },
-            set(newTag) {
-                this.$emit('tagAdded', {
-                    tagSlot: 0,
-                    entry: this.entry,
-                    tag: newTag
-                });
+            set(tagValue) {
+                console.debug(`Set tag called with ${tagValue}`);
+                if (tagValue === 'remove') {
+                    console.debug(`Need to remove ${this.selectedTag}`);
+                    this.$emit('tagRemoved', {
+                        entry: this.entry,
+                        tag: this.selectedTag
+                    });
+                } else {
+                    this.$emit('tagAdded', {
+                        entry: this.entry,
+                        tag: tagValue
+                    });
+                }
             }
         }
     },
     mounted() {
-        this.dropOnEntry = this.dropOnEntry.bind(this);
     },
     methods: {
-        async addNewEmbed(objectPath) {
-            const bounds = this.openmct.time.bounds();
-            const snapshotMeta = {
-                bounds,
-                link: null,
-                objectPath,
-                openmct: this.openmct
-            };
-            const newEmbed = await createNewEmbed(snapshotMeta);
-            this.entry.embeds.push(newEmbed);
-        },
-        cancelEditMode(event) {
-            const isEditing = this.openmct.editor.isEditing();
-            if (isEditing) {
-                this.openmct.editor.cancel();
-            }
-        },
-        changeCursor() {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = "copy";
-        },
-        deleteEntry() {
-            this.$emit('deleteEntry', this.entry.id);
-        },
-        async dropOnEntry($event) {
-            event.stopImmediatePropagation();
-
-            const snapshotId = $event.dataTransfer.getData('openmct/snapshot/id');
-            if (snapshotId.length) {
-                const snapshot = this.snapshotContainer.getSnapshot(snapshotId);
-                this.entry.embeds.push(snapshot.embedObject);
-                this.snapshotContainer.removeSnapshot(snapshotId);
-
-                const namespace = this.domainObject.identifier.namespace;
-                const notebookImageDomainObject = updateNamespaceOfDomainObject(snapshot.notebookImageDomainObject, namespace);
-                saveNotebookImageDomainObject(this.openmct, notebookImageDomainObject);
-            } else {
-                const data = $event.dataTransfer.getData('openmct/domain-object-path');
-                const objectPath = JSON.parse(data);
-                await this.addNewEmbed(objectPath);
-            }
-
-            this.$emit('updateEntry', this.entry);
-        },
-        findPositionInArray(array, id) {
-            let position = -1;
-            array.some((item, index) => {
-                const found = item.id === id;
-                if (found) {
-                    position = index;
-                }
-
-                return found;
-            });
-
-            return position;
-        },
-        forceBlur(event) {
-            event.target.blur();
-        },
-        formatTime(unixTime, timeFormat) {
-            return Moment.utc(unixTime).format(timeFormat);
-        },
-        navigateToPage() {
-            this.$emit('changeSectionPage', {
-                sectionId: this.result.section.id,
-                pageId: this.result.page.id
-            });
-        },
-        navigateToSection() {
-            this.$emit('changeSectionPage', {
-                sectionId: this.result.section.id,
-                pageId: null
-            });
-        },
-        removeEmbed(id) {
-            const embedPosition = this.findPositionInArray(this.entry.embeds, id);
-            // TODO: remove notebook snapshot object using object remove API
-            this.entry.embeds.splice(embedPosition, 1);
-
-            this.$emit('updateEntry', this.entry);
-        },
-        updateEmbed(newEmbed) {
-            this.entry.embeds.some(e => {
-                const found = (e.id === newEmbed.id);
-                if (found) {
-                    e = newEmbed;
-                }
-
-                return found;
-            });
-
-            this.$emit('updateEntry', this.entry);
-        },
-        updateEntryValue($event) {
-            const value = $event.target.innerText;
-            if (value !== this.entry.text && value.match(/\S/)) {
-                this.entry.text = value;
-                this.$emit('updateEntry', this.entry);
-            }
-        },
         addTag($event) {
             console.debug(`Would add another tag 🍊`);
         }

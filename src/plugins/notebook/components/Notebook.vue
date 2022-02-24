@@ -126,7 +126,8 @@
                                :selected-section="selectedSection"
                                :read-only="false"
                                @deleteEntry="deleteEntry"
-                               @tagEntry="tagEntry"
+                               @tagAdded="tagAdded"
+                               @tagRemoved="tagRemoved"
                                @updateEntry="updateEntry"
                 />
             </div>
@@ -381,16 +382,32 @@ export default {
                 ]
             });
         },
-        async tagEntry({tagSlot, entry, tag}) {
+        async checkEntryPos(entry) {
             const entryPos = await getEntryPosById(this.openmct, entry.id, this.domainObject, this.selectedSection, this.selectedPage);
             if (entryPos === -1) {
                 this.openmct.notifications.alert('Warning: unable to tag entry');
                 console.error(`unable to tag entry ${entry} from section ${this.selectedSection}, page ${this.selectedPage}`);
 
+                return false;
+            }
+
+            return true;
+        },
+        async tagAdded({entry, tag}) {
+            if (!await this.checkEntryPos(entry)) {
                 return;
             }
 
+            console.debug(`🥥 addding tag`);
+
             await this.openmct.annotation.addNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
+        },
+        async tagRemoved({entry, tag}) {
+            if (!await this.checkEntryPos(entry)) {
+                return;
+            }
+
+            await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
         },
         dragOver(event) {
             event.preventDefault();

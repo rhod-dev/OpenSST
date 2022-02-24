@@ -77,14 +77,15 @@
         <TagSelection
             v-for="addedTag in addedTags"
             :key="addedTag.key"
-            ref="addedTag"
-            :value="addedTag.value"
-            @annotation="annotation"
-            @selectedTag="addedTag.key"
+            :annotation="annotation"
+            :selected-tag="addedTag"
+            :entry="entry"
+            @tagAdded="tagAdded"
+            @tagRemoved="tagRemoved"
         />
         <button class="c-icon-button c-icon-button--major icon-plus"
-                title="Add tag"
-                @click="addTag"
+                title="Add new tag"
+                @click="addNewTag"
         >
         </button>
         <button class="c-icon-button c-icon-button--major icon-trash"
@@ -244,6 +245,12 @@ export default {
         deleteEntry() {
             this.$emit('deleteEntry', this.entry.id);
         },
+        tagAdded(event) {
+            this.$emit('tagAdded', event);
+        },
+        tagRemoved(event) {
+            this.$emit('tagRemoved', event);
+        },
         async dropOnEntry($event) {
             event.stopImmediatePropagation();
 
@@ -321,8 +328,13 @@ export default {
                 this.$emit('updateEntry', this.entry);
             }
         },
-        addTag($event) {
+        addNewTag($event) {
             console.debug(`Would add another tag 🍊`);
+            const newTagValue = this.openmct.annotation.getAvailableTags()[0].id;
+            this.$emit('tagAdded', {
+                entry: this.entry,
+                tag: newTagValue
+            });
         }
     }
 };
