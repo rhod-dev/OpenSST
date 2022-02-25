@@ -141,15 +141,11 @@ export default class AnnotationAPI {
             const targetOptions = {
                 entryId: entryId
             };
-            const tagArray = tag ? [tag] : [];
-            existingAnnotation = await this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, tagArray, '', originalContextPath, targetOptions);
-        } else if (existingAnnotation.tags.includes(tag)) {
-            return;
-        } else {
-            const tagArray = existingAnnotation.tags;
-            tagArray.push(tag);
-            this.openmct.objects.mutate(existingAnnotation, 'tags', tagArray);
+            existingAnnotation = await this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [], '', originalContextPath, targetOptions);
         }
+
+        const tagArray = [tag, ...existingAnnotation.tags];
+        this.openmct.objects.mutate(existingAnnotation, 'tags', tagArray);
     }
 
     async removeNotebookAnnotationTag(entryId, targetDomainObject, tagToRemove) {

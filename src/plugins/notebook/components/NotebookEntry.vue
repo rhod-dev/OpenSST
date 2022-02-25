@@ -75,8 +75,8 @@
          class="c-ne__local-controls--hidden"
     >
         <TagSelection
-            v-for="addedTag in addedTags"
-            :key="addedTag.key"
+            v-for="(addedTag, index) in addedTags"
+            :key="index"
             :annotation="annotation"
             :selected-tag="addedTag"
             :entry="entry"
@@ -180,16 +180,10 @@ export default {
     },
     data() {
         return {
+            addedTags: []
         };
     },
     computed: {
-        addedTags() {
-            if (this.annotation) {
-                return this.annotation.tags;
-            } else {
-                return null;
-            }
-        },
         createdOnDate() {
             return this.formatTime(this.entry.createdOn, 'YYYY-MM-DD');
         },
@@ -230,7 +224,7 @@ export default {
         this.dropOnEntry = this.dropOnEntry.bind(this);
         if (this.annotation) {
             this.removeTagsListener = this.openmct.objects.observe(this.annotation, 'tags', this.tagsChanged);
-            this.tagsChanged();
+            this.tagsChanged(this.annotation.tags);
         }
     },
     destroyed() {
@@ -239,8 +233,15 @@ export default {
         }
     },
     methods: {
-        tagsChanged(newAnnotation) {
+        tagsChanged(newTags) {
             console.debug(`🍇🍇🍇 new tags 🍇🍇🍇`);
+            if (newTags.length < this.addedTags.length) {
+                this.addedTags = this.addedTags.slice(0, newTags.length);
+            }
+
+            for (let index = 0; index < newTags.length; index += 1) {
+                this.$set(this.addedTags, index, newTags[index]);
+            }
         },
         async addNewEmbed(objectPath) {
             const bounds = this.openmct.time.bounds();
