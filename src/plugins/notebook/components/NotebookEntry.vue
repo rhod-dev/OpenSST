@@ -80,13 +80,12 @@
             :annotation="annotation"
             :selected-tag="addedTag"
             :entry="entry"
-            @tagAdded="tagAdded"
             @tagRemoved="tagRemoved"
             @tagChanged="tagChanged"
         />
         <button class="c-icon-button c-icon-button--major icon-plus"
                 title="Add new tag"
-                @click="addNewTag"
+                @click="tagAdded"
         >
         </button>
         <button class="c-icon-button c-icon-button--major icon-trash"
@@ -215,15 +214,15 @@ export default {
     watch: {
         annotation: {
             handler() {
-                this.tagsChanged();
+                this.tagsChanged(this.annotation.tags);
             },
             deep: true
         }
     },
     mounted() {
         this.dropOnEntry = this.dropOnEntry.bind(this);
-        if (this.annotation) {
-            this.removeTagsListener = this.openmct.objects.observe(this.annotation, 'tags', this.tagsChanged);
+        this.addAnnotationListener(this.annotation);
+        if (this.annotation && this.annotation.tags) {
             this.tagsChanged(this.annotation.tags);
         }
     },
@@ -233,8 +232,13 @@ export default {
         }
     },
     methods: {
+        addAnnotationListener(annotation) {
+            if (annotation && !this.removeTagsListener) {
+                this.removeTagsListener = this.openmct.objects.observe(annotation, 'tags', this.tagsChanged);
+            }
+        },
         tagsChanged(newTags) {
-            console.debug(`🍇🍇🍇 new tags 🍇🍇🍇`);
+            console.debug(`🍇🍇🍇 new tags 🍇🍇🍇`, newTags);
             if (newTags.length < this.addedTags.length) {
                 this.addedTags = this.addedTags.slice(0, newTags.length);
             }
@@ -267,14 +271,23 @@ export default {
         deleteEntry() {
             this.$emit('deleteEntry', this.entry.id);
         },
-        tagAdded(event) {
-            this.$emit('tagAdded', event);
+        async tagAdded() {
+            const newTagValue = this.openmct.annotation.getAvailableTags()[0].id;
+            console.debug(`🥥 adding tag ${newTagValue}`);
+            const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTagValue, '');
+            if (!this.annotation) {
+                this.addAnnotationListener(newAnnotation);
+            }
+
+            this.tagsChanged(newAnnotation.tags);
         },
-        tagRemoved(event) {
-            this.$emit('tagRemoved', event);
+        async tagRemoved({entry, tag}) {
+            console.debug(`removing tag ${tag}`);
+            await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
         },
-        tagChanged(event) {
-            this.$emit('tagChanged', event);
+        async tagChanged({entry, oldTag, newTag}) {
+            console.debug(`Changing tag from ${oldTag} to ${newTag}`);
+            await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, oldTag, newTag, '');
         },
         async dropOnEntry($event) {
             event.stopImmediatePropagation();
@@ -352,14 +365,6 @@ export default {
                 this.entry.text = value;
                 this.$emit('updateEntry', this.entry);
             }
-        },
-        addNewTag($event) {
-            console.debug(`Would add another tag 🍊`);
-            const newTagValue = this.openmct.annotation.getAvailableTags()[0].id;
-            this.$emit('tagAdded', {
-                entry: this.entry,
-                tag: newTagValue
-            });
         }
     }
 };

@@ -146,6 +146,8 @@ export default class AnnotationAPI {
 
         const tagArray = [tag, ...existingAnnotation.tags];
         this.openmct.objects.mutate(existingAnnotation, 'tags', tagArray);
+
+        return existingAnnotation;
     }
 
     async removeNotebookAnnotationTag(entryId, targetDomainObject, tagToRemove) {
