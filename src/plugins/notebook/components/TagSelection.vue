@@ -24,6 +24,7 @@
 <select
     ref="tagSelection"
     v-model="tagModel"
+    :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
 >
     <option v-for="tag in availableTags"
             :key="tag.id"
@@ -61,12 +62,17 @@ export default {
     },
     data() {
         return {
-            previousTag: null
         };
     },
     computed: {
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
+        },
+        selectedBackgroundColor() {
+            return this.getAvailableTagByID(this.selectedTag).backgroundColor;
+        },
+        selectedForegroundColor() {
+            return this.getAvailableTagByID(this.selectedTag).foregroundColor;
         },
         tagModel: {
             get() {
@@ -98,8 +104,10 @@ export default {
     mounted() {
     },
     methods: {
-        addTag($event) {
-            console.debug(`Would add another tag 🍊`);
+        getAvailableTagByID(tagID) {
+            return this.openmct.annotation.getAvailableTags().find(tag => {
+                return tag.id === tagID;
+            });
         }
     }
 };
