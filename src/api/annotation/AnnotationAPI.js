@@ -168,16 +168,10 @@ export default class AnnotationAPI {
     async changeNotebookAnnotationTag(entryId, targetDomainObject, tagToRemove, tagToAdd) {
         console.debug(`Going to change ${tagToRemove} to ${tagToAdd}`);
         let existingAnnotation = await this.getNotebookAnnotation(entryId, targetDomainObject);
-
-        if (existingAnnotation && existingAnnotation.tags.includes(tagToRemove)) {
-            const cleanedArray = existingAnnotation.tags.filter(extantTag => (extantTag !== tagToRemove) || (extantTag !== tagToAdd));
-            cleanedArray.push(tagToAdd);
-            console.debug(`tags are`, cleanedArray);
-            this.openmct.objects.mutate(existingAnnotation, 'tags', cleanedArray);
-        } else {
-            throw new Error(`Asked to remove notebook tag (${tagToRemove}) that doesn't exist for ${entryId}`);
-        }
-
+        const cleanedArray = existingAnnotation.tags.filter(extantTag => (extantTag !== tagToRemove) && (extantTag !== tagToAdd));
+        cleanedArray.push(tagToAdd);
+        console.debug(`tags are`, cleanedArray);
+        this.openmct.objects.mutate(existingAnnotation, 'tags', cleanedArray);
     }
 
     getMatchingTags(query) {
