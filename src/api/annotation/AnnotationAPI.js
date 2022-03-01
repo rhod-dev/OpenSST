@@ -151,7 +151,7 @@ export default class AnnotationAPI {
     }
 
     async removeNotebookAnnotationTag(entryId, targetDomainObject, tagToRemove) {
-        console.debug(`Going to remove ${tagToRemove}`);
+        console.debug(`Going to remove tag ${tagToRemove}`);
         let existingAnnotation = await this.getNotebookAnnotation(entryId, targetDomainObject);
 
         if (existingAnnotation && existingAnnotation.tags.includes(tagToRemove)) {
@@ -160,7 +160,12 @@ export default class AnnotationAPI {
         } else {
             throw new Error(`Asked to remove notebook tag (${tagToRemove}) that doesn't exist for ${entryId}`);
         }
+    }
 
+    async removeNotebookAnnotation(entryId, targetDomainObject) {
+        console.debug(`Going to remove annotation ${entryId}`);
+        let existingAnnotation = await this.getNotebookAnnotation(entryId, targetDomainObject);
+        console.debug(`Not implemented, so leaving this in place`, existingAnnotation);
     }
 
     async changeNotebookAnnotationTag(entryId, targetDomainObject, tagToRemove, tagToAdd) {

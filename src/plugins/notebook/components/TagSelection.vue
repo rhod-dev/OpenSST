@@ -92,11 +92,6 @@ export default {
                         oldTag: this.selectedTag,
                         newTag: tagValue
                     });
-                } else {
-                    this.$emit('tagAdded', {
-                        entry: this.entry,
-                        tag: tagValue
-                    });
                 }
             }
         }

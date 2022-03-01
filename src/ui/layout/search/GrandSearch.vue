@@ -1,20 +1,27 @@
 <template>
-<search
-    ref="shell-search"
-    class="c-search"
-    :value="searchValue"
-    @input="searchEverything"
-    @clear="searchEverything"
-/>
+<div ref="GrandSearch">
+    <search
+        ref="shell-search"
+        class="c-search"
+        :value="searchValue"
+        @click="showSearchResultsPane"
+        @input="searchEverything"
+        @clear="searchEverything"
+    />
+    <SearchResultsPane />
+</div>
 </template>
 
 <script>
-import search from '../components/search.vue';
+import search from '../../components/search.vue';
+import SearchResultsPane from './SearchResultsPane.vue';
 
 export default {
     name: 'GrandSearch',
     components: {
-        search
+        search,
+        SearchResultsPane
+
     },
     inject: ['openmct'],
     props: {
@@ -29,7 +36,7 @@ export default {
     computed: {
     },
     methods: {
-        searchEverything(value) {
+        async searchEverything(value) {
             // if an abort controller exists, regardless of the value passed in,
             // there is an active search that should be canceled
             if (this.abortSearchController) {
@@ -44,7 +51,8 @@ export default {
                 // clear any previous search results
                 this.searchResultItems = [];
 
-                this.getSearchResults();
+                await this.getSearchResults();
+                this.showSearchResultsPane();
             } else {
                 this.searchLoading = false;
             }
@@ -65,6 +73,9 @@ export default {
                     delete this.abortSearchController;
                 }
             }
+        },
+        showSearchResultsPane() {
+            console.debug(`Would be toggling search results pane`);
         }
     }
 };
