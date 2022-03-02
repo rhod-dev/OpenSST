@@ -10,7 +10,6 @@
     />
     <SearchResultsDropDown
         ref="searchResultsDropDown"
-        :results="[{ id: 1, name: 'Option 1'}, { id: 2, name: 'Option 2'}]"
         :max-item="10"
     />
 
