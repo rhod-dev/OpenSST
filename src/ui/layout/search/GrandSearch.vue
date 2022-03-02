@@ -4,24 +4,28 @@
         ref="shell-search"
         class="c-search"
         :value="searchValue"
-        @click="showSearchResultsPane"
+        @focus="showSearchResults"
         @input="searchEverything"
         @clear="searchEverything"
     />
-    <SearchResultsPane />
+    <SearchResultsDropDown
+        ref="searchResultsDropDown"
+        :results="[{ id: 1, name: 'Option 1'}, { id: 2, name: 'Option 2'}]"
+        :max-item="10"
+    />
+
 </div>
 </template>
 
 <script>
 import search from '../../components/search.vue';
-import SearchResultsPane from './SearchResultsPane.vue';
+import SearchResultsDropDown from './SearchResultsDropDown.vue';
 
 export default {
     name: 'GrandSearch',
     components: {
         search,
-        SearchResultsPane
-
+        SearchResultsDropDown
     },
     inject: ['openmct'],
     props: {
@@ -52,7 +56,6 @@ export default {
                 this.searchResultItems = [];
 
                 await this.getSearchResults();
-                this.showSearchResultsPane();
             } else {
                 this.searchLoading = false;
             }
@@ -64,8 +67,8 @@ export default {
             this.abortSearchController = new AbortController();
             const abortSignal = this.abortSearchController.signal;
             try {
-                const results = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
-                console.debug('results have returned', results);
+                this.searchResultItems = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
+                console.debug('results have returned', this.searchResultItems);
             } catch (error) {
                 this.searchLoading = false;
 
@@ -74,8 +77,9 @@ export default {
                 }
             }
         },
-        showSearchResultsPane() {
+        showSearchResults() {
             console.debug(`Would be toggling search results pane`);
+            this.$refs.searchResultsDropDown.showResults(this.searchResultItems);
         }
     }
 };
