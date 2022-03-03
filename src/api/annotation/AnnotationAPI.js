@@ -181,22 +181,51 @@ export default class AnnotationAPI {
         const allTags = availableTags.tags;
         const matchingTags = Object.keys(allTags).filter(tagKey => {
             return allTags[tagKey].label.includes(query);
-        }).map(tagKey => {
-            return tagKey;
         });
 
         return matchingTags;
     }
 
+    addTagMetaInformationToResults(results, matchingTagKeys) {
+        const matchingTags = matchingTagKeys.map(tagKey => availableTags.tags[tagKey]);
+        const tagsAddedToResults = results.map(result => {
+            return {
+                matchingTags,
+                ...result
+            };
+        });
+
+        return tagsAddedToResults;
+    }
+
+    async addTargetModelsToResults(results) {
+        const modelAddedToResults = await Promise.all(results.map(async result => {
+            const targetModels = await Promise.all(Object.keys(result.targets).map(async (targetID) => {
+                const targetModel = await this.openmct.objects.get(targetID);
+
+                return {
+                    targetModel,
+                    ...result
+                };
+            }));
+
+            return targetModels;
+        }));
+
+        return modelAddedToResults;
+    }
+
     async searchForTags(query, abortController) {
         // get matching tags first
-        const matchingTags = this.getMatchingTags(query);
+        const matchingTagKeys = this.getMatchingTags(query);
         // being "expedient" here and just assuming we've got the couch provider
         const searchProvider = this.getSearchProvider();
         if (searchProvider) {
-            const searchResults = await searchProvider.searchForTagsByTextQuery(matchingTags, abortController);
+            const searchResults = await searchProvider.searchForTagsByTextQuery(matchingTagKeys, abortController);
+            const appliedTagSearchResults = this.addTagMetaInformationToResults(searchResults, matchingTagKeys);
+            const appliedTargetsModels = await this.addTargetModelsToResults(appliedTagSearchResults);
 
-            return searchResults;
+            return appliedTargetsModels;
         }
     }
 }
