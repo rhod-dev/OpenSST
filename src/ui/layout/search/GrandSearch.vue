@@ -49,14 +49,15 @@ export default {
 
             this.searchValue = value;
             this.searchLoading = true;
+            // clear any previous search results
+            this.searchResultItems = [];
 
-            if (this.searchValue !== '') {
-                // clear any previous search results
-                this.searchResultItems = [];
+            if (this.searchValue) {
 
                 await this.getSearchResults();
             } else {
                 this.searchLoading = false;
+                this.$refs.searchResultsDropDown.showResults(this.searchResultItems);
             }
         },
         async getSearchResults() {
@@ -68,6 +69,7 @@ export default {
             try {
                 this.searchResultItems = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
                 console.debug('results have returned', this.searchResultItems);
+                this.showSearchResults();
             } catch (error) {
                 this.searchLoading = false;
 
