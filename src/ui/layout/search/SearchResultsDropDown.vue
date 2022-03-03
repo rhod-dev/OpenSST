@@ -12,7 +12,7 @@
             class="dropdown-item"
             @mousedown="selectResult(result)"
         >
-            {{ result.name || result.id || '-' }}
+            {{ `${result.fullTagModels[0].label} ${result.targetModels[0].name}` }}
         </div>
     </div>
 </div>
@@ -44,8 +44,9 @@ export default {
         this.$emit('selected', this.selected);
     },
     methods: {
-        selectResult(option) {
-            this.selectedResult = option;
+        selectResult(result) {
+            console.debug(`result to be displayed 🍇`, result);
+            this.selectedResult = result;
             this.resultsShown = false;
             this.$emit('selected', this.selectedResult);
         },

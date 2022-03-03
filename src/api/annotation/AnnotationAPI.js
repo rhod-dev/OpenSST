@@ -187,10 +187,10 @@ export default class AnnotationAPI {
     }
 
     addTagMetaInformationToResults(results, matchingTagKeys) {
-        const matchingTags = matchingTagKeys.map(tagKey => availableTags.tags[tagKey]);
+        const fullTagModels = matchingTagKeys.map(tagKey => availableTags.tags[tagKey]);
         const tagsAddedToResults = results.map(result => {
             return {
-                matchingTags,
+                fullTagModels,
                 ...result
             };
         });
@@ -203,13 +203,13 @@ export default class AnnotationAPI {
             const targetModels = await Promise.all(Object.keys(result.targets).map(async (targetID) => {
                 const targetModel = await this.openmct.objects.get(targetID);
 
-                return {
-                    targetModel,
-                    ...result
-                };
+                return targetModel;
             }));
 
-            return targetModels;
+            return {
+                targetModels,
+                ...result
+            };
         }));
 
         return modelAddedToResults;
