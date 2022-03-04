@@ -1,19 +1,21 @@
 <template>
 <div class="c-search-result">
-    <div class="c-tag-in-search-result"
-         :style="{backgroundColor: result.fullTagModels[0].backgroundColor, color: result.fullTagModels[0].foregroundColor}"
-    >
-        {{ `${result.fullTagModels[0].label}` }}
-    </div>
-    <div class="c-search_result_content">
-        {{ `${result.targetModels[0].name}` }}
-    </div>
+    <div class="c-search_result_icon">
+        <object-label
+            :domain-object="result"
+            :object-path="[]"
+        /></div>
 </div>
 </template>
 
 <script>
+import ObjectLabel from '../../components/ObjectLabel.vue';
+
 export default {
-    name: 'SearchResult',
+    name: 'ObjectSearchResult',
+    components: {
+        ObjectLabel
+    },
     props: {
         result: {
             type: Object,
@@ -28,6 +30,9 @@ export default {
         };
     },
     computed: {
+        resultName() {
+            return this.result.name;
+        }
     },
     watch: {
     },

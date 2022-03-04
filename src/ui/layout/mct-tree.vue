@@ -11,13 +11,6 @@
         ref="search"
         class="c-tree-and-search__search"
     >
-        <search
-            ref="shell-search"
-            class="c-search"
-            :value="searchValue"
-            @input="searchTree"
-            @clear="searchTree"
-        />
     </div>
 
     <!-- search loading -->

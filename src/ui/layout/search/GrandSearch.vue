@@ -10,7 +10,6 @@
     />
     <SearchResultsDropDown
         ref="searchResultsDropDown"
-        :max-item="10"
     />
 
 </div>
@@ -33,7 +32,8 @@ export default {
         return {
             searchValue: '',
             searchLoading: false,
-            searchResultItems: []
+            annotationSearchResults: [],
+            objectSearchResults: []
         };
     },
     computed: {
@@ -50,14 +50,15 @@ export default {
             this.searchValue = value;
             this.searchLoading = true;
             // clear any previous search results
-            this.searchResultItems = [];
+            this.annotationSearchResults = [];
+            this.objectSearchResults = [];
 
             if (this.searchValue) {
 
                 await this.getSearchResults();
             } else {
                 this.searchLoading = false;
-                this.$refs.searchResultsDropDown.showResults(this.searchResultItems);
+                this.$refs.searchResultsDropDown.showResults(this.annotationSearchResults, this.objectSearchResults);
             }
         },
         async getSearchResults() {
@@ -67,8 +68,12 @@ export default {
             this.abortSearchController = new AbortController();
             const abortSignal = this.abortSearchController.signal;
             try {
-                this.searchResultItems = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
-                console.debug('results have returned', this.searchResultItems);
+                this.annotationSearchResults = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
+                const fullObjectSearchResults = await Promise.all(this.openmct.objects.search(this.searchValue, abortSignal));
+                const aggregatedObjectSearchResults = fullObjectSearchResults.flat();
+                this.objectSearchResults = aggregatedObjectSearchResults;
+                console.debug('annotation results have returned', this.annotationSearchResults);
+                console.debug('object results have returned', this.objectSearchResults);
                 this.showSearchResults();
             } catch (error) {
                 this.searchLoading = false;
@@ -80,7 +85,7 @@ export default {
         },
         showSearchResults() {
             console.debug(`Would be toggling search results pane`);
-            this.$refs.searchResultsDropDown.showResults(this.searchResultItems);
+            this.$refs.searchResultsDropDown.showResults(this.annotationSearchResults, this.objectSearchResults);
         }
     }
 };

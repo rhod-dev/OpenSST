@@ -1,42 +1,55 @@
 <template>
-<div v-if="results"
+<div v-if="annotationResults || objectResults"
      class="c-search_dropdown"
 >
 
     <div v-show="resultsShown"
          class="c-search_dropdown_content"
-    >   <div class="c-search_results_tag_title"> TAGGED </div>
-        <search-result
-            v-for="(result, index) in results"
-            :key="index"
-            :result="result"
-            @mousedown="selectResult(result)"
-        />
+    >
+        <div v-if="annotationResults"
+             ref="tagResults"
+        >
+            <h4 class="c-search_results_title"> TAGGED </h4>
+            <annotation-search-result
+                v-for="(annotationResult, index) in annotationResults"
+                :key="index"
+                :result="annotationResult"
+                @mousedown="selectResult(annotationResult)"
+            />
+        </div>
+        <div v-if="objectResults"
+             ref="objectResults"
+        >
+            <h4 class="c-search_results_title"> OBJECTS </h4>
+            <object-search-result
+                v-for="(objectResult, index) in objectResults"
+                :key="index"
+                :result="objectResult"
+                @mousedown="selectResult(objectResult)"
+            />
+        </div>
     </div>
 </div>
 </template>
 
 <script>
-import SearchResult from './SearchResult.vue';
+import AnnotationSearchResult from './AnnotationSearchResult.vue';
+import ObjectSearchResult from './ObjectSearchResult.vue';
 
 export default {
     name: 'SearchResultsDropDown',
     components: {
-        SearchResult
+        AnnotationSearchResult,
+        ObjectSearchResult
     },
     props: {
-        maxItem: {
-            type: Number,
-            required: false,
-            default: 6,
-            note: 'Max items showing'
-        }
     },
     data() {
         return {
             selectedResult: {},
             resultsShown: false,
-            results: []
+            annotationResults: [],
+            objectResults: []
         };
     },
     computed: {
@@ -53,9 +66,10 @@ export default {
             this.resultsShown = false;
             this.$emit('selected', this.selectedResult);
         },
-        showResults(passedResults) {
-            this.resultsShown = passedResults.length;
-            this.results = passedResults;
+        showResults(passedAnnotationResults, passedObjectResults) {
+            this.resultsShown = passedAnnotationResults.length || passedObjectResults.length;
+            this.annotationResults = passedAnnotationResults;
+            this.objectResults = passedObjectResults;
         }
     },
     template: 'Dropdown'
