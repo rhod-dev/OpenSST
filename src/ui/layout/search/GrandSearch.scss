@@ -1,0 +1,39 @@
+.c-search_dropdown {
+    position: relative;
+    display: block;
+    margin: auto;
+    .c-search_dropdown_content {
+      position: absolute;
+      background-color: #333;
+      padding: 3%;
+      min-width: 248px;
+      max-width: 300px;
+      max-height: 300px;
+      border: 1px solid #aaaaaa;
+      box-shadow: 0px -8px 34px 0px rgba(0,0,0,0.05);
+      overflow: auto;
+      z-index: 1;
+    }
+    .c-search_dropdown:hover {
+      display: block;
+  }
+}
+.c-search_results_tag_title {
+  border-bottom: 1px solid rgba(170, 170, 170, 0.2);
+  padding: 3px;
+}
+.c-search-result {
+  display: flex;
+  padding-top: 5px;
+  border-top: 1px solid rgba(170, 170, 170, 0.2);
+}
+.c-tag-in-search-result {
+  border-radius: 5px;
+  border: 1px solid;
+  background-color: black;
+  color: white;
+  padding: 3px;
+}
+.c-search_result_content {
+  padding: 3px;
+}

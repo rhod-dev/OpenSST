@@ -1,26 +1,29 @@
 <template>
 <div v-if="results"
-     class="dropdown"
+     class="c-search_dropdown"
 >
 
     <div v-show="resultsShown"
-         class="dropdown-content"
-    >
-        <div
+         class="c-search_dropdown_content"
+    >   <div class="c-search_results_tag_title"> TAGGED </div>
+        <search-result
             v-for="(result, index) in results"
             :key="index"
-            class="dropdown-item"
+            :result="result"
             @mousedown="selectResult(result)"
-        >
-            {{ `${result.fullTagModels[0].label} ${result.targetModels[0].name}` }}
-        </div>
+        />
     </div>
 </div>
 </template>
 
 <script>
+import SearchResult from './SearchResult.vue';
+
 export default {
     name: 'SearchResultsDropDown',
+    components: {
+        SearchResult
+    },
     props: {
         maxItem: {
             type: Number,
