@@ -9,7 +9,7 @@
         <div class="c-search_result_label">
             <object-label
                 :domain-object="domainObject"
-                :object-path="[]"
+                :object-path="domainObject.originalPath"
             />
         </div>
         <div class="c-search_result_content">
@@ -26,6 +26,7 @@ export default {
     components: {
         ObjectLabel
     },
+    inject: ['openmct'],
     props: {
         result: {
             type: Object,
@@ -75,13 +76,6 @@ export default {
     watch: {
     },
     created() {
-    },
-    methods: {
-        getEntryTextFromNotebook(entryIdToFind, notebookModel) {
-
-        }
-    },
-    methods: {
     }
 };
 </script>

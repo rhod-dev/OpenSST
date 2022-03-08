@@ -3,7 +3,7 @@
     <div class="c-search_result_icon">
         <object-label
             :domain-object="result"
-            :object-path="[]"
+            :object-path="result.originalPath"
         /></div>
 </div>
 </template>
@@ -25,20 +25,10 @@ export default {
             }
         }
     },
-    data() {
-        return {
-        };
-    },
     computed: {
         resultName() {
             return this.result.name;
         }
-    },
-    watch: {
-    },
-    created() {
-    },
-    methods: {
     }
 };
 </script>

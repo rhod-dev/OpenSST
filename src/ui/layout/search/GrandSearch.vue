@@ -61,6 +61,17 @@ export default {
                 this.$refs.searchResultsDropDown.showResults(this.annotationSearchResults, this.objectSearchResults);
             }
         },
+        getPathsForObjects(objectsNeedingPaths) {
+            return Promise.all(objectsNeedingPaths.map(async (domainObject) => {
+                const keyStringForObject = this.openmct.objects.makeKeyString(domainObject.identifier);
+                const originalPathObjects = await this.openmct.objects.getOriginalPath(keyStringForObject);
+
+                return {
+                    originalPath: originalPathObjects,
+                    ...domainObject
+                };
+            }));
+        },
         async getSearchResults() {
             // an abort controller will be passed in that will be used
             // to cancel an active searches if necessary
@@ -71,7 +82,8 @@ export default {
                 this.annotationSearchResults = await this.openmct.annotation.searchForTags(this.searchValue, abortSignal);
                 const fullObjectSearchResults = await Promise.all(this.openmct.objects.search(this.searchValue, abortSignal));
                 const aggregatedObjectSearchResults = fullObjectSearchResults.flat();
-                this.objectSearchResults = aggregatedObjectSearchResults;
+                const aggregatedObjectSearchResultsWithPaths = await this.getPathsForObjects(aggregatedObjectSearchResults);
+                this.objectSearchResults = aggregatedObjectSearchResultsWithPaths;
                 console.debug('annotation results have returned', this.annotationSearchResults);
                 console.debug('object results have returned', this.objectSearchResults);
                 this.showSearchResults();

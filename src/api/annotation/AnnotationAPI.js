@@ -88,6 +88,10 @@ export default class AnnotationAPI {
         const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
         createdObject.targets[targetKeyString] = targetOptions || {};
 
+        const originalPathObjects = await this.openmct.objects.getOriginalPath(targetKeyString);
+        const originalPath = this.openmct.objects.getRelativePath(originalPathObjects);
+        createdObject.originalContextPath = originalPath;
+
         const success = await this.openmct.objects.save(createdObject);
         if (success) {
             return createdObject;
@@ -202,8 +206,13 @@ export default class AnnotationAPI {
         const modelAddedToResults = await Promise.all(results.map(async result => {
             const targetModels = await Promise.all(Object.keys(result.targets).map(async (targetID) => {
                 const targetModel = await this.openmct.objects.get(targetID);
+                const targetKeyString = this.openmct.objects.makeKeyString(targetModel.identifier);
+                const originalPathObjects = await this.openmct.objects.getOriginalPath(targetKeyString);
 
-                return targetModel;
+                return {
+                    originalPath: originalPathObjects,
+                    ...targetModel
+                };
             }));
 
             return {
