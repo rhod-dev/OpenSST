@@ -61,6 +61,20 @@
                 >
                 </div>
             </template>
+            <TagSelection
+                v-for="(addedTag, index) in addedTags"
+                :key="index"
+                :annotation="annotation"
+                :selected-tag="addedTag"
+                :entry="entry"
+                @tagRemoved="tagRemoved"
+                @tagChanged="tagChanged"
+            />
+            <button class="c-icon-button c-icon-button--major icon-plus"
+                    title="Add new tag"
+                    @click="tagAdded"
+            >
+            </button> Add Tag
             <div class="c-snapshots c-ne__embeds">
                 <NotebookEmbed v-for="embed in entry.embeds"
                                :key="embed.id"
@@ -74,20 +88,6 @@
     <div v-if="!readOnly"
          class="c-ne__local-controls--hidden"
     >
-        <TagSelection
-            v-for="(addedTag, index) in addedTags"
-            :key="index"
-            :annotation="annotation"
-            :selected-tag="addedTag"
-            :entry="entry"
-            @tagRemoved="tagRemoved"
-            @tagChanged="tagChanged"
-        />
-        <button class="c-icon-button c-icon-button--major icon-plus"
-                title="Add new tag"
-                @click="tagAdded"
-        >
-        </button>
         <button class="c-icon-button c-icon-button--major icon-trash"
                 title="Delete this entry"
                 tabindex="-1"
