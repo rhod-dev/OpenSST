@@ -773,6 +773,7 @@ export default {
         endMarquee() {
             const startPixels = this.marquee.startPixels;
             const endPixels = this.marquee.endPixels;
+            console.debug(`🍊 marquee fired`);
             const marqueeDistance = Math.sqrt(
                 Math.pow(startPixels.x - endPixels.x, 2)
             + Math.pow(startPixels.y - endPixels.y, 2)
