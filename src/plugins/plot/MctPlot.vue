@@ -166,6 +166,7 @@ import MctTicks from "./MctTicks.vue";
 import MctChart from "./chart/MctChart.vue";
 import XAxis from "./axis/XAxis.vue";
 import YAxis from "./axis/YAxis.vue";
+import KDBush from 'kdbush';
 import _ from "lodash";
 
 export default {
@@ -701,10 +702,12 @@ export default {
             const isFrozen = this.config.xAxis.get('frozen') === true && this.config.yAxis.get('frozen') === true;
             this.isFrozenOnMouseDown = isFrozen;
 
-            if (event.altKey) {
+            if (event.altKey && !event.shiftKey) {
                 return this.startPan(event);
+            } else if (event.altKey && event.shiftKey) {
+                return this.startMarquee(event, true);
             } else {
-                return this.startMarquee(event);
+                return this.startMarquee(event, false);
             }
         },
 
@@ -751,7 +754,7 @@ export default {
             this.marquee.endPixels = this.positionOverElement;
         },
 
-        startMarquee(event) {
+        startMarquee(event, annotationEvent) {
             this.canvas.classList.remove('plot-drag');
             this.canvas.classList.add('plot-marquee');
 
@@ -765,15 +768,43 @@ export default {
                     end: this.positionOverPlot,
                     color: [1, 1, 1, 0.5]
                 };
+                if (annotationEvent) {
+                    this.marquee.annotationEvent = true;
+                }
+
                 this.rectangles.push(this.marquee);
                 this.trackHistory();
             }
         },
+        endAnnotationMarquee() {
+            console.debug(`🍊 marquee annotation fired`);
+            // load series models in KD-Trees
+            const seriesKDTrees = this.seriesModels.map(seriesModel => {
+                const seriesData = seriesModel.getSeriesData();
+                const kdTree = new KDBush(seriesData,
+                    (point) => {
+                        return seriesModel.getXVal(point);
+                    },
+                    (point) => {
+                        return seriesModel.getYVal(point);
+                    }
+                );
+                const minX = Math.min(this.marquee.start.x, this.marquee.end.x);
+                const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
+                const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
+                const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
+                console.debug(`Bounding box (${minX}, ${minY}, ${maxX}, ${maxY})`);
+                const searchResult = kdTree.range(minX, minY, maxX, maxY)
+                    .map(id => seriesData[id]);
+                console.debug(`Results for rtree search`, searchResult);
 
-        endMarquee() {
+                return searchResult;
+            });
+            console.debug(`Done with annotation`, seriesKDTrees);
+        },
+        endZoomMarquee() {
             const startPixels = this.marquee.startPixels;
             const endPixels = this.marquee.endPixels;
-            console.debug(`🍊 marquee fired`);
             const marqueeDistance = Math.sqrt(
                 Math.pow(startPixels.x - endPixels.x, 2)
             + Math.pow(startPixels.y - endPixels.y, 2)
@@ -793,6 +824,13 @@ export default {
                 // A history entry is created by startMarquee, need to remove
                 // if marquee zoom doesn't occur.
                 this.plotHistory.pop();
+            }
+        },
+        endMarquee() {
+            if (this.marquee.annotationEvent) {
+                this.endAnnotationMarquee();
+            } else {
+                this.endZoomMarquee();
             }
 
             this.rectangles = [];

@@ -20,7 +20,6 @@
  * at runtime from the About dialog for additional information.
  *****************************************************************************/
 import _ from 'lodash';
-import rbush from 'rbush';
 import Model from "./Model";
 import { MARKER_SHAPES } from '../draw/MarkerShapes';
 import configStore from "../configuration/ConfigStore";
@@ -283,7 +282,6 @@ export default class PlotSeries extends Model {
             ? this.getXVal(highPoint) - indexVal
             : Number.POSITIVE_INFINITY;
         const nearestPoint = highDistance < lowDistance ? highPoint : lowPoint;
-        console.debug(`🍋 found nearest point`);
 
         return nearestPoint;
     }
