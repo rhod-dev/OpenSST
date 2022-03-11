@@ -796,11 +796,13 @@ export default {
                 console.debug(`Bounding box (${minX}, ${minY}, ${maxX}, ${maxY})`);
                 const searchResult = kdTree.range(minX, minY, maxX, maxY)
                     .map(id => seriesData[id]);
-                console.debug(`Results for rtree search`, searchResult);
 
-                return searchResult;
+                return {
+                    searchResult,
+                    ...seriesModel
+                };
             });
-            console.debug(`Done with annotation`, seriesKDTrees);
+            console.debug(`🍇 Done with annotation 🍇`, seriesKDTrees[0].searchResult);
         },
         endZoomMarquee() {
             const startPixels = this.marquee.startPixels;
