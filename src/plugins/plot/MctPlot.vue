@@ -757,6 +757,8 @@ export default {
         },
 
         startMarquee(event, annotationEvent) {
+            this.rectangles = [];
+            this.annotationSelections = [];
             this.canvas.classList.remove('plot-drag');
             this.canvas.classList.add('plot-marquee');
 
@@ -841,9 +843,9 @@ export default {
                 this.endAnnotationMarquee();
             } else {
                 this.endZoomMarquee();
+                this.rectangles = [];
             }
 
-            this.rectangles = [];
             this.marquee = undefined;
         },
 
