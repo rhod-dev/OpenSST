@@ -71,6 +71,7 @@
                 >
                     <mct-chart :rectangles="rectangles"
                                :highlights="highlights"
+                               :annotation-selections="annotationSelections"
                                :show-limit-line-labels="showLimitLineLabels"
                                @plotReinitializeCanvas="initCanvas"
                     />
@@ -209,6 +210,7 @@ export default {
     data() {
         return {
             highlights: [],
+            annotationSelections: [],
             lockHighlightPoint: false,
             tickWidth: 0,
             yKeyOptions: [],
@@ -795,14 +797,20 @@ export default {
                 const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
                 console.debug(`Bounding box (${minX}, ${minY}, ${maxX}, ${maxY})`);
                 const searchResult = kdTree.range(minX, minY, maxX, maxY)
-                    .map(id => seriesData[id]);
+                    .map(id => {
+                        const seriesDatum = seriesData[id];
 
-                return {
-                    searchResult,
-                    ...seriesModel
-                };
+                        return {
+                            series: seriesModel,
+                            point: seriesDatum
+                        };
+                    });
+
+                return searchResult;
             });
-            console.debug(`🍇 Done with annotation 🍇`, seriesKDTrees[0].searchResult);
+            const flattenedResults = seriesKDTrees.flat();
+            this.annotationSelections = flattenedResults;
+            console.debug(`🍇 Done with annotation 🍇`, flattenedResults);
         },
         endZoomMarquee() {
             const startPixels = this.marquee.startPixels;

@@ -49,6 +49,7 @@ import Vue from 'vue';
 
 const MARKER_SIZE = 6.0;
 const HIGHLIGHT_SIZE = MARKER_SIZE * 2.0;
+const ANNOTATION_SIZE = MARKER_SIZE * 2.0;
 const CLEARANCE = 15;
 
 export default {
@@ -61,6 +62,12 @@ export default {
             }
         },
         highlights: {
+            type: Array,
+            default() {
+                return [];
+            }
+        },
+        annotationSelections: {
             type: Array,
             default() {
                 return [];
@@ -80,6 +87,9 @@ export default {
     },
     watch: {
         highlights() {
+            this.scheduleDraw();
+        },
+        annotationSelections() {
             this.scheduleDraw();
         },
         rectangles() {
@@ -437,6 +447,7 @@ export default {
                 this.drawSeries();
                 this.drawRectangles();
                 this.drawHighlights();
+                this.drawAnnotationSelections();
             }
         },
         updateViewport() {
@@ -581,6 +592,23 @@ export default {
                 chartElement.count,
                 disconnected
             );
+        },
+        drawAnnotationSelections() {
+            if (this.annotationSelections && this.annotationSelections.length) {
+                this.annotationSelections.forEach(this.drawAnnotationSelection, this);
+            }
+        },
+        drawAnnotationSelection(annotationSelection) {
+            const points = new Float32Array([
+                this.offset.xVal(annotationSelection.point, annotationSelection.series),
+                this.offset.yVal(annotationSelection.point, annotationSelection.series)
+            ]);
+
+            const color = [255, 255, 255, 0.33]; // white
+            const pointCount = 1;
+            const shape = annotationSelection.series.get('markerShape');
+
+            this.drawAPI.drawPoints(points, color, pointCount, ANNOTATION_SIZE, shape);
         },
         drawHighlights() {
             if (this.highlights && this.highlights.length) {
