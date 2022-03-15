@@ -110,7 +110,22 @@ export default class AnnotationAPI {
     *          has been created, or be rejected if it cannot be saved
     */
     async get(targetDomainObject) {
-        return [];
+        if (!targetDomainObject) {
+            return [];
+        }
+
+        const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
+        let foundAnnotation = null;
+        // being "expedient" here and just assuming we've got the couch provider
+        const searchProvider = this.getSearchProvider();
+        if (searchProvider) {
+            const searchResults = await searchProvider.searchForAnnotationsForDomainObject(targetKeyString);
+            if (searchResults) {
+                foundAnnotation = searchResults[0];
+            }
+        }
+
+        return foundAnnotation;
     }
 
     getAvailableTags() {

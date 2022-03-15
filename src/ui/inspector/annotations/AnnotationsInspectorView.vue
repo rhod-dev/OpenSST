@@ -100,9 +100,13 @@ export default {
         this.openmct.selection.off('change', this.updateSelection);
     },
     methods: {
-        updateSelection(selection) {
+        async updateSelection(selection) {
             this.selection = selection;
-            this.annotations = this.openmct.annotation.get(selection);
+            if (selection && selection[0] && selection[0][0] && selection[0][0].context) {
+                this.annotations = await this.openmct.annotation.get(selection[0][0].context.item);
+            } else {
+                this.annotations = [];
+            }
         }
     }
 };

@@ -64,7 +64,7 @@ class CouchSearchProvider {
                 ]
             }
         };
-        filter.selector.model.targets[keyString] = {
+        filter.selector.$and[0].model.targets[keyString] = {
             "$exists": true
         };
 
