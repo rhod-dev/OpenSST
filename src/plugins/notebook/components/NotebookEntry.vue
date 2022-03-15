@@ -238,7 +238,6 @@ export default {
             }
         },
         tagsChanged(newTags) {
-            console.debug(`🍇🍇🍇 new tags 🍇🍇🍇`, newTags);
             if (newTags.length < this.addedTags.length) {
                 this.addedTags = this.addedTags.slice(0, newTags.length);
             }

@@ -100,6 +100,19 @@ export default class AnnotationAPI {
         }
     }
 
+    /**
+    * Get annotations for a given domain object
+    *
+    * @method get
+    * @param {module:openmct.DomainObject} domainObject the domain object to
+    *        create
+    * @returns {Promise} a promise which will resolve when the domain object
+    *          has been created, or be rejected if it cannot be saved
+    */
+    async get(targetDomainObject) {
+        return [];
+    }
+
     getAvailableTags() {
         const rearrangedToArray = Object.keys(availableTags.tags).map(tagKey => {
             return {

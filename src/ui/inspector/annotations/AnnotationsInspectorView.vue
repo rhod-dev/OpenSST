@@ -23,6 +23,20 @@
 <template>
 <div class="c-inspector__properties c-inspect-properties">
     <div class="c-inspect-properties__header">
+        Tags
+    </div>
+    <ul
+        v-if="hasTags"
+        class="c-inspect-properties__section"
+    >
+    </ul>
+    <div
+        v-else
+        class="c-inspect-properties__row--span-all"
+    >
+        {{ noTagsMessage }}
+    </div>
+    <div class="c-inspect-properties__header">
         Annotations
     </div>
     <ul
@@ -57,6 +71,13 @@ export default {
                 && !this.multiSelection
             );
         },
+        hasTags() {
+            return Boolean(
+                this.annotations
+                && this.annotations.length
+                && !this.multiSelection
+            );
+        },
         multiSelection() {
             return this.selection && this.selection.length > 1;
         },
@@ -64,6 +85,11 @@ export default {
             return this.multiSelection
                 ? 'No annotations to display for multiple items'
                 : 'No annotations to display for this item';
+        },
+        noTagsMessage() {
+            return this.multiSelection
+                ? 'No tags to display for multiple items'
+                : 'No tags to display for this item';
         }
     },
     mounted() {
@@ -76,6 +102,7 @@ export default {
     methods: {
         updateSelection(selection) {
             this.selection = selection;
+            this.annotations = this.openmct.annotation.get(selection);
         }
     }
 };
