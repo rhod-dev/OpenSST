@@ -604,7 +604,7 @@ export default {
                 this.offset.yVal(annotationSelection.point, annotationSelection.series)
             ]);
 
-            const color = [255, 255, 255, 0.33]; // white
+            const color = [255, 255, 255, 1]; // white
             const pointCount = 1;
             const shape = annotationSelection.series.get('markerShape');
 

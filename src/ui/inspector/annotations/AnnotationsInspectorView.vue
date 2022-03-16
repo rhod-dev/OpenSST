@@ -103,7 +103,9 @@ export default {
         async updateSelection(selection) {
             this.selection = selection;
             if (selection && selection[0] && selection[0][0] && selection[0][0].context) {
-                this.annotations = await this.openmct.annotation.get(selection[0][0].context.item);
+                const domainObject = selection[0][0].context.item;
+                this.unlistenToAnnotations = this.openmct.objects.observe(domainObject, `*`, this.onMutationOfIndexedObject);
+                this.annotations = await this.openmct.annotation.get(domainObject);
             } else {
                 this.annotations = [];
             }

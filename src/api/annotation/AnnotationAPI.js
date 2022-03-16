@@ -31,7 +31,8 @@ export default class AnnotationAPI {
             NOTEBOOK: 'notebook',
             GEOSPATIAL: 'geospatial',
             PIXEL_SPATIAL: 'pixelspatial',
-            TEMPORAL: 'temporal'
+            TEMPORAL: 'temporal',
+            PLOT_SPATIAL: 'plotspatial'
         });
 
         this.openmct.types.addType('annotation', {
@@ -44,7 +45,7 @@ export default class AnnotationAPI {
                 domainObject.originalContextPath = domainObject.originalContextPath || '';
                 domainObject.tags = domainObject.tags || [];
                 domainObject.contentText = domainObject.contentText || '';
-                domainObject.annotationType = domainObject.annotationType || this.ANNOTATION_TYPES.TEMPORAL;
+                domainObject.annotationType = domainObject.annotationType || 'plotspatial';
             }
         });
     }

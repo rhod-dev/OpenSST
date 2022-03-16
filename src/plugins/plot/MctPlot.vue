@@ -780,8 +780,23 @@ export default {
                 this.trackHistory();
             }
         },
+        createPlotAnnotations(minX, minY, maxX, maxY, annotationSelections) {
+            const targetOptions = {
+                boundingBox: {
+                    minX,
+                    minY,
+                    maxX,
+                    maxY
+                }
+            };
+            this.openmct.annotation.create(this.domainObject, 'Unnamed Plot Annotation', this.openmct.annotation.PLOT_SPATIAL, [], '', '', targetOptions);
+        },
         endAnnotationMarquee() {
             console.debug(`🍊 marquee annotation fired`);
+            const minX = Math.min(this.marquee.start.x, this.marquee.end.x);
+            const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
+            const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
+            const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
             // load series models in KD-Trees
             const seriesKDTrees = this.seriesModels.map(seriesModel => {
                 const seriesData = seriesModel.getSeriesData();
@@ -793,10 +808,6 @@ export default {
                         return seriesModel.getYVal(point);
                     }
                 );
-                const minX = Math.min(this.marquee.start.x, this.marquee.end.x);
-                const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
-                const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
-                const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
                 console.debug(`Bounding box (${minX}, ${minY}, ${maxX}, ${maxY})`);
                 const searchResult = kdTree.range(minX, minY, maxX, maxY)
                     .map(id => {
@@ -812,6 +823,7 @@ export default {
             });
             const flattenedResults = seriesKDTrees.flat();
             this.annotationSelections = flattenedResults;
+            this.createPlotAnnotations(minX, minY, maxX, maxY, this.annotationSelections);
             console.debug(`🍇 Done with annotation 🍇`, flattenedResults);
         },
         endZoomMarquee() {
