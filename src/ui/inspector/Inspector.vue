@@ -75,7 +75,9 @@
             type="vertical"
         >
             <pane class="c-inspector__annotations">
-                <AnnotationsInspectorView />
+                <AnnotationsInspectorView 
+                    @annotationCreated="updateCurrentTab(tabbedViews[2])"
+                />
             </pane>
         </multipane>
     </div>

@@ -43,6 +43,11 @@
         v-if="hasAnnotations"
         class="c-inspect-properties__section"
     >
+        <AnnotationEditor
+            v-for="(annotation, index) in annotations"
+            :key="index"
+            :annotation="annotation"
+        />
     </ul>
     <div
         v-else
@@ -54,8 +59,12 @@
 </template>
 
 <script>
+import AnnotationEditor from './AnnotationEditor.vue';
 
 export default {
+    components: {
+        AnnotationEditor
+    },
     inject: ['openmct'],
     data() {
         return {
@@ -93,22 +102,47 @@ export default {
         }
     },
     mounted() {
-        this.openmct.selection.on('change', this.updateSelection);
+        this.stopListeningToChanges = this.openmct.selection.on('change', this.updateSelection);
+        this.stopListeningToAnnotationCreation = this.openmct.annotation.on('annotationCreated', this.annotationCreated);
         this.updateSelection(this.openmct.selection.get());
     },
     beforeDestroy() {
         this.openmct.selection.off('change', this.updateSelection);
+        if (this.stopListeningToChanges) {
+            this.stopListeningToChanges();
+        }
+
+        if (this.stopListeningToAnnotationCreation) {
+            this.stopListeningToAnnotationCreation();
+        }
     },
     methods: {
         async updateSelection(selection) {
             this.selection = selection;
-            if (selection && selection[0] && selection[0][0] && selection[0][0].context) {
-                const domainObject = selection[0][0].context.item;
-                this.unlistenToAnnotations = this.openmct.objects.observe(domainObject, `*`, this.onMutationOfIndexedObject);
+            const domainObject = this.getDomainObject();
+            if (domainObject) {
                 this.annotations = await this.openmct.annotation.get(domainObject);
+                console.debug(`Should be displaying ${this.annotations.length} annotations`, this.annotations);
             } else {
                 this.annotations = [];
             }
+        },
+        annotationCreated(annotationObject) {
+            console.debug(`🍋 annotation created 🍋`, annotationObject);
+            this.$emit('annotationCreated');
+            const targetKeyString = Object.keys(annotationObject.targets)[0];
+            const targetIdentifier = this.openmct.objects.parseKeyString(targetKeyString);
+            const domainObjectSelected = this.getDomainObject();
+            if (domainObjectSelected && this.openmct.objects.areIdsEqual(domainObjectSelected.identifier, targetIdentifier)) {
+                console.debug(`🍋 annotation created on object we're looking at 🍋`, annotationObject);
+            }
+        },
+        getDomainObject() {
+            if (this.selection && this.selection[0] && this.selection[0][0] && this.selection[0][0].context) {
+                return this.selection[0][0].context.item;
+            }
+
+            return null;
         }
     }
 };

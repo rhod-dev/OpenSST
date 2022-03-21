@@ -22,10 +22,11 @@
 
 import uuid from 'uuid';
 import availableTags from '../../../example/tags/tags.json';
+import EventEmitter from 'EventEmitter';
 
-export default class AnnotationAPI {
-
+export default class AnnotationAPI extends EventEmitter {
     constructor(openmct) {
+        super();
         this.openmct = openmct;
         this.ANNOTATION_TYPES = Object.freeze({
             NOTEBOOK: 'notebook',
@@ -95,6 +96,8 @@ export default class AnnotationAPI {
 
         const success = await this.openmct.objects.save(createdObject);
         if (success) {
+            this.emit('annotationCreated', createdObject);
+
             return createdObject;
         } else {
             throw new Error('Failed to create object');
@@ -122,7 +125,7 @@ export default class AnnotationAPI {
         if (searchProvider) {
             const searchResults = await searchProvider.searchForAnnotationsForDomainObject(targetKeyString);
             if (searchResults) {
-                foundAnnotation = searchResults[0];
+                foundAnnotation = searchResults;
             }
         }
 
