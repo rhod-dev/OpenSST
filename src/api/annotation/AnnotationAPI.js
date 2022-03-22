@@ -186,6 +186,23 @@ export default class AnnotationAPI extends EventEmitter {
         return existingAnnotation;
     }
 
+    async addTag(targetDomainObject, tag, originalContextPath, type) {
+        console.debug(`Going to add ${tag}`);
+        const existingAnnotations = await this.get(targetDomainObject);
+        let existingAnnotation;
+
+        if (existingAnnotations.length) {
+            existingAnnotation = existingAnnotations[0];
+        } else {
+            existingAnnotation = await this.create(targetDomainObject, 'unnamed tag', type, [], '', originalContextPath, {});
+        }
+
+        const tagArray = [tag, ...existingAnnotation.tags];
+        this.openmct.objects.mutate(existingAnnotation, 'tags', tagArray);
+
+        return existingAnnotation;
+    }
+
     async removeNotebookAnnotationTag(entryId, targetDomainObject, tagToRemove) {
         console.debug(`Going to remove tag ${tagToRemove}`);
         let existingAnnotation = await this.getNotebookAnnotation(entryId, targetDomainObject);

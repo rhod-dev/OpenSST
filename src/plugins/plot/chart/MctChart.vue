@@ -67,6 +67,12 @@ export default {
                 return [];
             }
         },
+        annotations: {
+            type: Array,
+            default() {
+                return [];
+            }
+        },
         annotationSelections: {
             type: Array,
             default() {
@@ -87,6 +93,9 @@ export default {
     },
     watch: {
         highlights() {
+            this.scheduleDraw();
+        },
+        annotations() {
             this.scheduleDraw();
         },
         annotationSelections() {
@@ -447,6 +456,7 @@ export default {
                 this.drawSeries();
                 this.drawRectangles();
                 this.drawHighlights();
+                this.drawAnnotations();
                 this.drawAnnotationSelections();
             }
         },
@@ -592,6 +602,23 @@ export default {
                 chartElement.count,
                 disconnected
             );
+        },
+        drawAnnotations() {
+            if (this.annotations && this.annotations.length) {
+                this.annotations.forEach(this.drawAnnotations, this);
+            }
+        },
+        drawAnnotation(annotation) {
+            const points = new Float32Array([
+                this.offset.xVal(annotation.point, annotation.series),
+                this.offset.yVal(annotation.point, annotation.series)
+            ]);
+
+            const color = [255, 255, 255, 1]; // white
+            const pointCount = 1;
+            const shape = annotation.series.get('markerShape');
+
+            this.drawAPI.drawPoints(points, color, pointCount, ANNOTATION_SIZE, shape);
         },
         drawAnnotationSelections() {
             if (this.annotationSelections && this.annotationSelections.length) {

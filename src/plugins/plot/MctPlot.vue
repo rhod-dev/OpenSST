@@ -71,6 +71,7 @@
                 >
                     <mct-chart :rectangles="rectangles"
                                :highlights="highlights"
+                               :annotations="annotations"
                                :annotation-selections="annotationSelections"
                                :show-limit-line-labels="showLimitLineLabels"
                                @plotReinitializeCanvas="initCanvas"
@@ -210,6 +211,7 @@ export default {
     data() {
         return {
             highlights: [],
+            annotations: [],
             annotationSelections: [],
             lockHighlightPoint: false,
             tickWidth: 0,
@@ -791,12 +793,7 @@ export default {
             };
             this.openmct.annotation.create(this.domainObject, 'Unnamed Plot Annotation', this.openmct.annotation.PLOT_SPATIAL, [], '', '', targetOptions);
         },
-        endAnnotationMarquee() {
-            console.debug(`🍊 marquee annotation fired`);
-            const minX = Math.min(this.marquee.start.x, this.marquee.end.x);
-            const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
-            const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
-            const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
+        getPointsInBox(minX, minY, maxX, maxY) {
             // load series models in KD-Trees
             const seriesKDTrees = this.seriesModels.map(seriesModel => {
                 const seriesData = seriesModel.getSeriesData();
@@ -822,9 +819,18 @@ export default {
                 return searchResult;
             });
             const flattenedResults = seriesKDTrees.flat();
-            this.annotationSelections = flattenedResults;
+
+            return flattenedResults;
+        },
+        endAnnotationMarquee() {
+            console.debug(`🍊 marquee annotation fired`);
+            const minX = Math.min(this.marquee.start.x, this.marquee.end.x);
+            const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
+            const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
+            const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
+            const pointsInBox = this.getPointsInBox(minX, minY, maxX, maxY);
+            this.annotationSelections = pointsInBox;
             this.createPlotAnnotations(minX, minY, maxX, maxY, this.annotationSelections);
-            console.debug(`🍇 Done with annotation 🍇`, flattenedResults);
         },
         endZoomMarquee() {
             const startPixels = this.marquee.startPixels;

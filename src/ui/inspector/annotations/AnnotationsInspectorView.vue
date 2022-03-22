@@ -29,6 +29,11 @@
         v-if="hasTags"
         class="c-inspect-properties__section"
     >
+        <TagEditor
+            :domain-object="getDomainObject()"
+            :annotation="annotations[0]"
+            :entry="null"
+        />
     </ul>
     <div
         v-else
@@ -41,7 +46,7 @@
     </div>
     <ul
         v-if="hasAnnotations"
-        class="c-inspect-properties__section"
+        class="c-inspect-properties__section c-annotation-list"
     >
         <AnnotationEditor
             v-for="(annotation, index) in annotations"
@@ -60,16 +65,18 @@
 
 <script>
 import AnnotationEditor from './AnnotationEditor.vue';
+import TagEditor from '../../components/TagEditor.vue';
 
 export default {
     components: {
-        AnnotationEditor
+        AnnotationEditor,
+        TagEditor
     },
     inject: ['openmct'],
     data() {
         return {
             selection: null,
-            annotations: null
+            annotations: []
         };
     },
     computed: {
@@ -121,7 +128,18 @@ export default {
             this.selection = selection;
             const domainObject = this.getDomainObject();
             if (domainObject) {
-                this.annotations = await this.openmct.annotation.get(domainObject);
+                const unsortedAnnotations = await this.openmct.annotation.get(domainObject);
+                const sortedAnnotations = unsortedAnnotations.sort((annotationA, annotationB) => {
+                    return annotationB.modified - annotationA.modified;
+                });
+                if (sortedAnnotations.length < this.annotations.length) {
+                    this.annotations = this.annotations.slice(0, sortedAnnotations.length);
+                }
+
+                for (let index = 0; index < sortedAnnotations.length; index += 1) {
+                    this.$set(this.annotations, index, sortedAnnotations[index]);
+                }
+
                 console.debug(`Should be displaying ${this.annotations.length} annotations`, this.annotations);
             } else {
                 this.annotations = [];
@@ -135,6 +153,7 @@ export default {
             const domainObjectSelected = this.getDomainObject();
             if (domainObjectSelected && this.openmct.objects.areIdsEqual(domainObjectSelected.identifier, targetIdentifier)) {
                 console.debug(`🍋 annotation created on object we're looking at 🍋`, annotationObject);
+                this.updateSelection(this.openmct.selection.get());
             }
         },
         getDomainObject() {

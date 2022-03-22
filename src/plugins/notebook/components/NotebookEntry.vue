@@ -61,20 +61,11 @@
                 >
                 </div>
             </template>
-            <TagSelection
-                v-for="(addedTag, index) in addedTags"
-                :key="index"
+            <TagEditor
+                :domain-object="domainObject"
                 :annotation="annotation"
-                :selected-tag="addedTag"
                 :entry="entry"
-                @tagRemoved="tagRemoved"
-                @tagChanged="tagChanged"
             />
-            <button class="c-icon-button c-icon-button--major icon-plus"
-                    title="Add new tag"
-                    @click="tagAdded"
-            >
-            </button> Add Tag
             <div class="c-snapshots c-ne__embeds">
                 <NotebookEmbed v-for="embed in entry.embeds"
                                :key="embed.id"
@@ -119,7 +110,7 @@
 
 <script>
 import NotebookEmbed from './NotebookEmbed.vue';
-import TagSelection from './TagSelection.vue';
+import TagEditor from '../../../ui/components/TagEditor.vue';
 import TextHighlight from '../../../utils/textHighlight/TextHighlight.vue';
 import { createNewEmbed } from '../utils/notebook-entries';
 import { saveNotebookImageDomainObject, updateNamespaceOfDomainObject } from '../utils/notebook-image';
@@ -130,7 +121,7 @@ export default {
     components: {
         NotebookEmbed,
         TextHighlight,
-        TagSelection
+        TagEditor
     },
     inject: ['openmct', 'snapshotContainer'],
     props: {
@@ -179,7 +170,6 @@ export default {
     },
     data() {
         return {
-            addedTags: []
         };
     },
     computed: {
@@ -206,46 +196,16 @@ export default {
             }
 
             return text;
-        },
-        availableTags() {
-            return this.openmct.annotation.getAvailableTags();
         }
     },
     watch: {
-        annotation: {
-            handler() {
-                this.tagsChanged(this.annotation.tags);
-            },
-            deep: true
-        }
     },
     mounted() {
         this.dropOnEntry = this.dropOnEntry.bind(this);
-        this.addAnnotationListener(this.annotation);
-        if (this.annotation && this.annotation.tags) {
-            this.tagsChanged(this.annotation.tags);
-        }
     },
     destroyed() {
-        if (this.removeTagsListener) {
-            this.removeTagsListener();
-        }
     },
     methods: {
-        addAnnotationListener(annotation) {
-            if (annotation && !this.removeTagsListener) {
-                this.removeTagsListener = this.openmct.objects.observe(annotation, 'tags', this.tagsChanged);
-            }
-        },
-        tagsChanged(newTags) {
-            if (newTags.length < this.addedTags.length) {
-                this.addedTags = this.addedTags.slice(0, newTags.length);
-            }
-
-            for (let index = 0; index < newTags.length; index += 1) {
-                this.$set(this.addedTags, index, newTags[index]);
-            }
-        },
         async addNewEmbed(objectPath) {
             const bounds = this.openmct.time.bounds();
             const snapshotMeta = {
@@ -269,24 +229,6 @@ export default {
         },
         deleteEntry() {
             this.$emit('deleteEntry', this.entry.id);
-        },
-        async tagAdded() {
-            const newTagValue = this.openmct.annotation.getAvailableTags()[0].id;
-            console.debug(`🥥 adding tag ${newTagValue}`);
-            const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTagValue, '');
-            if (!this.annotation) {
-                this.addAnnotationListener(newAnnotation);
-            }
-
-            this.tagsChanged(newAnnotation.tags);
-        },
-        async tagRemoved({entry, tag}) {
-            console.debug(`removing tag ${tag}`);
-            await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
-        },
-        async tagChanged({entry, oldTag, newTag}) {
-            console.debug(`Changing tag from ${oldTag} to ${newTag}`);
-            await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, oldTag, newTag, '');
         },
         async dropOnEntry($event) {
             event.stopImmediatePropagation();
