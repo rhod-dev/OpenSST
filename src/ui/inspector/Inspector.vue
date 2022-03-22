@@ -23,14 +23,15 @@
 <template>
 <div class="c-inspector">
     <object-name />
-    <div v-if="showStyles"
-         class="c-inspector__tabs c-tabs"
+    <div
+        v-if="showStyles"
+        class="c-inspector__tabs c-tabs"
     >
         <div
             v-for="tabbedView in tabbedViews"
             :key="tabbedView.key"
             class="c-inspector__tab c-tab"
-            :class="{ 'is-current': isCurrent(tabbedView) }"
+            :class="{'is-current': isCurrent(tabbedView)}"
             @click="updateCurrentTab(tabbedView)"
         >
             {{ tabbedView.name }}
