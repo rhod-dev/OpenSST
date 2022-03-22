@@ -177,7 +177,7 @@ export default class AnnotationAPI extends EventEmitter {
             const targetOptions = {
                 entryId: entryId
             };
-            existingAnnotation = await this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [], '', originalContextPath, targetOptions);
+            existingAnnotation = await this.create(targetDomainObject, 'notebook entry tag', this.ANNOTATION_TYPES.NOTEBOOK, [], 'notebook entry tag', originalContextPath, targetOptions);
         }
 
         const tagArray = [tag, ...existingAnnotation.tags];
@@ -194,7 +194,7 @@ export default class AnnotationAPI extends EventEmitter {
         if (existingAnnotations.length) {
             existingAnnotation = existingAnnotations[0];
         } else {
-            existingAnnotation = await this.create(targetDomainObject, 'unnamed tag', type, [], '', originalContextPath, {});
+            existingAnnotation = await this.create(targetDomainObject, 'unnamed tag', type, [], 'notebook entry tag', originalContextPath, {});
         }
 
         const tagArray = [tag, ...existingAnnotation.tags];

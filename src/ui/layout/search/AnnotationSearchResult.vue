@@ -13,7 +13,7 @@
             />
         </div>
         <div class="c-search_result_content">
-            {{ resultNotebookName }}
+            {{ getResultName }}
         </div>
     </div>
 </div>
@@ -47,24 +47,28 @@ export default {
         resultTagLabel() {
             return this.result.fullTagModels[0].label.toUpperCase();
         },
-        resultNotebookName() {
-            const targetID = Object.keys(this.result.targets)[0];
-            const entryIdToFind = this.result.targets[targetID].entryId;
-            const notebookModel = this.result.targetModels[0].configuration.entries;
+        getResultName() {
+            if (this.result.annotationType === this.openmct.annotation.ANNOTATION_TYPES.NOTEBOOK) {
+                const targetID = Object.keys(this.result.targets)[0];
+                const entryIdToFind = this.result.targets[targetID].entryId;
+                const notebookModel = this.result.targetModels[0].configuration.entries;
 
-            const sections = Object.values(notebookModel);
-            for (const section of sections) {
-                const pages = Object.values(section);
-                for (const entries of pages) {
-                    for (const entry of entries) {
-                        if (entry.id === entryIdToFind) {
-                            return entry.text;
+                const sections = Object.values(notebookModel);
+                for (const section of sections) {
+                    const pages = Object.values(section);
+                    for (const entries of pages) {
+                        for (const entry of entries) {
+                            if (entry.id === entryIdToFind) {
+                                return entry.text;
+                            }
                         }
                     }
                 }
-            }
 
-            return "Could not find notebook entry";
+                return "Could not find notebook entry";
+            } else {
+                return this.result.targetModels[0].name;
+            }
         },
         tagBackgroundColor() {
             return this.result.fullTagModels[0].backgroundColor;
