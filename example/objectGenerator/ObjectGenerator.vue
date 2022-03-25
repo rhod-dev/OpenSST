@@ -24,9 +24,10 @@
 <div class="l-angular-ov-wrapper">
     <div class="u-contents">
         <div class="u-style-receiver js-style-receiver">
-            <button class="c-button icon-reset"
-                    title="Generate Objcts"
-                    @click="generateObjects(5, 10, 10)"
+            <button
+                class="c-button icon-reset"
+                title="Generate Objcts"
+                @click="generateObjects(5, 10, 10)"
             >
                 <span class="c-button__label">Generate Objects</span>
             </button>

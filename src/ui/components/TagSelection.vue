@@ -26,9 +26,10 @@
     v-model="tagModel"
     :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
 >
-    <option v-for="tag in availableTags"
-            :key="tag.id"
-            :value="tag.id"
+    <option
+        v-for="tag in availableTags"
+        :key="tag.id"
+        :value="tag.id"
     >
         {{ tag.label }}
     </option>

@@ -22,9 +22,10 @@
 
 <template>
 <div class="annotationInspectionObject">
-    <input v-model="contentModel"
-           class="field"
-           type="text"
+    <input
+        v-model="contentModel"
+        class="field"
+        type="text"
     >
     <div class="annotationDataLabel">
         <span>{{ modifiedOnDate }}</span>

@@ -841,9 +841,8 @@ export default {
 
                 return searchResult;
             });
-            const flattenedResults = seriesKDTrees.flat();
 
-            return flattenedResults;
+            return seriesKDTrees;
         },
         endAnnotationMarquee() {
             console.debug(`🍊 marquee annotation fired`);
@@ -852,7 +851,7 @@ export default {
             const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
             const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
             const pointsInBox = this.getPointsInBox(minX, minY, maxX, maxY);
-            this.annotationSelections = pointsInBox;
+            this.annotationSelections = pointsInBox.flat();
             this.createPlotAnnotations(minX, minY, maxX, maxY, this.annotationSelections);
         },
         endZoomMarquee() {

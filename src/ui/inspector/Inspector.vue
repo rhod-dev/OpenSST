@@ -56,8 +56,9 @@
                 <elements-pool />
             </pane>
         </multipane>
-        <multipane v-show="currentTabbedView.key === '__styles'"
-                   type="vertical"
+        <multipane
+            v-show="currentTabbedView.key === '__styles'"
+            type="vertical"
         >
             <pane class="c-inspector__styles">
                 <StylesInspectorView />
@@ -76,7 +77,7 @@
             type="vertical"
         >
             <pane class="c-inspector__annotations">
-                <AnnotationsInspectorView 
+                <AnnotationsInspectorView
                     @annotationCreated="updateCurrentTab(tabbedViews[2])"
                 />
             </pane>

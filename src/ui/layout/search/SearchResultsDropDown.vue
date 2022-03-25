@@ -1,13 +1,16 @@
 <template>
-<div v-if="annotationResults || objectResults"
-     class="c-search_dropdown"
+<div
+    v-if="annotationResults || objectResults"
+    class="c-search_dropdown"
 >
 
-    <div v-show="resultsShown"
-         class="c-search_dropdown_content"
+    <div
+        v-show="resultsShown"
+        class="c-search_dropdown_content"
     >
-        <div v-if="annotationResults"
-             ref="tagResults"
+        <div
+            v-if="annotationResults"
+            ref="tagResults"
         >
             <h4 class="c-search_results_title"> TAGGED </h4>
             <annotation-search-result
@@ -17,8 +20,9 @@
                 @mousedown="selectResult(annotationResult)"
             />
         </div>
-        <div v-if="objectResults"
-             ref="objectResults"
+        <div
+            v-if="objectResults"
+            ref="objectResults"
         >
             <h4 class="c-search_results_title"> OBJECTS </h4>
             <object-search-result

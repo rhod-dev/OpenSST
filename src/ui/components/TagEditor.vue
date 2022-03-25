@@ -32,9 +32,10 @@
         @tagRemoved="tagRemoved"
         @tagChanged="tagChanged"
     />
-    <button class="c-icon-button c-icon-button--major icon-plus"
-            title="Add new tag"
-            @click="tagAdded"
+    <button
+        class="c-icon-button c-icon-button--major icon-plus"
+        title="Add new tag"
+        @click="tagAdded"
     >
     </button> Add Tag
 

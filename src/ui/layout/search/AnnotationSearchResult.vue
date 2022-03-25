@@ -1,7 +1,8 @@
 <template>
 <div class="c-search-result">
-    <div class="c-tag-in-search-result"
-         :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
+    <div
+        class="c-tag-in-search-result"
+        :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
     >
         {{ resultTagLabel }}
     </div>

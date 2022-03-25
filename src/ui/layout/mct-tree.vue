@@ -122,7 +122,6 @@ const LOCATOR_ITEM_COUNT_HEIGHT = 10; // how many tree items to make the locator
 export default {
     name: 'MctTree',
     components: {
-        search,
         treeItem
     },
     inject: ['openmct'],
