@@ -156,10 +156,15 @@ export default {
             // const start = this.getRandomInteger(1, 8000);
             // const end = this.getRandomInteger(start, 8000);
             const targetDomainObject = this.getRandomElement(targetList);
+
+            const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
+            const targets = {
+                targetKeyString
+            };
             const originalContextPath = '/mine/8e488d26-5fc2-4b30-9947-8e9eba3bda20';
 
-            await this.openmct.annotation.create(targetDomainObject, name, annotationType,
-                tags, contentText, originalContextPath);
+            await this.openmct.annotation.create(name, '', originalContextPath, annotationType,
+                tags, contentText, originalContextPath, targets);
         }
     }
 };

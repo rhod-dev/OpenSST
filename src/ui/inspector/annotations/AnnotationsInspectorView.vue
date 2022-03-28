@@ -147,14 +147,7 @@ export default {
         },
         annotationCreated(annotationObject) {
             console.debug(`🍋 annotation created 🍋`, annotationObject);
-            this.$emit('annotationCreated');
-            const targetKeyString = Object.keys(annotationObject.targets)[0];
-            const targetIdentifier = this.openmct.objects.parseKeyString(targetKeyString);
-            const domainObjectSelected = this.getDomainObject();
-            if (domainObjectSelected && this.openmct.objects.areIdsEqual(domainObjectSelected.identifier, targetIdentifier)) {
-                console.debug(`🍋 annotation created on object we're looking at 🍋`, annotationObject);
-                this.updateSelection(this.openmct.selection.get());
-            }
+            this.updateSelection(this.openmct.selection.get());
         },
         getDomainObject() {
             if (this.selection && this.selection[0] && this.selection[0][0] && this.selection[0][0].context) {

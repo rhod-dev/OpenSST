@@ -756,7 +756,7 @@ export default {
             }
         },
 
-        onMouseUp(event) {
+        async onMouseUp(event) {
             this.stopListening(window, 'mouseup', this.onMouseUp, this);
             this.stopListening(window, 'mousemove', this.trackMousePosition, this);
 
@@ -769,7 +769,7 @@ export default {
             }
 
             if (this.marquee) {
-                this.endMarquee(event);
+                await this.endMarquee(event);
             }
 
             // resume the plot if no pan, zoom, or drag action is taken
@@ -823,16 +823,29 @@ export default {
                 this.trackHistory();
             }
         },
-        createPlotAnnotations(minX, minY, maxX, maxY, annotationSelections) {
-            const targetOptions = {
-                boundingBox: {
-                    minX,
-                    minY,
-                    maxX,
-                    maxY
-                }
+        async createPlotAnnotations(minX, minY, maxX, maxY, annotationsBySeries) {
+            const boundingBox = {
+                minX,
+                minY,
+                maxX,
+                maxY
             };
-            this.openmct.annotation.create(this.domainObject, 'Unnamed Plot Annotation', this.openmct.annotation.PLOT_SPATIAL, [], '', '', targetOptions);
+            let targets = {};
+            annotationsBySeries.forEach(annotation => {
+                if (annotation.length) {
+                    const seriesID = annotation[0].series.keyString;
+                    targets[seriesID] = boundingBox;
+                }
+            });
+            if (Object.keys(targets).length) {
+                const plotKeyString = this.openmct.objects.makeKeyString(this.domainObject.identifier);
+                const originalPathObjects = await this.openmct.objects.getOriginalPath(plotKeyString);
+                const originalPath = this.openmct.objects.getRelativePath(originalPathObjects);
+                const namespace = this.domainObject.identifier.namespace;
+                this.openmct.annotation.create('Unnamed Plot Annotation', namespace, originalPath,
+                    this.openmct.annotation.PLOT_SPATIAL, [], 'No Description', originalPath, targets);
+            }
+
         },
         getPointsInBox(minX, minY, maxX, maxY) {
             // load series models in KD-Trees
@@ -862,7 +875,7 @@ export default {
 
             return seriesKDTrees;
         },
-        endAnnotationMarquee() {
+        async endAnnotationMarquee() {
             console.debug(`🍊 marquee annotation fired`);
             const minX = Math.min(this.marquee.start.x, this.marquee.end.x);
             const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
@@ -870,7 +883,7 @@ export default {
             const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
             const pointsInBox = this.getPointsInBox(minX, minY, maxX, maxY);
             this.annotationSelections = pointsInBox.flat();
-            this.createPlotAnnotations(minX, minY, maxX, maxY, this.annotationSelections);
+            await this.createPlotAnnotations(minX, minY, maxX, maxY, pointsInBox);
         },
         endZoomMarquee() {
             const startPixels = this.marquee.startPixels;
@@ -896,9 +909,9 @@ export default {
                 this.plotHistory.pop();
             }
         },
-        endMarquee() {
+        async endMarquee() {
             if (this.marquee.annotationEvent) {
-                this.endAnnotationMarquee();
+                await this.endAnnotationMarquee();
             } else {
                 this.endZoomMarquee();
                 this.rectangles = [];

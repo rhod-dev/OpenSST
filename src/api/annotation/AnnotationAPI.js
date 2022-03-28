@@ -60,9 +60,14 @@ export default class AnnotationAPI extends EventEmitter {
     * @returns {Promise} a promise which will resolve when the domain object
     *          has been created, or be rejected if it cannot be saved
     */
-    async create(targetDomainObject, name, annotationType, tags, contentText, originalContextPath, targetOptions) {
+    async create(name, namespace, location, annotationType, tags, contentText, originalContextPath, targets) {
+        console.debug(`🍉 Creating annotation 🍉`);
         if (Object.keys(this.ANNOTATION_TYPES).includes(annotationType)) {
             throw new Error(`Unknown annotation type: ${annotationType}`);
+        }
+
+        if (!Object.keys(targets).length) {
+            throw new Error(`At least one target is required to create an annotation`);
         }
 
         const type = 'annotation';
@@ -74,25 +79,21 @@ export default class AnnotationAPI extends EventEmitter {
             type,
             identifier: {
                 key: uuid(),
-                namespace: targetDomainObject.identifier.namespace
+                namespace
             },
             tags,
             annotationType,
             contentText,
             originalContextPath,
-            location: targetDomainObject.location
+            location
         };
 
         if (definition.initialize) {
             definition.initialize(createdObject);
         }
 
-        const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
-        createdObject.targets[targetKeyString] = targetOptions || {};
-
-        const originalPathObjects = await this.openmct.objects.getOriginalPath(targetKeyString);
-        const originalPath = this.openmct.objects.getRelativePath(originalPathObjects);
-        createdObject.originalContextPath = originalPath;
+        createdObject.targets = targets;
+        createdObject.originalContextPath = originalContextPath;
 
         const success = await this.openmct.objects.save(createdObject);
         if (success) {
