@@ -117,7 +117,7 @@ export default {
         async tagAdded() {
             const newTagValue = this.openmct.annotation.getAvailableTags()[0].id;
             console.debug(`🥥 adding tag ${newTagValue}`);
-            const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTagValue, '');
+            const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTagValue);
             if (!this.annotation) {
                 this.addAnnotationListener(newAnnotation);
             }

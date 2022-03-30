@@ -161,10 +161,9 @@ export default {
             const targets = {
                 targetKeyString
             };
-            const originalContextPath = '/mine/8e488d26-5fc2-4b30-9947-8e9eba3bda20';
 
-            await this.openmct.annotation.create(name, '', originalContextPath, annotationType,
-                tags, contentText, originalContextPath, targets);
+            await this.openmct.annotation.create(name, targetDomainObject, annotationType,
+                tags, contentText, targets);
         }
     }
 };

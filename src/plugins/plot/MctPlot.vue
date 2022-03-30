@@ -838,12 +838,8 @@ export default {
                 }
             });
             if (Object.keys(targets).length) {
-                const plotKeyString = this.openmct.objects.makeKeyString(this.domainObject.identifier);
-                const originalPathObjects = await this.openmct.objects.getOriginalPath(plotKeyString);
-                const originalPath = this.openmct.objects.getRelativePath(originalPathObjects);
-                const namespace = this.domainObject.identifier.namespace;
-                this.openmct.annotation.create('Unnamed Plot Annotation', namespace, originalPath,
-                    this.openmct.annotation.PLOT_SPATIAL, [], 'No Description', originalPath, targets);
+                await this.openmct.annotation.create('Unnamed Plot Annotation', this.domainObject,
+                    this.openmct.annotation.PLOT_SPATIAL, [], 'No Description', targets);
             }
 
         },
