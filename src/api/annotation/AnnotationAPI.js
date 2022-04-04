@@ -126,17 +126,35 @@ export default class AnnotationAPI extends EventEmitter {
         }
 
         const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
-        let foundAnnotation = null;
+        let foundAnnotations = null;
         // being "expedient" here and just assuming we've got the couch provider
         const searchProvider = this.getSearchProvider();
         if (searchProvider) {
             const searchResults = await searchProvider.searchForAnnotationsForDomainObject(targetKeyString);
             if (searchResults) {
-                foundAnnotation = searchResults;
+                foundAnnotations = searchResults;
             }
         }
 
-        return foundAnnotation;
+        if (targetDomainObject.composition && targetDomainObject.composition.length) {
+            for (let i = 0; i < targetDomainObject.composition.length; i += 1) {
+                const childIdentifierObject = {
+                    identifier: targetDomainObject.composition[i]
+                };
+                const childAnnotations = await this.openmct.annotation.get(childIdentifierObject);
+                childAnnotations.forEach(childAnnotation => {
+                // check if unique
+                    const annotationExists = foundAnnotations.some(existingAnnotation => {
+                        return this.openmct.objects.areIdsEqual(existingAnnotation.identifier, childAnnotation.identifier);
+                    });
+                    if (!annotationExists) {
+                        foundAnnotations.push(childAnnotation);
+                    }
+                });
+            }
+        }
+
+        return foundAnnotations;
     }
 
     getAvailableTags() {
