@@ -607,20 +607,22 @@ export default {
         drawAnnotations() {
             if (this.annotations && this.annotations.length) {
                 console.debug(`Found ${this.annotations.length} to draw`);
-                this.annotations.forEach(this.drawAnnotations, this);
+                this.annotations.forEach(this.drawAnnotation, this);
             }
         },
         drawAnnotation(annotation) {
-            const points = new Float32Array([
-                this.offset.xVal(annotation.point, annotation.series),
-                this.offset.yVal(annotation.point, annotation.series)
-            ]);
+            if (annotation.point && annotation.series) {
+                const points = new Float32Array([
+                    this.offset.xVal(annotation.point, annotation.series),
+                    this.offset.yVal(annotation.point, annotation.series)
+                ]);
 
-            const color = [255, 255, 255, 1]; // white
-            const pointCount = 1;
-            const shape = annotation.series.get('markerShape');
+                const color = [255, 255, 255, 1]; // white
+                const pointCount = 1;
+                const shape = annotation.series.get('markerShape');
 
-            this.drawAPI.drawPoints(points, color, pointCount, ANNOTATION_SIZE, shape);
+                this.drawAPI.drawPoints(points, color, pointCount, ANNOTATION_SIZE, shape);
+            }
         },
         drawAnnotationSelections() {
             if (this.annotationSelections && this.annotationSelections.length) {

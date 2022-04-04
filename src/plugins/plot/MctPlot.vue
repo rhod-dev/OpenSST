@@ -291,6 +291,7 @@ export default {
         this.listenTo(this.config.series, 'remove', this.removeSeries, this);
 
         this.config.series.models.forEach(this.addSeries, this);
+        this.loadAnnotations();
 
         this.filterObserver = this.openmct.objects.observe(
             this.domainObject,
@@ -380,7 +381,10 @@ export default {
         removeSeries(plotSeries) {
             this.stopListening(plotSeries);
         },
-
+        async loadAnnotations() {
+            const rawAnnotations = await this.openmct.annotation.get(this.domainObject);
+            this.annotations = this.findAnnotationPoints(rawAnnotations);
+        },
         loadSeriesData(series) {
             //this check ensures that duplicate requests don't happen on load
             if (!this.timeContext) {
@@ -404,8 +408,7 @@ export default {
                 end: bounds.end
             };
 
-            series.load(options)
-                .then(this.stopLoading.bind(this));
+            series.load(options).then(this.stopLoading.bind(this));
         },
 
         loadMoreData(range, purge) {
@@ -843,9 +846,27 @@ export default {
             }
 
         },
-        getPointsInBox(minX, minY, maxX, maxY) {
+        findAnnotationPoints(rawAnnotations) {
+            const annotationsByPoints = [];
+            console.log(`Finding annotations points`);
+            rawAnnotations.forEach(rawAnnotation => {
+                if (rawAnnotation.targets) {
+                    const targetValues = Object.values(rawAnnotation.targets);
+                    if (targetValues && targetValues.length) {
+                        // just get the first one
+                        const boundingBox = Object.values(rawAnnotation.targets)[0];
+                        const pointsInBox = this.getPointsInBox(boundingBox);
+                        annotationsByPoints.push(pointsInBox);
+                    }
+                }
+            });
+
+            return annotationsByPoints;
+        },
+        getPointsInBox(boundingBox) {
             // load series models in KD-Trees
-            const seriesKDTrees = this.seriesModels.map(seriesModel => {
+            const seriesKDTrees = [];
+            this.seriesModels.forEach(seriesModel => {
                 const seriesData = seriesModel.getSeriesData();
                 const kdTree = new KDBush(seriesData,
                     (point) => {
@@ -855,18 +876,22 @@ export default {
                         return seriesModel.getYVal(point);
                     }
                 );
-                console.debug(`Bounding box (${minX}, ${minY}, ${maxX}, ${maxY})`);
-                const searchResult = kdTree.range(minX, minY, maxX, maxY)
-                    .map(id => {
+                console.debug(`Bounding box (${JSON.stringify(boundingBox)})`);
+                const searchResults = [];
+                kdTree.range(boundingBox.minX, boundingBox.minY, boundingBox.maxX, boundingBox.maxY)
+                    .forEach(id => {
                         const seriesDatum = seriesData[id];
-
-                        return {
-                            series: seriesModel,
-                            point: seriesDatum
-                        };
+                        if (seriesDatum) {
+                            const result = {
+                                series: seriesModel,
+                                point: seriesDatum
+                            };
+                            searchResults.push(result);
+                        }
                     });
-
-                return searchResult;
+                if (searchResults.length) {
+                    seriesKDTrees.push(searchResults);
+                }
             });
 
             return seriesKDTrees;
@@ -877,7 +902,13 @@ export default {
             const minY = Math.min(this.marquee.start.y, this.marquee.end.y);
             const maxX = Math.max(this.marquee.start.x, this.marquee.end.x);
             const maxY = Math.max(this.marquee.start.y, this.marquee.end.y);
-            const pointsInBox = this.getPointsInBox(minX, minY, maxX, maxY);
+            const boundingBox = {
+                minX,
+                minY,
+                maxX,
+                maxY
+            };
+            const pointsInBox = this.getPointsInBox(boundingBox);
             this.annotationSelections = pointsInBox.flat();
             await this.createPlotAnnotations(minX, minY, maxX, maxY, pointsInBox);
         },
