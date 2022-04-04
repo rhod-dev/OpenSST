@@ -606,7 +606,7 @@ export default {
         },
         drawAnnotations() {
             if (this.annotations && this.annotations.length) {
-                console.debug(`Found ${this.annotations.length} to draw`);
+                console.debug(`Found ${this.annotations.length} points to draw`);
                 this.annotations.forEach(this.drawAnnotation, this);
             }
         },
@@ -617,7 +617,7 @@ export default {
                     this.offset.yVal(annotation.point, annotation.series)
                 ]);
 
-                const color = [255, 255, 255, 1]; // white
+                const color = [255, 255, 255, 0.3]; // white
                 const pointCount = 1;
                 const shape = annotation.series.get('markerShape');
 

@@ -291,7 +291,6 @@ export default {
         this.listenTo(this.config.series, 'remove', this.removeSeries, this);
 
         this.config.series.models.forEach(this.addSeries, this);
-        this.loadAnnotations();
 
         this.filterObserver = this.openmct.objects.observe(
             this.domainObject,
@@ -301,6 +300,7 @@ export default {
         this.removeStatusListener = this.openmct.status.observe(this.domainObject.identifier, this.updateStatus);
 
         this.openmct.objectViews.on('clearData', this.clearData);
+        this.$on('loadingUpdated', this.loadAnnotations);
         this.setTimeContext();
 
         this.loaded = true;
@@ -856,30 +856,35 @@ export default {
                         // just get the first one
                         const boundingBox = Object.values(rawAnnotation.targets)[0];
                         const pointsInBox = this.getPointsInBox(boundingBox);
-                        annotationsByPoints.push(pointsInBox);
+                        if (pointsInBox && pointsInBox.length) {
+                            annotationsByPoints.push(pointsInBox.flat());
+                        }
                     }
                 }
             });
 
-            return annotationsByPoints;
+            return annotationsByPoints.flat();
         },
         getPointsInBox(boundingBox) {
             // load series models in KD-Trees
             const seriesKDTrees = [];
             this.seriesModels.forEach(seriesModel => {
                 const seriesData = seriesModel.getSeriesData();
-                const kdTree = new KDBush(seriesData,
-                    (point) => {
-                        return seriesModel.getXVal(point);
-                    },
-                    (point) => {
-                        return seriesModel.getYVal(point);
-                    }
-                );
-                console.debug(`Bounding box (${JSON.stringify(boundingBox)})`);
-                const searchResults = [];
-                kdTree.range(boundingBox.minX, boundingBox.minY, boundingBox.maxX, boundingBox.maxY)
-                    .forEach(id => {
+                if (seriesData && seriesData.length) {
+                    const kdTree = new KDBush(seriesData,
+                        (point) => {
+                            return seriesModel.getXVal(point);
+                        },
+                        (point) => {
+                            return seriesModel.getYVal(point);
+                        }
+                    );
+                    console.debug(`Bounding box (${JSON.stringify(boundingBox)})`);
+                    console.debug(`Searching through ${seriesData.length} items`);
+                    const searchResults = [];
+                    const rangeResults = kdTree.range(boundingBox.minX, boundingBox.minY, boundingBox.maxX, boundingBox.maxY);
+                    console.debug(`Found ${rangeResults.length} items`);
+                    rangeResults.forEach(id => {
                         const seriesDatum = seriesData[id];
                         if (seriesDatum) {
                             const result = {
@@ -889,8 +894,11 @@ export default {
                             searchResults.push(result);
                         }
                     });
-                if (searchResults.length) {
-                    seriesKDTrees.push(searchResults);
+                    if (searchResults.length) {
+                        seriesKDTrees.push(searchResults);
+                    }
+                } else {
+                    console.debug(`🍊 No series data, skipping`);
                 }
             });
 
