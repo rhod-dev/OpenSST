@@ -128,8 +128,26 @@ export default {
             this.selection = selection;
             const domainObject = this.getDomainObject();
             if (domainObject) {
-                const unsortedAnnotations = await this.openmct.annotation.get(domainObject);
-                const sortedAnnotations = unsortedAnnotations.sort((annotationA, annotationB) => {
+                let totalAnnotations = await this.openmct.annotation.get(domainObject);
+                if (domainObject.composition && domainObject.composition.length) {
+                    for (let i = 0; i < domainObject.composition.length; i += 1) {
+                        const childIdentifierObject = {
+                            identifier: domainObject.composition[i]
+                        };
+                        const childAnnotations = await this.openmct.annotation.get(childIdentifierObject);
+                        childAnnotations.forEach(childAnnotation => {
+                        // check if unique
+                            const annotationExists = totalAnnotations.some(existingAnnotation => {
+                                return this.openmct.objects.areIdsEqual(existingAnnotation.identifier, childAnnotation.identifier);
+                            });
+                            if (!annotationExists) {
+                                totalAnnotations.push(childAnnotation);
+                            }
+                        });
+                    }
+                }
+
+                const sortedAnnotations = totalAnnotations.sort((annotationA, annotationB) => {
                     return annotationB.modified - annotationA.modified;
                 });
                 if (sortedAnnotations.length < this.annotations.length) {

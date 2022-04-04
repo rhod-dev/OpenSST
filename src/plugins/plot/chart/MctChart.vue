@@ -606,6 +606,7 @@ export default {
         },
         drawAnnotations() {
             if (this.annotations && this.annotations.length) {
+                console.debug(`Found ${this.annotations.length} to draw`);
                 this.annotations.forEach(this.drawAnnotations, this);
             }
         },
