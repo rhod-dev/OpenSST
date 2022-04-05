@@ -50,7 +50,7 @@ import Vue from 'vue';
 
 const MARKER_SIZE = 6.0;
 const HIGHLIGHT_SIZE = MARKER_SIZE * 2.0;
-const ANNOTATION_SIZE = MARKER_SIZE * 2.0;
+const ANNOTATION_SIZE = MARKER_SIZE * 3.0;
 const CLEARANCE = 15;
 
 export default {
@@ -606,7 +606,6 @@ export default {
         },
         drawAnnotations() {
             if (this.annotations && this.annotations.length) {
-                console.debug(`Found ${this.annotations.length} points to draw`);
                 this.annotations.forEach(this.drawAnnotation, this);
             }
         },
@@ -616,8 +615,10 @@ export default {
                     this.offset.xVal(annotation.point, annotation.series),
                     this.offset.yVal(annotation.point, annotation.series)
                 ]);
+                const color = annotation.series.get('color').asRGBAArray();
+                // set transparency
+                color[3] = 0.3;
 
-                const color = [255, 255, 255, 0.3]; // white
                 const pointCount = 1;
                 const shape = annotation.series.get('markerShape');
 
