@@ -21,13 +21,13 @@
  *****************************************************************************/
 
 <template>
-<div class="annotationInspectionObject">
-    <input
+<div class="c-annotation__row">
+    <textarea
         v-model="contentModel"
-        class="field"
+        class="c-annotation__text_area"
         type="text"
-    >
-    <div class="annotationDataLabel">
+    ></textarea>
+    <div>
         <span>{{ modifiedOnDate }}</span>
         <span>{{ modifiedOnTime }}</span>
     </div>

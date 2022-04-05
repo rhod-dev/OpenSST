@@ -143,7 +143,7 @@ export default class AnnotationAPI extends EventEmitter {
                 };
                 const childAnnotations = await this.openmct.annotation.get(childIdentifierObject);
                 childAnnotations.forEach(childAnnotation => {
-                // check if unique
+                    // check if unique
                     const annotationExists = foundAnnotations.some(existingAnnotation => {
                         return this.openmct.objects.areIdsEqual(existingAnnotation.identifier, childAnnotation.identifier);
                     });

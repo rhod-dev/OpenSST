@@ -44,16 +44,16 @@
     <div class="c-inspect-properties__header">
         Annotations
     </div>
-    <ul
+    <div
         v-if="hasAnnotations"
-        class="c-inspect-properties__section c-annotation-list"
+        class="c-inspect-properties__section c-annotation__list"
     >
         <AnnotationEditor
             v-for="(annotation, index) in annotations"
             :key="index"
             :annotation="annotation"
         />
-    </ul>
+    </div>
     <div
         v-else
         class="c-inspect-properties__row--span-all"
