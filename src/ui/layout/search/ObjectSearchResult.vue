@@ -4,17 +4,25 @@
         <object-label
             :domain-object="result"
             :object-path="result.originalPath"
-        /></div>
+        />
+        <Location
+            ref="location"
+            :enable-selection-listening="false"
+        />
+    </div>
 </div>
 </template>
 
 <script>
+import { result } from 'lodash';
 import ObjectLabel from '../../components/ObjectLabel.vue';
+import Location from '../../inspector/Location.vue';
 
 export default {
     name: 'ObjectSearchResult',
     components: {
-        ObjectLabel
+        ObjectLabel,
+        Location
     },
     props: {
         result: {
@@ -29,6 +37,14 @@ export default {
         resultName() {
             return this.result.name;
         }
+    },
+    mounted() {
+        const selectionObject = {
+            context: {
+                item: this.result
+            }
+        };
+        this.$refs.location.updateSelection([[selectionObject]]);
     }
 };
 </script>

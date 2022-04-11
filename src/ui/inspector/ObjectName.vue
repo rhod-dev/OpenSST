@@ -59,6 +59,15 @@
 <script>
 export default {
     inject: ['openmct'],
+    props: {
+        enableSelectionListening: {
+            type: Boolean,
+            required: false,
+            default() {
+                return true;
+            }
+        }
+    },
     data() {
         return {
             domainObject: {},
@@ -95,8 +104,10 @@ export default {
         }
     },
     mounted() {
-        this.openmct.selection.on('change', this.updateSelection);
-        this.updateSelection(this.openmct.selection.get());
+        if (this.enableSelectionListening) {
+            this.openmct.selection.on('change', this.updateSelection);
+            this.updateSelection(this.openmct.selection.get());
+        }
     },
     beforeDestroy() {
         this.openmct.selection.off('change', this.updateSelection);
