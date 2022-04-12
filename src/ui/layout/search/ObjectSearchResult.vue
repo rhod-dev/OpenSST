@@ -1,16 +1,18 @@
 <template>
 <div class="c-search-result">
-    <div class="c-search_result_icon">
+    <div class="c-search_result_content">
         <object-label
             :domain-object="result"
             :object-path="result.originalPath"
         />
-        <Location
-            ref="location"
-            :show-header="false"
-            :enable-selection-listening="false"
-            :is-small="true"
-        />
+        <div class="c-search_result_location">
+            <Location
+                ref="location"
+                :show-header="false"
+                :enable-selection-listening="false"
+                :is-small="true"
+            />
+        </div>
     </div>
 </div>
 </template>

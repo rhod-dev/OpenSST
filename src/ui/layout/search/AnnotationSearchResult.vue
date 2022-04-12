@@ -13,6 +13,14 @@
                 :object-path="domainObject.originalPath"
             />
         </div>
+        <div class="c-search_result_location">
+            <Location
+                ref="location"
+                :show-header="false"
+                :enable-selection-listening="false"
+                :is-small="true"
+            />
+        </div>
         <div class="c-search_result_content">
             {{ getResultName }}
         </div>
@@ -22,10 +30,13 @@
 
 <script>
 import ObjectLabel from '../../components/ObjectLabel.vue';
+import Location from '../../inspector/Location.vue';
+
 export default {
     name: 'AnnotationSearchResult',
     components: {
-        ObjectLabel
+        ObjectLabel,
+        Location
     },
     inject: ['openmct'],
     props: {
@@ -78,9 +89,13 @@ export default {
             return this.result.fullTagModels[0].foregroundColor;
         }
     },
-    watch: {
-    },
-    created() {
+    mounted() {
+        const selectionObject = {
+            context: {
+                item: this.domainObject
+            }
+        };
+        this.$refs.location.updateSelection([[selectionObject]]);
     }
 };
 </script>

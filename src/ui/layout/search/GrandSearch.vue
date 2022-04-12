@@ -83,7 +83,10 @@ export default {
                 const fullObjectSearchResults = await Promise.all(this.openmct.objects.search(this.searchValue, abortSignal));
                 const aggregatedObjectSearchResults = fullObjectSearchResults.flat();
                 const aggregatedObjectSearchResultsWithPaths = await this.getPathsForObjects(aggregatedObjectSearchResults);
-                this.objectSearchResults = aggregatedObjectSearchResultsWithPaths;
+                const filterAnnotations = aggregatedObjectSearchResultsWithPaths.filter(result => {
+                    return result.type !== 'annotation';
+                });
+                this.objectSearchResults = filterAnnotations;
                 console.debug('annotation results have returned', this.annotationSearchResults);
                 console.debug('object results have returned', this.objectSearchResults);
                 this.showSearchResults();
