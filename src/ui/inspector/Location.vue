@@ -23,6 +23,7 @@
 <template>
 <div class="c-inspect-properties c-inspect-properties--location">
     <div
+        v-if="showHeader"
         class="c-inspect-properties__header"
         title="The location of this linked object."
     >
@@ -45,6 +46,7 @@
                     <object-label
                         :domain-object="pathObject.domainObject"
                         :object-path="pathObject.objectPath"
+                        :is-small="isSmall"
                     />
                 </li>
             </ul>
@@ -69,6 +71,20 @@ export default {
     inject: ['openmct'],
     props: {
         enableSelectionListening: {
+            type: Boolean,
+            required: false,
+            default() {
+                return true;
+            }
+        },
+        showHeader: {
+            type: Boolean,
+            required: false,
+            default() {
+                return true;
+            }
+        },
+        isSmall: {
             type: Boolean,
             required: false,
             default() {

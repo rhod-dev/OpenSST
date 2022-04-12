@@ -7,14 +7,15 @@
         />
         <Location
             ref="location"
+            :show-header="false"
             :enable-selection-listening="false"
+            :is-small="true"
         />
     </div>
 </div>
 </template>
 
 <script>
-import { result } from 'lodash';
 import ObjectLabel from '../../components/ObjectLabel.vue';
 import Location from '../../inspector/Location.vue';
 
