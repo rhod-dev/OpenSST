@@ -25,11 +25,26 @@
         display: inline;
     }
 
+    &__name-small {
+        @include ellipsize();
+        display: inline;
+        font-size: 0.6em;
+    }
+
     &__type-icon {
         // Type icon. Must be an HTML entity to allow inclusion of alias indicator.
         display: block;
         flex: 0 0 auto;
-        font-size: 1.1em;
+        font-size: 0.8em;
+        opacity: $objectLabelTypeIconOpacity;
+    }
+
+    &__type-icon-small {
+        // Type icon. Must be an HTML entity to allow inclusion of alias indicator.
+        display: block;
+        flex: 0 0 auto;
+        font-size: 0.5em;
+        color: #FFFF !important;
         opacity: $objectLabelTypeIconOpacity;
     }
 
@@ -79,23 +94,9 @@
         width: 100%;
     }
 
-    &__name-small {
-        display: inline;
-        width: 100%;
-        font-size: 4em;
-    }
-
     &__type-icon {
         color: $colorItemTreeIcon;
         font-size: 1.25em;
-        margin-right: $interiorMarginSm;
-        opacity: 1;
-        min-width: $treeTypeIconW;
-    }
-
-    &__type-icon-small {
-        color: $colorItemTreeIcon;
-        font-size: 0.25em;
         margin-right: $interiorMarginSm;
         opacity: 1;
         min-width: $treeTypeIconW;
