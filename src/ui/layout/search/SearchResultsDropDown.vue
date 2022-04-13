@@ -9,19 +9,7 @@
         class="c-search_dropdown_content"
     >
         <div
-            v-if="annotationResults"
-            ref="tagResults"
-        >
-            <h4 class="c-search_results_title"> TAGGED </h4>
-            <annotation-search-result
-                v-for="(annotationResult, index) in annotationResults"
-                :key="index"
-                :result="annotationResult"
-                @mousedown="selectResult(annotationResult)"
-            />
-        </div>
-        <div
-            v-if="objectResults"
+            v-if="objectResults && objectResults.length"
             ref="objectResults"
         >
             <h4 class="c-search_results_title"> OBJECTS </h4>
@@ -30,6 +18,18 @@
                 :key="index"
                 :result="objectResult"
                 @mousedown="selectResult(objectResult)"
+            />
+        </div>
+        <div
+            v-if="annotationResults && annotationResults.length"
+            ref="annotationResults"
+        >
+            <h4 class="c-search_results_title"> TAGGED </h4>
+            <annotation-search-result
+                v-for="(annotationResult, index) in annotationResults"
+                :key="index"
+                :result="annotationResult"
+                @mousedown="selectResult(annotationResult)"
             />
         </div>
     </div>
