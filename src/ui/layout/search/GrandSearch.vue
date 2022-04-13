@@ -4,9 +4,9 @@
         ref="shell-search"
         class="c-search"
         :value="searchValue"
-        @focus="showSearchResults"
         @input="searchEverything"
         @clear="searchEverything"
+        @click="showSearchResults"
     />
     <SearchResultsDropDown
         ref="searchResultsDropDown"
@@ -36,7 +36,10 @@ export default {
             objectSearchResults: []
         };
     },
-    computed: {
+    mounted() {
+        this.$on('resultSelected', () => {
+
+        });
     },
     methods: {
         async searchEverything(value) {

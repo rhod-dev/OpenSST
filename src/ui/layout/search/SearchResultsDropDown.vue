@@ -1,6 +1,7 @@
 <template>
 <div
-    v-if="annotationResults || objectResults"
+    v-if="(annotationResults && annotationResults.length) ||
+        (objectResults && objectResults.length)"
     class="c-search_dropdown"
 >
 
@@ -17,7 +18,7 @@
                 v-for="(objectResult, index) in objectResults"
                 :key="index"
                 :result="objectResult"
-                @mousedown="selectResult(objectResult)"
+                @click.native="selectResult(objectResult)"
             />
         </div>
         <div
@@ -29,7 +30,7 @@
                 v-for="(annotationResult, index) in annotationResults"
                 :key="index"
                 :result="annotationResult"
-                @mousedown="selectResult(annotationResult)"
+                @click.native="selectResult(annotationResult)"
             />
         </div>
     </div>
@@ -39,6 +40,7 @@
 <script>
 import AnnotationSearchResult from './AnnotationSearchResult.vue';
 import ObjectSearchResult from './ObjectSearchResult.vue';
+import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'SearchResultsDropDown',
@@ -46,29 +48,21 @@ export default {
         AnnotationSearchResult,
         ObjectSearchResult
     },
-    props: {
-    },
+    inject: ['openmct'],
     data() {
         return {
-            selectedResult: {},
             resultsShown: false,
             annotationResults: [],
             objectResults: []
         };
     },
-    computed: {
-    },
-    watch: {
-    },
-    created() {
-        this.$emit('selected', this.selected);
-    },
     methods: {
         selectResult(result) {
             console.debug(`result to be displayed 🍇`, result);
-            this.selectedResult = result;
             this.resultsShown = false;
-            this.$emit('selected', this.selectedResult);
+            const objectPath = result.originalPath;
+            const resultUrl = objectPathToUrl(this.openmct, objectPath);
+            this.openmct.router.navigate(resultUrl);
         },
         showResults(passedAnnotationResults, passedObjectResults) {
             this.resultsShown = passedAnnotationResults.length || passedObjectResults.length;
