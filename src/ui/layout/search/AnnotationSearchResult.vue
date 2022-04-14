@@ -1,5 +1,8 @@
 <template>
-<div class="c-search-result">
+<div
+    class="c-search-result"
+    @click="clickedResult"
+>
     <div
         class="c-tag-in-search-result"
         :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
@@ -31,6 +34,7 @@
 <script>
 import ObjectLabel from '../../components/ObjectLabel.vue';
 import Location from '../../inspector/Location.vue';
+import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'AnnotationSearchResult',
@@ -96,6 +100,13 @@ export default {
             }
         };
         this.$refs.location.updateSelection([[selectionObject]]);
+    },
+    methods: {
+        clickedResult() {
+            const objectPath = this.domainObject.originalPath;
+            const resultUrl = objectPathToUrl(this.openmct, objectPath);
+            this.openmct.router.navigate(resultUrl);
+        }
     }
 };
 </script>

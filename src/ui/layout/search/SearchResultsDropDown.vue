@@ -18,7 +18,7 @@
                 v-for="(objectResult, index) in objectResults"
                 :key="index"
                 :result="objectResult"
-                @click.native="selectResult(objectResult)"
+                @click.native="selectedResult"
             />
         </div>
         <div
@@ -30,7 +30,7 @@
                 v-for="(annotationResult, index) in annotationResults"
                 :key="index"
                 :result="annotationResult"
-                @click.native="selectResult(annotationResult)"
+                @click.native="selectedResult"
             />
         </div>
     </div>
@@ -40,7 +40,6 @@
 <script>
 import AnnotationSearchResult from './AnnotationSearchResult.vue';
 import ObjectSearchResult from './ObjectSearchResult.vue';
-import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'SearchResultsDropDown',
@@ -48,7 +47,6 @@ export default {
         AnnotationSearchResult,
         ObjectSearchResult
     },
-    inject: ['openmct'],
     data() {
         return {
             resultsShown: false,
@@ -57,17 +55,18 @@ export default {
         };
     },
     methods: {
-        selectResult(result) {
-            console.debug(`result to be displayed 🍇`, result);
+        selectedResult() {
+            console.debug(`selected a result, need to hide search dropdown`);
             this.resultsShown = false;
-            const objectPath = result.originalPath;
-            const resultUrl = objectPathToUrl(this.openmct, objectPath);
-            this.openmct.router.navigate(resultUrl);
         },
         showResults(passedAnnotationResults, passedObjectResults) {
-            this.resultsShown = passedAnnotationResults.length || passedObjectResults.length;
-            this.annotationResults = passedAnnotationResults;
-            this.objectResults = passedObjectResults;
+            if (passedAnnotationResults.length || passedObjectResults.length) {
+                this.resultsShown = true;
+                this.annotationResults = passedAnnotationResults;
+                this.objectResults = passedObjectResults;
+            } else {
+                this.resultsShown = false;
+            }
         }
     },
     template: 'Dropdown'

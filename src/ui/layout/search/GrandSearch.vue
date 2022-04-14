@@ -37,9 +37,9 @@ export default {
         };
     },
     mounted() {
-        this.$on('resultSelected', () => {
-
-        });
+    },
+    destroyed() {
+        document.body.removeEventListener('click', this.handleOutsideClick);
     },
     methods: {
         async searchEverything(value) {
@@ -102,8 +102,18 @@ export default {
             }
         },
         showSearchResults() {
-            console.debug(`Would be toggling search results pane`);
             this.$refs.searchResultsDropDown.showResults(this.annotationSearchResults, this.objectSearchResults);
+            document.body.addEventListener('click', this.handleOutsideClick);
+        },
+        handleOutsideClick(event) {
+            // if click event is detected outside the dropdown while the
+            // dropdown is visible, this will collapse the dropdown.
+            if (this.$refs.GrandSearch) {
+                const clickedInsideDropdown = this.$refs.GrandSearch.contains(event.target);
+                if (!clickedInsideDropdown && this.resultsShown) {
+                    this.resultsShown = false;
+                }
+            }
         }
     }
 };

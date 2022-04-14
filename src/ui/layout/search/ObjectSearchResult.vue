@@ -1,5 +1,8 @@
 <template>
-<div class="c-search-result">
+<div
+    class="c-search-result"
+    @click="clickedResult"
+>
     <div class="c-search_result_content">
         <object-label
             :domain-object="result"
@@ -20,6 +23,7 @@
 <script>
 import ObjectLabel from '../../components/ObjectLabel.vue';
 import Location from '../../inspector/Location.vue';
+import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'ObjectSearchResult',
@@ -27,6 +31,7 @@ export default {
         ObjectLabel,
         Location
     },
+    inject: ['openmct'],
     props: {
         result: {
             type: Object,
@@ -48,6 +53,13 @@ export default {
             }
         };
         this.$refs.location.updateSelection([[selectionObject]]);
+    },
+    methods: {
+        clickedResult() {
+            const objectPath = this.result.originalPath;
+            const resultUrl = objectPathToUrl(this.openmct, objectPath);
+            this.openmct.router.navigate(resultUrl);
+        }
     }
 };
 </script>
