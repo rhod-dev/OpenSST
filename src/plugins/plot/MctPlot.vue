@@ -37,6 +37,7 @@
             v-if="seriesModels.length > 0"
             :tick-width="tickWidth"
             :single-series="seriesModels.length === 1"
+            :has-same-range-value="hasSameRangeValue"
             :series-model="seriesModels[0]"
             :style="{
                 left: (plotWidth - tickWidth) + 'px'
@@ -255,7 +256,8 @@ export default {
             loaded: false,
             isTimeOutOfSync: false,
             showLimitLineLabels: undefined,
-            isFrozenOnMouseDown: false
+            isFrozenOnMouseDown: false,
+            hasSameRangeValue: true
         };
     },
     computed: {
@@ -368,6 +370,7 @@ export default {
                 this.setDisplayRange(series, xKey);
             }, this);
             this.listenTo(series, 'change:yKey', () => {
+                this.checkSameRangeValue();
                 this.loadSeriesData(series);
             }, this);
 
@@ -375,10 +378,18 @@ export default {
                 this.loadSeriesData(series);
             }, this);
 
+            this.checkSameRangeValue();
             this.loadSeriesData(series);
         },
 
+        checkSameRangeValue() {
+            this.hasSameRangeValue = this.seriesModels.every((model) => {
+                return model.get('yKey') === this.seriesModels[0].get('yKey');
+            });
+        },
+
         removeSeries(plotSeries) {
+            this.checkSameRangeValue();
             this.stopListening(plotSeries);
         },
         async loadAnnotations() {
@@ -496,7 +507,7 @@ export default {
         },
 
         setDisplayRange(series, xKey) {
-            if (this.config.series.length !== 1) {
+            if (this.config.series.models.length !== 1) {
                 return;
             }
 
