@@ -22,26 +22,22 @@
 
 <template>
 <div>
-    <select
+    <AutoCompleteField
         ref="tagSelection"
-        v-model="tagModel"
+        :model="availableTagModel"
         :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
-    >
-        <option
-            v-for="tag in availableTags"
-            :key="tag.id"
-            :value="tag.id"
-        >
-            {{ tag.label }}
-        </option>
-        <option value="remove">*Remove Tag*</option>
-    </select>
+    />
 </div>
 </template>
 
 <script>
 
+import AutoCompleteField from '../../api/forms/components/controls/AutoCompleteField.vue';
+
 export default {
+    components: {
+        AutoCompleteField
+    },
     inject: ['openmct'],
     props: {
         annotation: {
@@ -68,8 +64,18 @@ export default {
         };
     },
     computed: {
-        availableTags() {
-            return this.openmct.annotation.getAvailableTags();
+        availableTagModel() {
+            console.debug(`🍇 calculating tags`);
+            const availableTags = this.openmct.annotation.getAvailableTags().map(tag => {
+                return {
+                    name: tag.label,
+                    color: tag.backgroundColor
+                };
+            });
+
+            return {
+                options: availableTags
+            };
         },
         selectedBackgroundColor() {
             return this.getAvailableTagByID(this.selectedTag).backgroundColor;
