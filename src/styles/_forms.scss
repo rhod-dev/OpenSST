@@ -347,6 +347,10 @@
             .optionText {
                 cursor: pointer;
             }
+            &::marker {
+                color: var(--optionMarkerColor);
+                font-size: 20px;
+            }
         }
         .optionPreSelected {
             background-color: $colorInspectorSectionHeaderBg;

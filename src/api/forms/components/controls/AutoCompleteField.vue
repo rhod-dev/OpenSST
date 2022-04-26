@@ -39,11 +39,14 @@
         class="autocompleteOptions"
         @blur="hideOptions = true"
     >
-        <ul v-if="!hideOptions">
+        <ul
+            v-if="!hideOptions"
+        >
             <li
                 v-for="opt in filteredOptions"
                 :key="opt.optionId"
                 :class="{'optionPreSelected': optionIndex === opt.optionId}"
+                :style="itemStyle(opt)"
                 @click="fillInputWithString(opt.name)"
                 @mouseover="optionMouseover(opt.optionId)"
             >
@@ -78,25 +81,32 @@ export default {
     },
     computed: {
         filteredOptions() {
-            const options = this.optionNames || [];
+            const fullOptions = this.options || [];
+            console.debug(`🍒 full options are`, fullOptions);
             if (this.showFilteredOptions) {
-                return options
+                const optionsFiltered = fullOptions
                     .filter(option => {
-                        return option.toLowerCase().indexOf(this.field.toLowerCase()) >= 0;
+                        return option.name.toLowerCase().indexOf(this.field.toLowerCase()) >= 0;
                     }).map((option, index) => {
                         return {
                             optionId: index,
-                            name: option
+                            name: option.name,
+                            color: option.color
                         };
                     });
+
+                return optionsFiltered;
             }
 
-            return options.map((option, index) => {
+            const optionsFiltered = fullOptions.map((option, index) => {
                 return {
                     optionId: index,
-                    name: option
+                    name: option.name,
+                    color: option.color
                 };
             });
+
+            return optionsFiltered;
         }
     },
     watch: {
@@ -123,17 +133,17 @@ export default {
         }
     },
     mounted() {
-        this.options = this.model.options;
         this.autocompleteInputAndArrow = this.$el.getElementsByClassName('autocompleteInputAndArrow')[0];
         this.autocompleteInputElement = this.$el.getElementsByClassName('autocompleteInput')[0];
-        if (this.options[0].name) {
-        // If "options" include name, value pair
-            this.optionNames = this.options.map((opt) => {
-                return opt.name;
+        if (!this.model.options[0].name) {
+            // If options is only an array of string.
+            this.options = this.model.options.map((option) => {
+                return {
+                    name: option
+                };
             });
         } else {
-        // If options is only an array of string.
-            this.optionNames = this.options;
+            this.options = this.model.options;
         }
     },
     destroyed() {
@@ -222,6 +232,18 @@ export default {
                     });
                 }
             });
+        },
+        itemStyle(option) {
+            if (option.color) {
+                const style = {
+                    '--optionMarkerColor': option.color,
+                    'list-style-type': 'disc',
+                    'list-style-position': 'inside',
+                    display: 'list-item'
+                };
+
+                return style;
+            }
         }
     }
 };

@@ -21,20 +21,22 @@
  *****************************************************************************/
 
 <template>
-<select
-    ref="tagSelection"
-    v-model="tagModel"
-    :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
->
-    <option
-        v-for="tag in availableTags"
-        :key="tag.id"
-        :value="tag.id"
+<div>
+    <select
+        ref="tagSelection"
+        v-model="tagModel"
+        :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
     >
-        {{ tag.label }}
-    </option>
-    <option value="remove">*Remove Tag*</option>
-</select>
+        <option
+            v-for="tag in availableTags"
+            :key="tag.id"
+            :value="tag.id"
+        >
+            {{ tag.label }}
+        </option>
+        <option value="remove">*Remove Tag*</option>
+    </select>
+</div>
 </template>
 
 <script>
