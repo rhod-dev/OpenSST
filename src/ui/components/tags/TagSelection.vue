@@ -21,7 +21,7 @@
  *****************************************************************************/
 
 <template>
-<div>
+<div class="c-tag_selection">
     <AutoCompleteField
         ref="tagSelection"
         :model="availableTagModel"
@@ -32,7 +32,7 @@
 
 <script>
 
-import AutoCompleteField from '../../api/forms/components/controls/AutoCompleteField.vue';
+import AutoCompleteField from '../../../api/forms/components/controls/AutoCompleteField.vue';
 
 export default {
     components: {
@@ -98,7 +98,6 @@ export default {
                 } else if (this.selectedTag) {
                     this.$emit('tagChanged', {
                         entry: this.entry,
-                        oldTag: this.selectedTag,
                         newTag: tagValue
                     });
                 }

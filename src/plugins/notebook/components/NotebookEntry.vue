@@ -116,7 +116,7 @@
 
 <script>
 import NotebookEmbed from './NotebookEmbed.vue';
-import TagEditor from '../../../ui/components/TagEditor.vue';
+import TagEditor from '../../../ui/components/tags/TagEditor.vue';
 import TextHighlight from '../../../utils/textHighlight/TextHighlight.vue';
 import { createNewEmbed } from '../utils/notebook-entries';
 import { saveNotebookImageDomainObject, updateNamespaceOfDomainObject } from '../utils/notebook-image';

@@ -65,7 +65,7 @@
 
 <script>
 import AnnotationEditor from './AnnotationEditor.vue';
-import TagEditor from '../../components/TagEditor.vue';
+import TagEditor from '../../components/tags/TagEditor.vue';
 
 export default {
     components: {
