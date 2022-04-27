@@ -23,10 +23,15 @@
 <template>
 <div class="c-tag_selection">
     <AutoCompleteField
+        v-if="newTag"
         ref="tagSelection"
         :model="availableTagModel"
-        :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
     />
+    <div
+        v-else
+        class="c-completed-tag"
+        :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
+    >{{ selectedTagLabel }}</div>
 </div>
 </template>
 
@@ -57,6 +62,12 @@ export default {
             default() {
                 return {};
             }
+        },
+        newTag: {
+            type: Boolean,
+            default() {
+                return false;
+            }
         }
     },
     data() {
@@ -82,6 +93,9 @@ export default {
         },
         selectedForegroundColor() {
             return this.getAvailableTagByID(this.selectedTag).foregroundColor;
+        },
+        selectedTagLabel() {
+            return this.getAvailableTagByID(this.selectedTag).label;
         },
         tagModel: {
             get() {
