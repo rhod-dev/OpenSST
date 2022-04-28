@@ -28,6 +28,7 @@
         :key="index"
         :annotation="annotation"
         :selected-tag="addedTag"
+        :new-tag="addedTag.newTag"
         :entry="entry"
         @tagRemoved="tagRemoved"
         @tagChanged="tagChanged"

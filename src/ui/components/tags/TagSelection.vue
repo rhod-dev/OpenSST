@@ -31,7 +31,15 @@
         v-else
         class="c-completed-tag"
         :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
-    >{{ selectedTagLabel }}</div>
+    >
+        <div class="c-completed-tag-label">{{ selectedTagLabel }} </div>
+        <button
+            class="c-completed-tag-deletion"
+            :style="{ background: selectedBackgroundColor, color: selectedForegroundColor, opacity: 0.5}"
+            @click="removeTag"
+        >
+            <b>x</b></button>
+    </div>
 </div>
 </template>
 
@@ -95,27 +103,7 @@ export default {
             return this.getAvailableTagByID(this.selectedTag).foregroundColor;
         },
         selectedTagLabel() {
-            return this.getAvailableTagByID(this.selectedTag).label;
-        },
-        tagModel: {
-            get() {
-                return this.selectedTag;
-            },
-            set(tagValue) {
-                console.debug(`Set tag called with ${tagValue}`);
-                if (tagValue === 'remove') {
-                    console.debug(`Need to remove ${this.selectedTag}`);
-                    this.$emit('tagRemoved', {
-                        entry: this.entry,
-                        tag: this.selectedTag
-                    });
-                } else if (this.selectedTag) {
-                    this.$emit('tagChanged', {
-                        entry: this.entry,
-                        newTag: tagValue
-                    });
-                }
-            }
+            return this.getAvailableTagByID(this.selectedTag).label.toUpperCase();
         }
     },
     mounted() {
@@ -124,6 +112,12 @@ export default {
         getAvailableTagByID(tagID) {
             return this.openmct.annotation.getAvailableTags().find(tag => {
                 return tag.id === tagID;
+            });
+        },
+        removeTag() {
+            this.$emit('tagRemoved', {
+                entry: this.entry,
+                tag: this.selectedTag
             });
         }
     }

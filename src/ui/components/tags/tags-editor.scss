@@ -11,9 +11,15 @@
   border: 0.25px solid;
   background-color: black;
   color: white;
-  padding: 3px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 3px;
+  padding-right: 1px;
   margin-top: 5px;
   margin-left: 4px;
+  max-height: 20px;
+  display: flex;
+  flex-direction: row;
 }
 .c-add-tag-button {
   margin-top: 4px;
@@ -21,5 +27,9 @@
 }
 .c-add-tag-text {
   margin-top: 7px;
+  text-align: center;
+}
+.c-completed-tag-deletion {
+  margin-bottom: 4px;
   text-align: center;
 }
