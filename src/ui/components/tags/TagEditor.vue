@@ -33,11 +33,11 @@
         @tagChanged="tagChanged"
     />
     <button
-        class="c-icon-button c-icon-button--major icon-plus"
+        class="c-add-tag-button c-icon-button c-icon-button--major icon-plus"
         title="Add new tag"
         @click="tagAdded"
     >
-    </button> Add Tag
+    </button> <div class="c-add-tag-text"> Add Tag </div>
 
 </div>
 </template>
