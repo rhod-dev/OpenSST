@@ -1,14 +1,14 @@
 <template>
 <div
-    class="c-search-result"
+    class="c-gsearch-result c-gsearch-result--object"
     @click="clickedResult"
 >
-    <div class="c-search_result_content">
+    <div class="c-gsearch__result_content">
         <object-label
             :domain-object="result"
             :object-path="result.originalPath"
         />
-        <div class="c-search_result_location">
+        <div class="c-gsearch__result_location">
             <Location
                 ref="location"
                 :show-header="false"

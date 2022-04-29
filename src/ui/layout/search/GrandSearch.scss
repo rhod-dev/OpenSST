@@ -1,24 +1,48 @@
-.c-search_dropdown {
-    position: relative;
-    display: block;
-    margin: auto;
-    .c-search_dropdown_content {
-      position: absolute;
-      background-color: #333;
-      padding: 3%;
-      min-width: 350px;
-      max-width: 500px;
+.c-gsearch__dropdown {
+    // position: relative;
+    // display: block;
+    // margin: auto;
+    // z-index: 1000; // makes search component the front-most layer
+    .c-gsearch__dropdown_content {
+      @include menuOuter();
+      min-width: 500px;
       max-height: 500px;
-      border: 1px solid #aaaaaa;
-      box-shadow: 0px -8px 34px 0px rgba(0,0,0,0.05);
-      overflow: auto;
-      z-index: 1;
+      // position: absolute;
+      // background-color: #333;
+      // padding: 3%;
+      // min-width: 350px;
+      // max-width: 500px;
+      // max-height: 500px;
+      // border: 1px solid #aaaaaa;
+      // box-shadow: 0px -8px 34px 0px rgba(0,0,0,0.05);
+      // overflow: auto;
+      // z-index: 1;
     }
-    .c-search_dropdown:hover {
+    .c-gsearch__dropdown:hover { 
       display: block;
   }
 }
-.c-search_results_title {
+
+.c-gsearch__filter { //hardcoded filter element using button and sup tags
+  button { 
+    color: #0096D7;
+    padding: 4px;
+    
+    sup { 
+      color: white;
+    }
+  }
+  // > * {
+  //   color: #0096D7;
+  //   padding: 4px; 
+  // }
+  > button:hover {
+    background-color: #0096D7;
+    color: white;
+  }
+}
+
+.c-gsearch__results_title {
   border-bottom: 1px solid rgba(170, 170, 170, 0.2);
   padding: 2px;
 }
@@ -31,7 +55,7 @@
   border-bottom: 1px solid rgba(170, 170, 170, 0.2);
 }
 .c-search-result:hover {
-  background-color: #4d4d4d;
+  background-color: #345461;
 }
 .c-tag-in-search-result {
   border-radius: 3px;
@@ -42,16 +66,16 @@
   margin-top: 5px;
   margin-left: 4px;
 }
-.c-search_result_content {
+.c-gsearch__result_content {
   padding: 3px;
 }
-.c-search_result_location {
+.c-gsearch__result_location {
   padding-left: 3px;
 }
-.c-search_result_label {
+.c-gsearch__result_label {
   padding: 2px;
 }
-.c-search_result_content {
+.c-gsearch__result_content {
   display: flex;
   flex-direction: column;
 }

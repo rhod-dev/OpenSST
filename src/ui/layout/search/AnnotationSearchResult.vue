@@ -1,22 +1,22 @@
 <template>
 <div
-    class="c-search-result"
+    class="c-gsearch-result c-gsearch-result--annotation"
     @click="clickedResult"
 >
     <div
-        class="c-tag-in-search-result"
+        class="c-tag c-gsearch-result__tag"
         :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
     >
         {{ resultTagLabel }}
     </div>
-    <div class="c-search_result_content">
-        <div class="c-search_result_label">
+    <div class="c-gsearch__result_content">
+        <div class="c-gsearch__result_label">
             <object-label
                 :domain-object="domainObject"
                 :object-path="domainObject.originalPath"
             />
         </div>
-        <div class="c-search_result_location">
+        <div class="c-gsearch__result_location">
             <Location
                 ref="location"
                 :show-header="false"
@@ -24,7 +24,7 @@
                 :is-small="true"
             />
         </div>
-        <div class="c-search_result_content">
+        <div class="c-gsearch__result_content">
             {{ getResultName }}
         </div>
     </div>
