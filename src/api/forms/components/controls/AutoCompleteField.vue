@@ -27,6 +27,7 @@
             v-model="field"
             class="autocompleteInput"
             type="text"
+            :placeholder="placeHolderText"
             @click="inputClicked()"
             @keydown="keyDown($event)"
         >
@@ -68,7 +69,16 @@ export default {
     props: {
         model: {
             type: Object,
-            required: true
+            required: true,
+            default() {
+                return {};
+            }
+        },
+        placeHolderText: {
+            type: String,
+            default() {
+                return "";
+            }
         }
     },
     data() {
@@ -82,7 +92,6 @@ export default {
     computed: {
         filteredOptions() {
             const fullOptions = this.options || [];
-            console.debug(`🍒 full options are`, fullOptions);
             if (this.showFilteredOptions) {
                 const optionsFiltered = fullOptions
                     .filter(option => {
@@ -112,7 +121,6 @@ export default {
     watch: {
         field(newValue, oldValue) {
             if (newValue !== oldValue) {
-
                 const data = {
                     model: this.model,
                     value: newValue

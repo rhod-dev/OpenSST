@@ -27,7 +27,7 @@
         v-for="(addedTag, index) in addedTags"
         :key="index"
         :annotation="annotation"
-        :selected-tag="addedTag"
+        :selected-tag="addedTag.newTag ? null : addedTag"
         :new-tag="addedTag.newTag"
         :entry="entry"
         @tagRemoved="tagRemoved"
@@ -126,13 +126,14 @@ export default {
             await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
         },
         async tagAdded({entry, newTag}) {
-            const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTagValue);
+            console.debug(`🍋 user selected`, newTag);
+            const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTag);
             if (!this.annotation) {
                 this.addAnnotationListener(newAnnotation);
             }
 
             this.tagsChanged(newAnnotation.tags);
-            await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, oldTag, newTag, '');
+            await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, null, newTag, '');
         }
     }
 };

@@ -26,6 +26,8 @@
         v-if="newTag"
         ref="tagSelection"
         :model="availableTagModel"
+        :place-holder-text="'Type to add tag'"
+        @onChange="tagSelected"
     />
     <div
         v-else
@@ -86,8 +88,9 @@ export default {
         availableTagModel() {
             const availableTags = this.openmct.annotation.getAvailableTags().map(tag => {
                 return {
-                    name: tag.label,
-                    color: tag.backgroundColor
+                    name: tag.label.toUpperCase(),
+                    color: tag.backgroundColor,
+                    id: tag.id
                 };
             });
 
@@ -117,6 +120,19 @@ export default {
             this.$emit('tagRemoved', {
                 entry: this.entry,
                 tag: this.selectedTag
+            });
+        },
+        tagSelected(autoField) {
+            const tagAdded = autoField.model.options.find(option => {
+                if (option.name === autoField.value) {
+                    return true;
+                }
+
+                return false;
+            });
+            this.$emit('tagAdded', {
+                entry: this.entry,
+                newTag: tagAdded.id
             });
         }
     }
