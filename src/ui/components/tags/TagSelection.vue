@@ -55,22 +55,16 @@ export default {
     },
     inject: ['openmct'],
     props: {
-        annotation: {
-            type: Object,
+        addedTags: {
+            type: Array,
             default() {
-                return {};
+                return [];
             }
         },
         selectedTag: {
             type: String,
             default() {
                 return "";
-            }
-        },
-        entry: {
-            type: Object,
-            default() {
-                return {};
             }
         },
         newTag: {
@@ -86,7 +80,9 @@ export default {
     },
     computed: {
         availableTagModel() {
-            const availableTags = this.openmct.annotation.getAvailableTags().map(tag => {
+            const availableTags = this.openmct.annotation.getAvailableTags().filter(tag => {
+                return (!this.addedTags.includes(tag.id));
+            }).map(tag => {
                 return {
                     name: tag.label.toUpperCase(),
                     color: tag.backgroundColor,
@@ -117,10 +113,7 @@ export default {
             });
         },
         removeTag() {
-            this.$emit('tagRemoved', {
-                entry: this.entry,
-                tag: this.selectedTag
-            });
+            this.$emit('tagRemoved', this.selectedTag);
         },
         tagSelected(autoField) {
             const tagAdded = autoField.model.options.find(option => {
@@ -131,10 +124,7 @@ export default {
                 return false;
             });
             if (tagAdded) {
-                this.$emit('tagAdded', {
-                    entry: this.entry,
-                    newTag: tagAdded.id
-                });
+                this.$emit('tagAdded', tagAdded.id);
             }
         }
     }
