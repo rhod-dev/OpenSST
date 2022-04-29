@@ -133,7 +133,6 @@ export default {
             }
 
             this.tagsChanged(newAnnotation.tags);
-            await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, null, newTag, '');
         }
     }
 };
