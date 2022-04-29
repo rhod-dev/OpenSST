@@ -130,10 +130,12 @@ export default {
 
                 return false;
             });
-            this.$emit('tagAdded', {
-                entry: this.entry,
-                newTag: tagAdded.id
-            });
+            if (tagAdded) {
+                this.$emit('tagAdded', {
+                    entry: this.entry,
+                    newTag: tagAdded.id
+                });
+            }
         }
     }
 };

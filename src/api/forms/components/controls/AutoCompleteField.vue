@@ -95,7 +95,11 @@ export default {
             if (this.showFilteredOptions) {
                 const optionsFiltered = fullOptions
                     .filter(option => {
-                        return option.name.toLowerCase().indexOf(this.field.toLowerCase()) >= 0;
+                        if (option.name && this.field) {
+                            return option.name.toLowerCase().indexOf(this.field.toLowerCase()) >= 0;
+                        }
+
+                        return false;
                     }).map((option, index) => {
                         return {
                             optionId: index,
