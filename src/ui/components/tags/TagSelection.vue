@@ -84,7 +84,6 @@ export default {
     },
     computed: {
         availableTagModel() {
-            console.debug(`🍇 calculating tags`);
             const availableTags = this.openmct.annotation.getAvailableTags().map(tag => {
                 return {
                     name: tag.label,

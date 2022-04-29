@@ -31,12 +31,12 @@
         :new-tag="addedTag.newTag"
         :entry="entry"
         @tagRemoved="tagRemoved"
-        @tagChanged="tagChanged"
+        @tagAdded="tagAdded"
     />
     <button
         class="c-add-tag-button c-icon-button c-icon-button--major icon-plus"
         title="Add new tag"
-        @click="tagAdded"
+        @click="addTag"
     >
     </button> <div class="c-add-tag-text"> Add Tag </div>
 
@@ -115,22 +115,23 @@ export default {
                 this.$set(this.addedTags, index, newTags[index]);
             }
         },
-        async tagAdded() {
-            const newTagValue = this.openmct.annotation.getAvailableTags()[0].id;
-            console.debug(`🥥 adding tag ${newTagValue}`);
+        addTag() {
+            const newTagValue = {
+                newTag: true
+            };
+            this.addedTags.push(newTagValue);
+        },
+        async tagRemoved({entry, tag}) {
+            console.debug(`removing tag ${tag}`);
+            await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
+        },
+        async tagAdded({entry, newTag}) {
             const newAnnotation = await this.openmct.annotation.addNotebookAnnotationTag(this.entry.id, this.domainObject, newTagValue);
             if (!this.annotation) {
                 this.addAnnotationListener(newAnnotation);
             }
 
             this.tagsChanged(newAnnotation.tags);
-        },
-        async tagRemoved({entry, tag}) {
-            console.debug(`removing tag ${tag}`);
-            await this.openmct.annotation.removeNotebookAnnotationTag(entry.id, this.domainObject, tag, '');
-        },
-        async tagChanged({entry, oldTag, newTag}) {
-            console.debug(`Changing tag from ${oldTag} to ${newTag}`);
             await this.openmct.annotation.changeNotebookAnnotationTag(entry.id, this.domainObject, oldTag, newTag, '');
         }
     }
