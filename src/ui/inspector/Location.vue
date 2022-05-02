@@ -46,7 +46,7 @@
                     <object-label
                         :domain-object="pathObject.domainObject"
                         :object-path="pathObject.objectPath"
-                        :is-small="isSmall"
+
                     />
                 </li>
             </ul>

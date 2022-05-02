@@ -46,7 +46,7 @@
   border-bottom: 1px solid rgba(170, 170, 170, 0.2);
   padding: 2px;
 }
-.c-search-result {
+.c-gsearch-result {
   display: flex;
   cursor: pointer;
   align-items: flex-start;
@@ -54,7 +54,7 @@
   padding-bottom: 5px;
   border-bottom: 1px solid rgba(170, 170, 170, 0.2);
 }
-.c-search-result:hover {
+.c-gsearch-result:hover {
   background-color: #345461;
 }
 .c-tag-in-search-result {
@@ -71,6 +71,8 @@
 }
 .c-gsearch__result_location {
   padding-left: 3px;
+  font-size: 0.7em;
+
 }
 .c-gsearch__result_label {
   padding: 2px;
