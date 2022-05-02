@@ -32,10 +32,19 @@
         const port = e.ports[0];
 
         port.onmessage = function (event) {
-            if (event.data.request === 'index') {
+            const requestType = event.data.request;
+            if (requestType === 'index') {
                 indexItem(event.data.keyString, event.data.model);
-            } else if (event.data.request === 'search') {
-                port.postMessage(search(event.data));
+            } else if (requestType === 'searchForObjects') {
+                port.postMessage(searchForObjects(event.data));
+            } else if (requestType === 'searchForAnnotationsForDomainObject') {
+                port.postMessage(searchForAnnotationsForDomainObject(event.data));
+            } else if (requestType === 'searchForTags') {
+                port.postMessage(searchForTags(event.data));
+            } else if (requestType === 'searchForNotebookAnnotations') {
+                port.postMessage(searchForNotebookAnnotations(event.data));
+            } else {
+                throw new Error(`Unknown request ${event.data.request}`);
             }
         };
 
@@ -65,13 +74,11 @@
      *           * maxResults: The maximum number of search results desired
      *           * queryId: an id identifying this query, will be returned.
      */
-    function search(data) {
-        // This results dictionary will have domain object ID keys which
-        // point to the value the domain object's score.
+    function searchForObjects(data) {
         let results;
         const input = data.input.trim().toLowerCase();
         const message = {
-            request: 'search',
+            request: 'searchForObjects',
             results: {},
             total: 0,
             queryId: data.queryId
@@ -79,6 +86,66 @@
 
         results = Object.values(indexedItems).filter((indexedItem) => {
             return indexedItem.name.toLowerCase().includes(input);
+        });
+
+        message.total = results.length;
+        message.results = results
+            .slice(0, data.maxResults);
+
+        return message;
+    }
+
+    function searchForAnnotationsForDomainObject(data) {
+        let results;
+        const message = {
+            request: 'searchForAnnotationsForDomainObject',
+            results: {},
+            total: 0,
+            queryId: data.queryId
+        };
+
+        results = Object.values(indexedItems).filter((indexedItem) => {
+            return false;
+        });
+
+        message.total = results.length;
+        message.results = results
+            .slice(0, data.maxResults);
+
+        return message;
+    }
+
+    function searchForTags(data) {
+        let results;
+        const message = {
+            request: 'searchForTags',
+            results: {},
+            total: 0,
+            queryId: data.queryId
+        };
+
+        results = Object.values(indexedItems).filter((indexedItem) => {
+            return false;
+        });
+
+        message.total = results.length;
+        message.results = results
+            .slice(0, data.maxResults);
+
+        return message;
+    }
+
+    function searchForNotebookAnnotations(data) {
+        let results;
+        const message = {
+            request: 'searchForNotebookAnnotations',
+            results: {},
+            total: 0,
+            queryId: data.queryId
+        };
+
+        results = Object.values(indexedItems).filter((indexedItem) => {
+            return false;
         });
 
         message.total = results.length;

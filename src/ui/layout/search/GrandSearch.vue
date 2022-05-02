@@ -94,6 +94,7 @@ export default {
                 console.debug('object results have returned', this.objectSearchResults);
                 this.showSearchResults();
             } catch (error) {
+                console.error(`😞 Error searching`, error);
                 this.searchLoading = false;
 
                 if (this.abortSearchController) {

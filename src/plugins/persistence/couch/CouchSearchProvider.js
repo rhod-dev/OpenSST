@@ -32,7 +32,7 @@ class CouchSearchProvider {
         this.couchObjectProvider = couchObjectProvider;
     }
 
-    search(query, abortSignal) {
+    searchForObjects(query, abortSignal) {
         const filter = {
             "selector": {
                 "model": {
@@ -71,7 +71,7 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForAnnotationsByTargetByIDAndNotebookEntry(keyString, entryId, abortSignal) {
+    searchForNotebookAnnotations(keyString, entryId, abortSignal) {
         const filter = {
             "selector": {
                 "$and": [
@@ -103,39 +103,7 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForAnnotationsTargetByIDAndTimestampRange(keyString, startInclusive, endInclusive, abortSignal) {
-        const filter = {
-            "selector": {
-                "$and": [
-                    {
-                        "model": {
-                            "targets": {
-                            }
-                        }
-                    },
-                    {
-                        "model.type": {
-                            "$eq": "annotation"
-                        }
-                    }
-                ]
-            }
-        };
-        filter.selector.model.targets[keyString] = {
-            "targetTime": {
-                "start": {
-                    "$gte": startInclusive
-                },
-                "end": {
-                    "$lte": endInclusive
-                }
-            }
-        };
-
-        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
-    }
-
-    searchForTagsByTextQuery(tagsArray, abortSignal) {
+    searchForTags(tagsArray, abortSignal) {
         const filter = {
             "selector": {
                 "$and": [
@@ -158,27 +126,5 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForAnnotationsByPath(path, abortSignal) {
-        const filter = {
-            "selector": {
-                "$and": [
-                    {
-                        "model": {
-                            "originalContextPath": {
-                                "${eq}": path
-                            }
-                        }
-                    },
-                    {
-                        "model.type": {
-                            "$eq": "annotation"
-                        }
-                    }
-                ]
-            }
-        };
-
-        return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
-    }
 }
 export default CouchSearchProvider;

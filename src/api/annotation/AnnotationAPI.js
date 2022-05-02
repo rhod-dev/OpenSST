@@ -127,13 +127,10 @@ export default class AnnotationAPI extends EventEmitter {
 
         const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
         let foundAnnotations = null;
-        // being "expedient" here and just assuming we've got the couch provider
-        const searchProvider = this.getSearchProvider();
-        if (searchProvider) {
-            const searchResults = await searchProvider.searchForAnnotationsForDomainObject(targetKeyString);
-            if (searchResults) {
-                foundAnnotations = searchResults;
-            }
+
+        const searchResults = await (await Promise.all(this.openmct.objects.queryUsingProvider('searchForAnnotationsForDomainObject', targetKeyString))).flat();
+        if (searchResults) {
+            foundAnnotations = searchResults;
         }
 
         if (targetDomainObject.composition && targetDomainObject.composition.length) {
@@ -142,15 +139,18 @@ export default class AnnotationAPI extends EventEmitter {
                     identifier: targetDomainObject.composition[i]
                 };
                 const childAnnotations = await this.openmct.annotation.get(childIdentifierObject);
-                childAnnotations.forEach(childAnnotation => {
-                    // check if unique
-                    const annotationExists = foundAnnotations.some(existingAnnotation => {
-                        return this.openmct.objects.areIdsEqual(existingAnnotation.identifier, childAnnotation.identifier);
+                if (childAnnotations && childAnnotations.length) {
+                    childAnnotations.forEach(childAnnotation => {
+                        // check if unique
+                        const annotationExists = foundAnnotations.some(existingAnnotation => {
+                            return this.openmct.objects.areIdsEqual(existingAnnotation.identifier, childAnnotation.identifier);
+                        });
+                        if (!annotationExists) {
+                            foundAnnotations.push(childAnnotation);
+                        }
                     });
-                    if (!annotationExists) {
-                        foundAnnotations.push(childAnnotation);
-                    }
-                });
+
+                }
             }
         }
 
@@ -168,27 +168,16 @@ export default class AnnotationAPI extends EventEmitter {
         return rearrangedToArray;
     }
 
-    getSearchProvider() {
-        const searchProviders = Object.values(this.openmct.objects.providers).filter(provider => {
-            return provider.searchForAnnotationsByTargetByIDAndNotebookEntry;
-        });
-        if (searchProviders) {
-            return searchProviders[0];
-        } else {
-            return null;
-        }
-    }
-
     async getNotebookAnnotation(entryId, targetDomainObject) {
         const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
         let foundAnnotation = null;
-        // being "expedient" here and just assuming we've got the couch provider
-        const searchProvider = this.getSearchProvider();
-        if (searchProvider) {
-            const searchResults = await searchProvider.searchForAnnotationsByTargetByIDAndNotebookEntry(targetKeyString, entryId, null);
-            if (searchResults) {
-                foundAnnotation = searchResults[0];
-            }
+        const query = {
+            targetKeyString,
+            entryId
+        };
+        const searchResults = (await Promise.all(this.openmct.objects.queryUsingProvider('searchForNotebookAnnotations', query))).flat();
+        if (searchResults) {
+            foundAnnotation = searchResults[0];
         }
 
         return foundAnnotation;
@@ -278,14 +267,10 @@ export default class AnnotationAPI extends EventEmitter {
     async searchForTags(query, abortController) {
         // get matching tags first
         const matchingTagKeys = this.getMatchingTags(query);
-        // being "expedient" here and just assuming we've got the couch provider
-        const searchProvider = this.getSearchProvider();
-        if (searchProvider) {
-            const searchResults = await searchProvider.searchForTagsByTextQuery(matchingTagKeys, abortController);
-            const appliedTagSearchResults = this.addTagMetaInformationToResults(searchResults, matchingTagKeys);
-            const appliedTargetsModels = await this.addTargetModelsToResults(appliedTagSearchResults);
+        const searchResults = (await Promise.all(this.openmct.objects.queryUsingProvider('searchForTags', matchingTagKeys, abortController))).flat();
+        const appliedTagSearchResults = this.addTagMetaInformationToResults(searchResults, matchingTagKeys);
+        const appliedTargetsModels = await this.addTargetModelsToResults(appliedTagSearchResults);
 
-            return appliedTargetsModels;
-        }
+        return appliedTargetsModels;
     }
 }

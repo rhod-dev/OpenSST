@@ -98,14 +98,7 @@ class InMemorySearchProvider {
         return intermediateResponse;
     }
 
-    /**
-     * Query the search provider for results.
-     *
-     * @param {String} input the string to search by.
-     * @param {Number} maxResults max number of results to return.
-     * @returns {Promise} a promise for a modelResults object.
-     */
-    query(input, maxResults) {
+    search(input, queryType, localQueryFallBack, maxResults) {
         if (!maxResults) {
             maxResults = this.DEFAULT_MAX_RESULTS;
         }
@@ -115,25 +108,43 @@ class InMemorySearchProvider {
         this.pendingQueries[queryId] = pendingQuery;
 
         if (this.worker) {
-            this.dispatchSearch(queryId, input, maxResults);
+            this.dispatchSearch(queryId, queryType, input, maxResults);
         } else {
-            this.localSearch(queryId, input, maxResults);
+            localQueryFallBack(queryId, input, maxResults);
         }
 
         return pendingQuery.promise;
     }
 
     /**
-     * Handle messages from the worker.  Only really knows how to handle search
-     * results, which are parsed, transformed into a modelResult object, which
-     * is used to resolve the corresponding promise.
+     * Query the search provider for results.
+     *
+     * @param {String} input the string to search by.
+     * @param {Number} maxResults max number of results to return.
+     * @returns {Promise} a promise for a modelResults object.
+     */
+    searchForObjects(input, maxResults) {
+        return this.search(input, 'searchForObjects', this.localSearchForObjects, maxResults);
+    }
+
+    searchForAnnotationsForDomainObject(input, maxResults) {
+        return this.search(input, 'searchForAnnotationsForDomainObject', this.localSearchForAnnotationsForDomainObject, maxResults);
+    }
+
+    searchForTags(input, maxResults) {
+        return this.search(input, 'searchForTags', this.localSearchForTags, maxResults);
+    }
+
+    searchForAnnotationsByTargetByIDAndNotebookEntry(input, maxResults) {
+        return this.search(input, 'searchForAnnotationsByTargetByIDAndNotebookEntry', this.localSearchForAnnotationsByTargetByIDAndNotebookEntry, maxResults);
+    }
+
+    /**
+     * Handle messages from the worker.
      * @private
      */
     async onWorkerMessage(event) {
-        if (event.data.request !== 'search') {
-            return;
-        }
-
+        console.debug('⚙️ Received worker message ⚙️', event);
         const pendingQuery = this.pendingQueries[event.data.queryId];
         const modelResults = {
             total: event.data.total
@@ -317,9 +328,9 @@ class InMemorySearchProvider {
      * @private
      * @returns {String} a unique query Id for the query.
      */
-    dispatchSearch(queryId, searchInput, maxResults) {
+    dispatchSearch(queryId, searchType, searchInput, maxResults) {
         const message = {
-            request: 'search',
+            request: searchType,
             input: searchInput,
             maxResults,
             queryId
@@ -346,13 +357,13 @@ class InMemorySearchProvider {
      * Gets search results from the indexedItems based on provided search
      * input. Returns matching results from indexedItems
      */
-    localSearch(queryId, searchInput, maxResults) {
+    localSearchForObjects(queryId, searchInput, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
         let results;
         const input = searchInput.trim().toLowerCase();
         const message = {
-            request: 'search',
+            request: 'searchForObjects',
             results: {},
             total: 0,
             queryId
@@ -360,6 +371,99 @@ class InMemorySearchProvider {
 
         results = Object.values(this.localIndexedItems).filter((indexedItem) => {
             return indexedItem.name.toLowerCase().includes(input);
+        });
+
+        message.total = results.length;
+        message.results = results
+            .slice(0, maxResults);
+        const eventToReturn = {
+            data: message
+        };
+        this.onWorkerMessage(eventToReturn);
+    }
+
+    /**
+     * A local version of the same SharedWorker function
+     * if we don't have SharedWorkers available (e.g., iOS)
+     *
+     * Gets search results from the indexedItems based on provided search
+     * input. Returns matching results from indexedItems
+     */
+    localSearchForAnnotationsForDomainObject(queryId, searchInput, maxResults) {
+        // This results dictionary will have domain object ID keys which
+        // point to the value the domain object's score.
+        let results;
+        const message = {
+            request: 'searchForAnnotationsForDomainObject',
+            results: {},
+            total: 0,
+            queryId
+        };
+
+        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+            return false;
+        });
+
+        message.total = results.length;
+        message.results = results
+            .slice(0, maxResults);
+        const eventToReturn = {
+            data: message
+        };
+        this.onWorkerMessage(eventToReturn);
+    }
+
+    /**
+     * A local version of the same SharedWorker function
+     * if we don't have SharedWorkers available (e.g., iOS)
+     *
+     * Gets search results from the indexedItems based on provided search
+     * input. Returns matching results from indexedItems
+     */
+    localSearchForTags(queryId, searchInput, maxResults) {
+        // This results dictionary will have domain object ID keys which
+        // point to the value the domain object's score.
+        let results;
+        const message = {
+            request: 'searchForTags',
+            results: {},
+            total: 0,
+            queryId
+        };
+
+        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+            return false;
+        });
+
+        message.total = results.length;
+        message.results = results
+            .slice(0, maxResults);
+        const eventToReturn = {
+            data: message
+        };
+        this.onWorkerMessage(eventToReturn);
+    }
+
+    /**
+     * A local version of the same SharedWorker function
+     * if we don't have SharedWorkers available (e.g., iOS)
+     *
+     * Gets search results from the indexedItems based on provided search
+     * input. Returns matching results from indexedItems
+     */
+    localSearchForNotebookAnnotations(queryId, searchInput, maxResults) {
+        // This results dictionary will have domain object ID keys which
+        // point to the value the domain object's score.
+        let results;
+        const message = {
+            request: 'searchForNotebookAnnotations',
+            results: {},
+            total: 0,
+            queryId
+        };
+
+        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+            return false;
         });
 
         message.total = results.length;

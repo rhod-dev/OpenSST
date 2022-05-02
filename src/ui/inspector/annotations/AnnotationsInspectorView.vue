@@ -129,6 +129,11 @@ export default {
             const domainObject = this.getDomainObject();
             if (domainObject) {
                 let totalAnnotations = await this.openmct.annotation.get(domainObject);
+                if (!totalAnnotations) {
+                    this.annotations = [];
+
+                    return;
+                }
 
                 const sortedAnnotations = totalAnnotations.sort((annotationA, annotationB) => {
                     return annotationB.modified - annotationA.modified;
@@ -140,8 +145,6 @@ export default {
                 for (let index = 0; index < sortedAnnotations.length; index += 1) {
                     this.$set(this.annotations, index, sortedAnnotations[index]);
                 }
-
-                console.debug(`Should be displaying ${this.annotations.length} annotations`, this.annotations);
             } else {
                 this.annotations = [];
             }

@@ -60,7 +60,8 @@ export default {
             this.resultsShown = false;
         },
         showResults(passedAnnotationResults, passedObjectResults) {
-            if (passedAnnotationResults.length || passedObjectResults.length) {
+            if ((passedAnnotationResults && passedAnnotationResults.length)
+                || (passedObjectResults && passedObjectResults.length)) {
                 this.resultsShown = true;
                 this.annotationResults = passedAnnotationResults;
                 this.objectResults = passedObjectResults;
