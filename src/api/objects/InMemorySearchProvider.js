@@ -135,8 +135,8 @@ class InMemorySearchProvider {
         return this.search(input, 'searchForTags', this.localSearchForTags, maxResults);
     }
 
-    searchForAnnotationsByTargetByIDAndNotebookEntry(input, maxResults) {
-        return this.search(input, 'searchForAnnotationsByTargetByIDAndNotebookEntry', this.localSearchForAnnotationsByTargetByIDAndNotebookEntry, maxResults);
+    searchForNotebookAnnotations(input, maxResults) {
+        return this.search(input, 'searchForNotebookAnnotations', this.localSearchForNotebookAnnotations, maxResults);
     }
 
     /**

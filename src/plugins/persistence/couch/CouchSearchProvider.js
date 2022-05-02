@@ -71,7 +71,8 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForNotebookAnnotations(keyString, entryId, abortSignal) {
+    searchForNotebookAnnotations({targetKeyString, entryId}, abortSignal) {
+        console.trace();
         const filter = {
             "selector": {
                 "$and": [
@@ -94,7 +95,7 @@ class CouchSearchProvider {
                 ]
             }
         };
-        filter.selector.$and[2].model.targets[keyString] = {
+        filter.selector.$and[2].model.targets[targetKeyString] = {
             "entryId": {
                 "$eq": entryId
             }
