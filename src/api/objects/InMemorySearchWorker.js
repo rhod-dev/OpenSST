@@ -37,8 +37,8 @@
                 indexItem(event.data.keyString, event.data.model);
             } else if (requestType === 'searchForObjects') {
                 port.postMessage(searchForObjects(event.data));
-            } else if (requestType === 'searchForAnnotationsForDomainObject') {
-                port.postMessage(searchForAnnotationsForDomainObject(event.data));
+            } else if (requestType === 'searchForAnnotations') {
+                port.postMessage(searchForAnnotations(event.data));
             } else if (requestType === 'searchForTags') {
                 port.postMessage(searchForTags(event.data));
             } else if (requestType === 'searchForNotebookAnnotations') {
@@ -95,10 +95,10 @@
         return message;
     }
 
-    function searchForAnnotationsForDomainObject(data) {
+    function searchForAnnotations(data) {
         let results;
         const message = {
-            request: 'searchForAnnotationsForDomainObject',
+            request: 'searchForAnnotations',
             results: {},
             total: 0,
             queryId: data.queryId

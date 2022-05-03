@@ -74,7 +74,7 @@ export default class AnnotationAPI extends EventEmitter {
         const originalPathObjects = await this.openmct.objects.getOriginalPath(domainObjectKeyString);
         const originalContextPath = this.openmct.objects.getRelativePath(originalPathObjects);
         const namespace = domainObject.identifier.namespace;
-        const location = originalContextPath;
+        const location = this.openmct.objects.makeKeyString(domainObject.identifier);
 
         const type = 'annotation';
         const typeDefinition = this.openmct.types.get(type);
@@ -128,7 +128,7 @@ export default class AnnotationAPI extends EventEmitter {
         const targetKeyString = this.openmct.objects.makeKeyString(targetDomainObject.identifier);
         let foundAnnotations = null;
 
-        const searchResults = await (await Promise.all(this.openmct.objects.queryUsingProvider('searchForAnnotationsForDomainObject', targetKeyString))).flat();
+        const searchResults = await (await Promise.all(this.openmct.objects.queryUsingProvider('searchForAnnotations', targetKeyString))).flat();
         if (searchResults) {
             foundAnnotations = searchResults;
         }

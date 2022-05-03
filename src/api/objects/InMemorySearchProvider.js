@@ -52,11 +52,16 @@ class InMemorySearchProvider {
         /**
          * If we don't have SharedWorkers available (e.g., iOS)
          */
-        this.localIndexedItems = {};
+        this.localIndexedDomainObjects = {};
+        this.localIndexedAnnotationsByDomainObject = {};
 
         this.pendingQueries = {};
         this.onWorkerMessage = this.onWorkerMessage.bind(this);
         this.onWorkerMessageError = this.onWorkerMessageError.bind(this);
+        this.localSearchForObjects = this.localSearchForObjects.bind(this);
+        this.localSearchForAnnotations = this.localSearchForAnnotations.bind(this);
+        this.localSearchForTags = this.localSearchForTags.bind(this);
+        this.localSearchForNotebookAnnotations = this.localSearchForNotebookAnnotations.bind(this);
         this.onerror = this.onWorkerError.bind(this);
         this.startIndexing = this.startIndexing.bind(this);
 
@@ -79,6 +84,7 @@ class InMemorySearchProvider {
         this.scheduleForIndexing(rootObject.identifier);
 
         if (typeof SharedWorker !== 'undefined') {
+        // if (false) {
             this.worker = this.startSharedWorker();
         } else {
             // we must be on iOS
@@ -107,6 +113,7 @@ class InMemorySearchProvider {
         const pendingQuery = this.getIntermediateResponse();
         this.pendingQueries[queryId] = pendingQuery;
 
+        // TODO remove test code here
         if (this.worker) {
             this.dispatchSearch(queryId, queryType, input, maxResults);
         } else {
@@ -127,8 +134,8 @@ class InMemorySearchProvider {
         return this.search(input, 'searchForObjects', this.localSearchForObjects, maxResults);
     }
 
-    searchForAnnotationsForDomainObject(input, maxResults) {
-        return this.search(input, 'searchForAnnotationsForDomainObject', this.localSearchForAnnotationsForDomainObject, maxResults);
+    searchForAnnotations(input, maxResults) {
+        return this.search(input, 'searchForAnnotations', this.localSearchForAnnotations, maxResults);
     }
 
     searchForTags(input, maxResults) {
@@ -343,11 +350,17 @@ class InMemorySearchProvider {
      * if we don't have SharedWorkers available (e.g., iOS)
      */
     localIndexItem(keyString, model) {
-        this.localIndexedItems[keyString] = {
+        this.localIndexedDomainObjects[keyString] = {
             type: model.type,
             name: model.name,
             keyString
         };
+        if (model && (model.type === 'annotation')
+            && model.targets && model.targets) {
+            Object.keys(model.targets).forEach(targetID => {
+                this.localIndexedAnnotationsByDomainObject[targetID] = model;
+            });
+        }
     }
 
     /**
@@ -369,7 +382,7 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
             return indexedItem.name.toLowerCase().includes(input);
         });
 
@@ -389,18 +402,18 @@ class InMemorySearchProvider {
      * Gets search results from the indexedItems based on provided search
      * input. Returns matching results from indexedItems
      */
-    localSearchForAnnotationsForDomainObject(queryId, searchInput, maxResults) {
+    localSearchForAnnotations(queryId, searchInput, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
         let results;
         const message = {
-            request: 'searchForAnnotationsForDomainObject',
+            request: 'searchForAnnotations',
             results: {},
             total: 0,
             queryId
         };
 
-        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
             return false;
         });
 
@@ -420,7 +433,7 @@ class InMemorySearchProvider {
      * Gets search results from the indexedItems based on provided search
      * input. Returns matching results from indexedItems
      */
-    localSearchForTags(queryId, searchInput, maxResults) {
+    localSearchForTags(queryId, {entryId, targetKeyString}, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
         let results;
@@ -431,7 +444,7 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
             return false;
         });
 
@@ -462,7 +475,7 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = Object.values(this.localIndexedItems).filter((indexedItem) => {
+        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
             return false;
         });
 

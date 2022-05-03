@@ -317,6 +317,7 @@ ObjectAPI.prototype.isMissing = function (domainObject) {
  *          has been saved, or be rejected if it cannot be saved
  */
 ObjectAPI.prototype.save = function (domainObject) {
+    console.trace();
     let provider = this.getProvider(domainObject.identifier);
     let savedResolve;
     let savedReject;

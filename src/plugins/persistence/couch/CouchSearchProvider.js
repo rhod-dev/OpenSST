@@ -46,7 +46,7 @@ class CouchSearchProvider {
         return this.couchObjectProvider.getObjectsByFilter(filter, abortSignal);
     }
 
-    searchForAnnotationsForDomainObject(keyString, abortSignal) {
+    searchForAnnotations(keyString, abortSignal) {
         const filter = {
             "selector": {
                 "$and": [
