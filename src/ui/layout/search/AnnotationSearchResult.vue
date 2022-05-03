@@ -11,7 +11,6 @@
     </div>
     <div class="c-gsearch__result_content">
         <div class="c-gsearch__result_label">
-            <div> This is a test </div> 
             <object-label
                 :domain-object="domainObject"
                 :object-path="domainObject.originalPath"
