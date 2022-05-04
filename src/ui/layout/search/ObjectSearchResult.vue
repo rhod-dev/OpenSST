@@ -13,15 +13,10 @@
             class="c-gsearch-result__title"
             @click="clickedResult"
         >
-            {{ result.name }}
+            {{ resultName }}
         </div>
 
-        <Location
-            ref="location"
-            :show-header="false"
-            :enable-selection-listening="false"
-            :is-small="true"
-        />
+        <ObjectPath ref="objectpath" />
     </div>
     <div class="c-gsearch-result__more-options-button">
         <button class="c-icon-button icon-3-dots"></button>
@@ -31,14 +26,14 @@
 
 <script>
 import ObjectLabel from '../../components/ObjectLabel.vue';
-import Location from '../../inspector/Location.vue';
+import ObjectPath from '../../inspector/ObjectPath.vue';
 import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'ObjectSearchResult',
     components: {
         ObjectLabel,
-        Location
+        ObjectPath
     },
     inject: ['openmct'],
     props: {
@@ -61,7 +56,8 @@ export default {
                 item: this.result
             }
         };
-        this.$refs.location.updateSelection([[selectionObject]]);
+        console.log('result', this.result);
+        this.$refs.objectpath.updateSelection([[selectionObject]]);
     },
     methods: {
         clickedResult() {

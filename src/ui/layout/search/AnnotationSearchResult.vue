@@ -1,7 +1,6 @@
 <template>
 <div
     class="c-gsearch-result c-gsearch-result--annotation"
-    @click="clickedResult"
 >
     <div class="c-gsearch-result__icon">
         <object-label
@@ -14,15 +13,10 @@
             class="c-gsearch-result__title"
             @click="clickedResult"
         >
-            {{ result.name }}
+            {{ getResultName }}
         </div>
 
-        <Location
-            ref="location"
-            :show-header="false"
-            :enable-selection-listening="false"
-            :is-small="true"
-        />
+        <ObjectPath ref="location" />
 
         <div
             class="c-tag"
@@ -39,14 +33,14 @@
 
 <script>
 import ObjectLabel from '../../components/ObjectLabel.vue';
-import Location from '../../inspector/Location.vue';
+import ObjectPath from '../../inspector/ObjectPath.vue';
 import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'AnnotationSearchResult',
     components: {
         ObjectLabel,
-        Location
+        ObjectPath
     },
     inject: ['openmct'],
     props: {

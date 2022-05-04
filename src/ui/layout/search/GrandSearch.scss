@@ -59,6 +59,10 @@
     }
   }
 
+  &__more-options-button {
+    display: none; // TEMP until enabled
+  }
+
   &__body {
     flex: 1 1 auto;
 
