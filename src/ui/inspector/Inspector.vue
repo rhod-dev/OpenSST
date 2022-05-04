@@ -44,7 +44,18 @@
         >
             <pane class="c-inspector__properties">
                 <Properties v-if="!activity" />
-                <location />
+                <div
+                    v-if="!multiSelect"
+                    class="c-inspect-properties c-inspect-properties--location"
+                >
+                    <div
+                        class="c-inspect-properties__header"
+                        title="The location of this object"
+                    >
+                        Original Location
+                    </div>
+                    <ObjectPath class="c-inspect-properties__value" />
+                </div>
                 <inspector-views />
             </pane>
             <pane
@@ -90,7 +101,8 @@
 import multipane from "../layout/multipane.vue";
 import pane from "../layout/pane.vue";
 import ElementsPool from "./ElementsPool.vue";
-import Location from "./Location.vue";
+import ObjectPath from './ObjectPath.vue';
+// import Location from "./Location.vue";
 import Properties from "./details/Properties.vue";
 import ObjectName from "./ObjectName.vue";
 import InspectorViews from "./InspectorViews.vue";
@@ -110,7 +122,7 @@ export default {
         ElementsPool,
         Properties,
         ObjectName,
-        Location,
+        ObjectPath,
         InspectorViews
     },
     provide: {
@@ -126,6 +138,7 @@ export default {
     data() {
         return {
             hasComposition: false,
+            multiSelect: false,
             showStyles: false,
             tabbedViews: [
                 {
@@ -164,6 +177,14 @@ export default {
 
             if (this.openmct.types.get("conditionSet")) {
                 this.refreshTabs(selection);
+            }
+
+            if (selection.length > 1) {
+                this.multiSelect = true;
+
+                // return;
+            } else {
+                this.multiSelect = false;
             }
 
             this.setActivity(selection);
