@@ -1,21 +1,30 @@
 <template>
 <div
     class="c-gsearch-result c-gsearch-result--object"
-    @click="clickedResult"
 >
-    <div class="c-gsearch__result_content">
+    <div class="c-gsearch-result__icon">
         <object-label
             :domain-object="result"
             :object-path="result.originalPath"
         />
-        <div class="c-gsearch__result_location">
-            <Location
-                ref="location"
-                :show-header="false"
-                :enable-selection-listening="false"
-                :is-small="true"
-            />
+    </div>
+    <div class="c-gsearch-result__body">
+        <div
+            class="c-gsearch-result__title"
+            @click="clickedResult"
+        >
+            {{ result.name }}
         </div>
+
+        <Location
+            ref="location"
+            :show-header="false"
+            :enable-selection-listening="false"
+            :is-small="true"
+        />
+    </div>
+    <div class="c-gsearch-result__more-options-button">
+        <button class="c-icon-button icon-3-dots"></button>
     </div>
 </div>
 </template>
