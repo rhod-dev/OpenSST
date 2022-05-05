@@ -1,3 +1,4 @@
+/******************************* EXPANDED SEARCH 2022 */
 .c-gsearch {
   &__results-wrapper {
     @include menuOuter();
@@ -73,6 +74,7 @@
 
     .c-location {
       font-size: 0.9em;
+      opacity: 0.8;
     }
   }
 
@@ -97,5 +99,3 @@
     }
   }
 }
-
-
