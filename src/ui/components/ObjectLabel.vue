@@ -7,18 +7,15 @@
     @click="navigateOrPreview"
 >
     <div
-        class="c-tree__item__type-icon "
-        :class="typeAndSizeClasses"
+        class="c-tree__item__type-icon c-object-label__type-icon"
+        :class="typeClass"
     >
         <span
             class="is-status__indicator"
             :title="`This item is ${status}`"
         ></span>
     </div>
-    <div
-        class="c-tree__item__name"
-        :class="isSmall ? 'c-object-label__name-small' : 'c-object-label__name'"
-    >
+    <div class="c-tree__item__name c-object-label__name">
         {{ domainObject.name }}
     </div>
 </a>
@@ -45,11 +42,6 @@ export default {
         navigateToPath: {
             type: String,
             default: undefined
-        },
-        isSmall: {
-            type: Boolean,
-            default: false,
-            required: false
         }
     },
     data() {
@@ -58,22 +50,13 @@ export default {
         };
     },
     computed: {
-        typeAndSizeClasses() {
-            const classes = [];
-            const type = this.openmct.types.get(this.domainObject.type);
-            if (type) {
-                classes.push(type.definition.cssClass);
-            } else {
-                classes.push('icon-object-unknown');
+        typeClass() {
+            let type = this.openmct.types.get(this.domainObject.type);
+            if (!type) {
+                return 'icon-object-unknown';
             }
 
-            if (this.isSmall) {
-                classes.push('c-object-label__type-icon-small');
-            } else {
-                classes.push('c-object-label__type-icon');
-            }
-
-            return classes;
+            return type.definition.cssClass;
         },
         statusClass() {
             return (this.status) ? `is-status--${this.status}` : '';

@@ -25,26 +25,11 @@
         display: inline;
     }
 
-    &__name-small {
-        @include ellipsize();
-        display: inline;
-        font-size: 0.6em;
-    }
-
     &__type-icon {
         // Type icon. Must be an HTML entity to allow inclusion of alias indicator.
         display: block;
         flex: 0 0 auto;
-        font-size: 0.8em;
-        opacity: $objectLabelTypeIconOpacity;
-    }
-
-    &__type-icon-small {
-        // Type icon. Must be an HTML entity to allow inclusion of alias indicator.
-        display: block;
-        flex: 0 0 auto;
-        font-size: 0.5em;
-        color: #FFFF !important;
+        font-size: 1.1em;
         opacity: $objectLabelTypeIconOpacity;
     }
 
