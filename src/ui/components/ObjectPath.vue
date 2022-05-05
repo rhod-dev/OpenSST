@@ -21,48 +21,25 @@
  *****************************************************************************/
 
 <template>
-<div class="c-inspect-properties c-inspect-properties--location">
-    <div
-        v-if="showHeader"
-        class="c-inspect-properties__header"
-        title="The location of this linked object."
+<ul
+    v-if="originalPath.length"
+    class="c-location"
+>
+    <li
+        v-for="pathObject in orderedOriginalPath"
+        :key="pathObject.key"
+        class="c-location__item"
     >
-        Original Location
-    </div>
-    <ul
-        v-if="!multiSelect"
-        class="c-inspect-properties__section"
-    >
-        <li
-            v-if="originalPath.length"
-            class="c-inspect-properties__row"
-        >
-            <ul class="c-inspect-properties__value c-location">
-                <li
-                    v-for="pathObject in orderedOriginalPath"
-                    :key="pathObject.key"
-                    class="c-location__item"
-                >
-                    <object-label
-                        :domain-object="pathObject.domainObject"
-                        :object-path="pathObject.objectPath"
-                        :is-small="isSmall"
-                    />
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <div
-        v-if="multiSelect"
-        class="c-inspect-properties__row--span-all"
-    >
-        No location to display for multiple items
-    </div>
-</div>
+        <object-label
+            :domain-object="pathObject.domainObject"
+            :object-path="pathObject.objectPath"
+        />
+    </li>
+</ul>
 </template>
 
 <script>
-import ObjectLabel from '../components/ObjectLabel.vue';
+import ObjectLabel from './ObjectLabel.vue';
 
 export default {
     components: {
@@ -76,26 +53,11 @@ export default {
             default() {
                 return true;
             }
-        },
-        showHeader: {
-            type: Boolean,
-            required: false,
-            default() {
-                return true;
-            }
-        },
-        isSmall: {
-            type: Boolean,
-            required: false,
-            default() {
-                return true;
-            }
         }
     },
     data() {
         return {
             domainObject: {},
-            multiSelect: false,
             originalPath: [],
             keyString: ''
         };
@@ -144,16 +106,9 @@ export default {
                 return;
             }
 
-            if (selection.length > 1) {
-                this.multiSelect = true;
-
-                return;
-            } else {
-                this.multiSelect = false;
-            }
-
             this.domainObject = selection[0][0].context.item;
             let parentObject = selection[0][1];
+
 
             if (!this.domainObject && parentObject && parentObject.context.item) {
                 this.setOriginalPath([parentObject.context.item], true);

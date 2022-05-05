@@ -1,46 +1,42 @@
 <template>
 <div
-    class="c-search-result"
-    @click="clickedResult"
+    class="c-gsearch-result c-gsearch-result--annotation"
 >
     <div
-        class="c-tag-in-search-result"
-        :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
-    >
-        {{ resultTagLabel }}
-    </div>
-    <div class="c-search_result_content">
-        <div class="c-search_result_label">
-            <object-label
-                :domain-object="domainObject"
-                :object-path="domainObject.originalPath"
-            />
-        </div>
-        <div class="c-search_result_location">
-            <Location
-                ref="location"
-                :show-header="false"
-                :enable-selection-listening="false"
-                :is-small="true"
-            />
-        </div>
-        <div class="c-search_result_content">
+        class="c-gsearch-result__type-icon"
+        :class="resultTypeIcon"
+    ></div>
+    <div class="c-gsearch-result__body">
+        <div
+            class="c-gsearch-result__title"
+            @click="clickedResult"
+        >
             {{ getResultName }}
         </div>
+
+        <ObjectPath ref="location" />
+
+        <div
+            class="c-tag"
+            :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
+        >
+            {{ resultTagLabel }}
+        </div>
+    </div>
+    <div class="c-gsearch-result__more-options-button">
+        <button class="c-icon-button icon-3-dots"></button>
     </div>
 </div>
 </template>
 
 <script>
-import ObjectLabel from '../../components/ObjectLabel.vue';
-import Location from '../../inspector/Location.vue';
+import ObjectPath from '../../components/ObjectPath.vue';
 import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'AnnotationSearchResult',
     components: {
-        ObjectLabel,
-        Location
+        ObjectPath
     },
     inject: ['openmct'],
     props: {
@@ -85,6 +81,9 @@ export default {
             } else {
                 return this.result.targetModels[0].name;
             }
+        },
+        resultTypeIcon() {
+            return this.openmct.types.get(this.result.type).definition.cssClass;
         },
         tagBackgroundColor() {
             return this.result.fullTagModels[0].backgroundColor;

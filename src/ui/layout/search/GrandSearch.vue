@@ -1,8 +1,8 @@
 <template>
-<div ref="GrandSearch">
+<div class="c-gsearch" ref="GrandSearch">
     <search
         ref="shell-search"
-        class="c-search"
+        class="c-gsearch__input"
         :value="searchValue"
         @input="searchEverything"
         @clear="searchEverything"

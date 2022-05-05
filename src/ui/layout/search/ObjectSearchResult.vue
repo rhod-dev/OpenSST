@@ -1,35 +1,35 @@
 <template>
 <div
-    class="c-search-result"
-    @click="clickedResult"
+    class="c-gsearch-result c-gsearch-result--object"
 >
-    <div class="c-search_result_content">
-        <object-label
-            :domain-object="result"
-            :object-path="result.originalPath"
-        />
-        <div class="c-search_result_location">
-            <Location
-                ref="location"
-                :show-header="false"
-                :enable-selection-listening="false"
-                :is-small="true"
-            />
+    <div
+        class="c-gsearch-result__type-icon"
+        :class="resultTypeIcon"
+    ></div>
+    <div class="c-gsearch-result__body">
+        <div
+            class="c-gsearch-result__title"
+            @click="clickedResult"
+        >
+            {{ resultName }}
         </div>
+
+        <ObjectPath ref="objectpath" />
+    </div>
+    <div class="c-gsearch-result__more-options-button">
+        <button class="c-icon-button icon-3-dots"></button>
     </div>
 </div>
 </template>
 
 <script>
-import ObjectLabel from '../../components/ObjectLabel.vue';
-import Location from '../../inspector/Location.vue';
+import ObjectPath from '../../components/ObjectPath.vue';
 import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'ObjectSearchResult',
     components: {
-        ObjectLabel,
-        Location
+        ObjectPath
     },
     inject: ['openmct'],
     props: {
@@ -44,6 +44,9 @@ export default {
     computed: {
         resultName() {
             return this.result.name;
+        },
+        resultTypeIcon() {
+            return this.openmct.types.get(this.result.type).definition.cssClass;
         }
     },
     mounted() {
@@ -52,7 +55,8 @@ export default {
                 item: this.result
             }
         };
-        this.$refs.location.updateSelection([[selectionObject]]);
+        console.log('result', this.result);
+        this.$refs.objectpath.updateSelection([[selectionObject]]);
     },
     methods: {
         clickedResult() {

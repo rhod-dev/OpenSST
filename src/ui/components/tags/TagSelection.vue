@@ -21,28 +21,30 @@
  *****************************************************************************/
 
 <template>
-<div class="c-tag_selection">
-    <AutoCompleteField
-        v-if="newTag"
-        ref="tagSelection"
-        :model="availableTagModel"
-        :place-holder-text="'Type to add tag'"
-        @onChange="tagSelected"
-    />
-    <div
-        v-else
-        class="c-completed-tag"
-        :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
-    >
-        <div class="c-completed-tag-label">{{ selectedTagLabel }} </div>
-        <button
-            class="c-completed-tag-deletion"
-            :style="{ background: selectedBackgroundColor, color: selectedForegroundColor, opacity: 0.5}"
-            @click="removeTag"
-        >
-            <b>x</b></button>
+    <div class="c-tag__parent">
+        <div class="c-tag_selection">
+            <AutoCompleteField
+                v-if="newTag"
+                ref="tagSelection"
+                :model="availableTagModel"
+                :place-holder-text="'Type to add tag'"
+                @onChange="tagSelected"
+            />
+            <div
+                v-else
+                class="c-completed-tag"
+                :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
+            >
+                <div class="c-completed-tag-label">{{ selectedTagLabel }} </div>
+                <button
+                    class="c-completed-tag-deletion"
+                    :style="{ background: selectedBackgroundColor, color: selectedForegroundColor, opacity: 0.5}"
+                    @click="removeTag"
+                >
+                    <b>x</b></button>
+            </div>
+        </div>
     </div>
-</div>
 </template>
 
 <script>
