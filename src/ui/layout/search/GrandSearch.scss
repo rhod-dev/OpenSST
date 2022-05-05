@@ -45,12 +45,12 @@
     border-top: 1px solid $colorInteriorBorder;
   }
 
-  &__icon,
+  &__type-icon,
   &__more-options-button {
     flex: 0 0 auto;
   }
 
-  &__icon {
+  &__type-icon {
     font-size: 2.5em;
 
     // TEMP: uses object-label component, hide label part

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import ObjectLabel from '../components/ObjectLabel.vue';
+import ObjectLabel from './ObjectLabel.vue';
 
 export default {
     components: {

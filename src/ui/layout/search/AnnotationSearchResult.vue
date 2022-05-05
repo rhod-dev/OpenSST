@@ -2,12 +2,10 @@
 <div
     class="c-gsearch-result c-gsearch-result--annotation"
 >
-    <div class="c-gsearch-result__icon">
-        <object-label
-            :domain-object="result"
-            :object-path="result.originalPath"
-        />
-    </div>
+    <div
+        class="c-gsearch-result__type-icon"
+        :class="resultTypeIcon"
+    ></div>
     <div class="c-gsearch-result__body">
         <div
             class="c-gsearch-result__title"
@@ -32,14 +30,12 @@
 </template>
 
 <script>
-import ObjectLabel from '../../components/ObjectLabel.vue';
-import ObjectPath from '../../inspector/ObjectPath.vue';
+import ObjectPath from '../../components/ObjectPath.vue';
 import objectPathToUrl from '../../../tools/url';
 
 export default {
     name: 'AnnotationSearchResult',
     components: {
-        ObjectLabel,
         ObjectPath
     },
     inject: ['openmct'],
@@ -85,6 +81,9 @@ export default {
             } else {
                 return this.result.targetModels[0].name;
             }
+        },
+        resultTypeIcon() {
+            return this.openmct.types.get(this.result.type).definition.cssClass;
         },
         tagBackgroundColor() {
             return this.result.fullTagModels[0].backgroundColor;
