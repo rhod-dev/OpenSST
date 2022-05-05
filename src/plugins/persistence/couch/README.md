@@ -31,10 +31,10 @@ Follow the installation instructions from the CouchDB installation guide: https:
 # Configuring CouchDB
 1. Start CouchDB by running: `couchdb`.
 2. Add the `_global_changes` database using `curl` (note the `youradminpassword` should be changed to what you set above 👆): `curl -X PUT http://admin:youradminpassword@127.0.0.1:5984/_global_changes`
-1. Navigate to http://localhost:5984/_utils
-2. Create a database called `openmct`
-3. Navigate to http://127.0.0.1:5984/_utils/#/database/openmct/permissions
-4. Remove permission restrictions in CouchDB from Open MCT by deleting `_admin` roles for both `Admin` and `Member`.
+3. Navigate to http://localhost:5984/_utils
+4. Create a database called `openmct`
+5. Navigate to http://127.0.0.1:5984/_utils/#/database/openmct/permissions
+6. Remove permission restrictions in CouchDB from Open MCT by deleting `_admin` roles for both `Admin` and `Member`.
 
 # Configuring Open MCT
 1. Edit `openmct/index.html` comment out the following line:
@@ -45,8 +45,8 @@ Add a line to install the CouchDB plugin for Open MCT:
 ```
 openmct.install(openmct.plugins.CouchDB("http://localhost:5984/openmct"));
 ```
-2. Start Open MCT by running `npm start` in the `openmct` path.
-1. Navigate to http://localhost:8080/ and create a random object in Open MCT (e.g., a 'Clock') and save. You may get an error saying that the object failed to persist - this is a known error that you can ignore, and will only happen the first time you save - just try again.
-1. Navigate to: http://127.0.0.1:5984/_utils/#database/openmct/_all_docs
-1. Look at the 'JSON' tab and ensure you can see the specific object you created above.
-1. All done! 🏆
+1. Start Open MCT by running `npm start` in the `openmct` path.
+2. Navigate to http://localhost:8080/ and create a random object in Open MCT (e.g., a 'Clock') and save. You may get an error saying that the object failed to persist - this is a known error that you can ignore, and will only happen the first time you save - just try again.
+3. Navigate to: http://127.0.0.1:5984/_utils/#database/openmct/_all_docs
+4. Look at the 'JSON' tab and ensure you can see the specific object you created above.
+5. All done! 🏆
