@@ -87,15 +87,9 @@
     &:hover {
       background-color: $colorItemTreeHoverBg;
     }
+  }
 
-    .c-tag {
-      border-radius: 3px;
-      border: 0.25px solid;
-      background-color: black;
-      color: white;
-      padding: 3px;
-      margin-top: 5px;
-      margin-left: 4px;
-    }
+  .c-tag {
+    font-size: 0.9em;
   }
 }

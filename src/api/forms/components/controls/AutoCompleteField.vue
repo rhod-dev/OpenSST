@@ -19,39 +19,42 @@
 * this source code distribution or the Licensing information page available
 * at runtime from the About dialog for additional information.
 *****************************************************************************/
-
 <template>
-<div class="form-control autocomplete">
-    <span class="autocompleteInputAndArrow">
+<div class="form-control c-input--autocomplete js-autocomplete">
+    <div
+        class="c-input--autocomplete__wrapper"
+    >
         <input
             v-model="field"
-            class="autocompleteInput"
+            class="c-input--autocomplete__input js-autocomplete__input"
             type="text"
             :placeholder="placeHolderText"
             @click="inputClicked()"
             @keydown="keyDown($event)"
         >
-        <span
-            class="icon-arrow-down"
+        <div
+            class="icon-arrow-down c-icon-button c-input--autocomplete__afford-arrow js-autocomplete__afford-arrow"
             @click="arrowClicked()"
-        ></span>
-    </span>
+        ></div>
+    </div>
     <div
-        class="autocompleteOptions"
+        v-if="!hideOptions"
+        class="c-menu c-input--autocomplete__options"
         @blur="hideOptions = true"
     >
-        <ul
-            v-if="!hideOptions"
-        >
+        <ul>
             <li
                 v-for="opt in filteredOptions"
                 :key="opt.optionId"
-                :class="{'optionPreSelected': optionIndex === opt.optionId}"
+                :class="[
+                    {'optionPreSelected': optionIndex === opt.optionId},
+                    itemCssClass
+                ]"
                 :style="itemStyle(opt)"
                 @click="fillInputWithString(opt.name)"
                 @mouseover="optionMouseover(opt.optionId)"
             >
-                <span class="optionText">{{ opt.name }}</span>
+                {{ opt.name }}
             </li>
         </ul>
     </div>
@@ -64,6 +67,9 @@ const key = {
     up: 38,
     enter: 13
 };
+
+const JS_AC = 'js-autocomplete';
+const JS_AC_INPUT = 'js-autocomplete__input';
 
 export default {
     props: {
@@ -79,6 +85,10 @@ export default {
             default() {
                 return "";
             }
+        },
+        itemCssClass: {
+            type: String,
+            required: false
         }
     },
     data() {
@@ -145,8 +155,8 @@ export default {
         }
     },
     mounted() {
-        this.autocompleteInputAndArrow = this.$el.getElementsByClassName('autocompleteInputAndArrow')[0];
-        this.autocompleteInputElement = this.$el.getElementsByClassName('autocompleteInput')[0];
+        this.autocompleteInputAndArrow = this.$el.getElementsByClassName(JS_AC)[0];
+        this.autocompleteInputElement = this.$el.getElementsByClassName(JS_AC_INPUT)[0];
         if (!this.model.options[0].name) {
             // If options is only an array of string.
             this.options = this.model.options.map((option) => {
@@ -188,6 +198,7 @@ export default {
         },
         keyDown($event) {
             this.showFilteredOptions = true;
+            // this.showOptions();
             if (this.filteredOptions) {
                 let keyCode = $event.keyCode;
                 switch (keyCode) {
@@ -247,14 +258,8 @@ export default {
         },
         itemStyle(option) {
             if (option.color) {
-                const style = {
-                    '--optionMarkerColor': option.color,
-                    'list-style-type': 'disc',
-                    'list-style-position': 'inside',
-                    display: 'list-item'
-                };
 
-                return style;
+                return { '--optionIconColor': option.color };
             }
         }
     }

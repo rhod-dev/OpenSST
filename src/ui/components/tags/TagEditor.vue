@@ -21,27 +21,24 @@
  *****************************************************************************/
 
 <template>
-<div class="c-tag__parent">
-        <div class="c-tag_editor">
-            <TagSelection
-                v-for="(addedTag, index) in addedTags"
-                :key="index"
-                :selected-tag="addedTag.newTag ? null : addedTag"
-                :new-tag="addedTag.newTag"
-                :added-tags="addedTags"
-                @tagRemoved="tagRemoved"
-                @tagAdded="tagAdded"
-            />
-            <button
-                class="c-add-tag-button c-icon-button c-icon-button--major icon-plus"
-                title="Add new tag"
-                @click="addTag"
-            > 
-                <div class="c-add-tag-text"> Add Tag </div>
-            </button> 
-
-        </div>
-    </div>
+<div class="c-tag-applier">
+    <TagSelection
+        v-for="(addedTag, index) in addedTags"
+        :key="index"
+        :selected-tag="addedTag.newTag ? null : addedTag"
+        :new-tag="addedTag.newTag"
+        :added-tags="addedTags"
+        @tagRemoved="tagRemoved"
+        @tagAdded="tagAdded"
+    />
+    <button
+        class="c-add-tag-button c-icon-button c-icon-button--major icon-plus"
+        title="Add new tag"
+        @click="addTag"
+    >
+        <div class="c-icon-button__label">Add Tag</div>
+    </button>
+</div>
 </template>
 
 <script>

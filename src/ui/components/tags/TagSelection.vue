@@ -21,30 +21,30 @@
  *****************************************************************************/
 
 <template>
-    <div class="c-tag__parent">
-        <div class="c-tag_selection">
-            <AutoCompleteField
-                v-if="newTag"
-                ref="tagSelection"
-                :model="availableTagModel"
-                :place-holder-text="'Type to add tag'"
-                @onChange="tagSelected"
-            />
-            <div
-                v-else
-                class="c-completed-tag"
-                :style="{ background: selectedBackgroundColor, color: selectedForegroundColor}"
-            >
-                <div class="c-completed-tag-label">{{ selectedTagLabel }} </div>
-                <button
-                    class="c-completed-tag-deletion"
-                    :style="{ background: selectedBackgroundColor, color: selectedForegroundColor, opacity: 0.5}"
-                    @click="removeTag"
-                >
-                    <b>x</b></button>
-            </div>
+<div class="c-tag__parent">
+    <div class="c-tag_selection">
+        <AutoCompleteField
+            v-if="newTag"
+            ref="tagSelection"
+            :model="availableTagModel"
+            :place-holder-text="'Type to select tag'"
+            class="c-tag-selection"
+            :item-css-class="'icon-circle'"
+            @onChange="tagSelected"
+        />
+        <div
+            v-else
+            class="c-tag"
+            :style="{ background: selectedBackgroundColor, color: selectedForegroundColor }"
+        >
+            <div class="c-tag__label">{{ selectedTagLabel }} </div>
+            <button
+                class="c-completed-tag-deletion c-tag__remove-btn icon-x-in-circle"
+                @click="removeTag"
+            ></button>
         </div>
     </div>
+</div>
 </template>
 
 <script>
@@ -86,7 +86,7 @@ export default {
                 return (!this.addedTags.includes(tag.id));
             }).map(tag => {
                 return {
-                    name: tag.label.toUpperCase(),
+                    name: tag.label,
                     color: tag.backgroundColor,
                     id: tag.id
                 };
@@ -103,7 +103,7 @@ export default {
             return this.getAvailableTagByID(this.selectedTag).foregroundColor;
         },
         selectedTagLabel() {
-            return this.getAvailableTagByID(this.selectedTag).label.toUpperCase();
+            return this.getAvailableTagByID(this.selectedTag).label;
         }
     },
     mounted() {
