@@ -45,8 +45,17 @@ Add a line to install the CouchDB plugin for Open MCT:
 ```
 openmct.install(openmct.plugins.CouchDB("http://localhost:5984/openmct"));
 ```
-2. Start Open MCT by running `npm start` in the `openmct` path.
-1. Navigate to http://localhost:8080/ and create a random object in Open MCT (e.g., a 'Clock') and save. You may get an error saying that the object failed to persist - this is a known error that you can ignore, and will only happen the first time you save - just try again.
-1. Navigate to: http://127.0.0.1:5984/_utils/#database/openmct/_all_docs
-1. Look at the 'JSON' tab and ensure you can see the specific object you created above.
-1. All done! 🏆
+6. Enable cors in CouchDB by editing `~/homebrew/etc/local.ini` and add: `
+```
+[chttpd]
+enable_cors = true
+
+[cors]
+origins = http://localhost:8080
+```
+7. Remove permission restrictions in CouchDB from OpenMCT by navigating to http://127.0.0.1:5984/_utils/#/database/openmct/permissions and deleting `_admin` roles for both `Admin` and `Member`.
+8. Start openmct by running `npm start` in the OpenMCT directory.
+9. Navigate to http://localhost:8080/ and create a random object in OpenMCT (e.g., a `Clock`) and save. You may get an error saying that the objects failed to persist. This is a known error that you can ignore, and will only happen the first time you save.
+10. Navigate to: http://127.0.0.1:5984/_utils/#database/openmct/_all_docs
+11. Look at the `JSON` tab and ensure you can see the `Clock` object you created above.
+12. All done! 🏆
