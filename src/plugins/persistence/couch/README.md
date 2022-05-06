@@ -45,8 +45,8 @@ Add a line to install the CouchDB plugin for Open MCT:
 ```
 openmct.install(openmct.plugins.CouchDB("http://localhost:5984/openmct"));
 ```
-1. Start Open MCT by running `npm start` in the `openmct` path.
-2. Navigate to http://localhost:8080/ and create a random object in Open MCT (e.g., a 'Clock') and save. You may get an error saying that the object failed to persist - this is a known error that you can ignore, and will only happen the first time you save - just try again.
-3. Navigate to: http://127.0.0.1:5984/_utils/#database/openmct/_all_docs
-4. Look at the 'JSON' tab and ensure you can see the specific object you created above.
-5. All done! 🏆
+2. Start Open MCT by running `npm start` in the `openmct` path.
+3. Navigate to http://localhost:8080/ and create a random object in Open MCT (e.g., a 'Clock') and save. You may get an error saying that the object failed to persist - this is a known error that you can ignore, and will only happen the first time you save - just try again.
+4. Navigate to: http://127.0.0.1:5984/_utils/#database/openmct/_all_docs
+5. Look at the 'JSON' tab and ensure you can see the specific object you created above.
+6. All done! 🏆
