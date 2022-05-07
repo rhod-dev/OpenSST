@@ -1,5 +1,15 @@
 /******************************* EXPANDED SEARCH 2022 */
 .c-gsearch {
+  .l-shell__head & {
+    // Search input in the shell head
+    width: 20%;
+
+    .c-search {
+      background: rgba($colorHeadFg, 0.2);
+      box-shadow: none;
+    }
+  }
+
   &__results-wrapper {
     @include menuOuter();
     display: flex;
@@ -42,6 +52,7 @@
   > * + * {
     margin-left: $interiorMarginLg;
   }
+
   + .c-gsearch-result {
     border-top: 1px solid $colorInteriorBorder;
   }
@@ -80,6 +91,7 @@
 
   &__title {
     border-radius: $basicCr;
+    color: pullForward($colorBodyFg, 30%);
     cursor: pointer;
     font-size: 1.15em;
     padding: 3px $interiorMarginSm;
