@@ -57,7 +57,7 @@ export default {
             return this.result.targetModels[0];
         },
         resultTagLabel() {
-            return this.result.fullTagModels[0].label.toUpperCase();
+            return this.result.fullTagModels[0].label;
         },
         getResultName() {
             if (this.result.annotationType === this.openmct.annotation.ANNOTATION_TYPES.NOTEBOOK) {

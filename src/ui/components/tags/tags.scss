@@ -10,8 +10,12 @@
 
   &__remove-btn {
     color: inherit !important;
-    opacity: 0.7;
+    display: none;
+    opacity: 0;
+    overflow: hidden;
     padding: 1px !important;
+    transition: $transIn;
+    width: 0;
 
     &:hover {
       opacity: 1;
@@ -30,42 +34,29 @@
     margin-left: $interiorMargin;
   }
 
+  &__add-btn {
+    &:before { font-size: 0.9em; }
+  }
 
   .c-tag {
     flex-direction: row;
     align-items: center;
     padding-right: 3px !important;
+
+    &__remove-btn {
+      display: block;
+    }
   }
 }
-/*
-.c-tag-applier {
-    display: flex;
-    flex-direction: row;
-}
-.c-completed-tag {
-  border-radius: 3px;
-  border: 0.25px solid;
-  background-color: black;
-  color: white;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  padding-left: 3px;
-  padding-right: 1px;
-  margin-top: 5px;
-  margin-left: 4px;
-  max-height: 20px;
-  display: flex;
-  flex-direction: row;
-}
-.c-add-tag-button { // parent button
-  margin-top: 4px;
-  text-align: center;
-  display: flex;
-}
-.c-add-tag-text { // "add tag"
-  margin-left: 5px;
-}
-.c-completed-tag-deletion {
-  margin-bottom: 4px;
-  text-align: center;
-}*/
+
+/******************************* HOVERS */
+.has-tag-applier {
+  // Apply this class to all components that should trigger tag removal btn on hover
+   &:hover {
+     .c-tag__remove-btn {
+       width: 1.1em;
+       opacity: 0.7;
+       transition: $transOut;
+     }
+   }
+ }

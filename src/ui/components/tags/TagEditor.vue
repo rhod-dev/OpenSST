@@ -32,7 +32,7 @@
         @tagAdded="tagAdded"
     />
     <button
-        class="c-add-tag-button c-icon-button c-icon-button--major icon-plus"
+        class="c-tag-applier__add-btn c-icon-button c-icon-button--major icon-plus"
         title="Add new tag"
         @click="addTag"
     >

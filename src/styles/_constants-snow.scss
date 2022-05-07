@@ -270,7 +270,6 @@ $colorFormSectionHeaderBg: rgba(#000, 0.05);
 $colorFormSectionHeaderFg: rgba($colorBodyFg, 0.5);
 $colorInputBg: $colorGenBg;
 $colorInputFg: $colorBodyFg;
-$colorInputPlaceholder: pushBack($colorBodyFg, 20%);
 $colorFormText: pushBack($colorBodyFg, 10%);
 $colorInputIcon: pushBack($colorBodyFg, 25%);
 $colorFieldHint: pullForward($colorBodyFg, 40%);

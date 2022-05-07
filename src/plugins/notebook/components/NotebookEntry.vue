@@ -22,7 +22,7 @@
 
 <template>
 <div
-    class="c-notebook__entry c-ne has-local-controls"
+    class="c-notebook__entry c-ne has-local-controls has-tag-applier"
     @dragover="changeCursor"
     @drop.capture="cancelEditMode"
     @drop.prevent="dropOnEntry"
