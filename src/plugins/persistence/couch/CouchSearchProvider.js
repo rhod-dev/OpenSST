@@ -72,7 +72,6 @@ class CouchSearchProvider {
     }
 
     searchForNotebookAnnotations({targetKeyString, entryId}, abortSignal) {
-        console.trace();
         const filter = {
             "selector": {
                 "$and": [

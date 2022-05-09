@@ -20,11 +20,15 @@
 * at runtime from the About dialog for additional information.
 *****************************************************************************/
 <template>
-<div class="form-control c-input--autocomplete js-autocomplete">
+<div
+    ref="autoCompleteForm"
+    class="form-control c-input--autocomplete js-autocomplete"
+>
     <div
         class="c-input--autocomplete__wrapper"
     >
         <input
+            ref="autoCompleteInput"
             v-model="field"
             class="c-input--autocomplete__input js-autocomplete__input"
             type="text"
@@ -68,9 +72,6 @@ const key = {
     enter: 13
 };
 
-const JS_AC = 'js-autocomplete';
-const JS_AC_INPUT = 'js-autocomplete__input';
-
 export default {
     props: {
         model: {
@@ -88,7 +89,10 @@ export default {
         },
         itemCssClass: {
             type: String,
-            required: false
+            required: false,
+            default() {
+                return "";
+            }
         }
     },
     data() {
@@ -155,9 +159,9 @@ export default {
         }
     },
     mounted() {
-        this.autocompleteInputAndArrow = this.$el.getElementsByClassName(JS_AC)[0];
-        this.autocompleteInputElement = this.$el.getElementsByClassName(JS_AC_INPUT)[0];
-        if (!this.model.options[0].name) {
+        this.autocompleteInputAndArrow = this.$refs.autoCompleteForm;
+        this.autocompleteInputElement = this.$refs.autoCompleteInput;
+        if (this.model.options && this.model.options.length && !this.model.options[0].name) {
             // If options is only an array of string.
             this.options = this.model.options.map((option) => {
                 return {
