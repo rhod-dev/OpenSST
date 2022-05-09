@@ -54,6 +54,7 @@ class InMemorySearchProvider {
          */
         this.localIndexedDomainObjects = {};
         this.localIndexedAnnotationsByDomainObject = {};
+        this.localIndexedAnnotationsByTag = {};
 
         this.pendingQueries = {};
         this.onWorkerMessage = this.onWorkerMessage.bind(this);
@@ -83,12 +84,30 @@ class InMemorySearchProvider {
         const rootObject = this.openmct.objects.rootProvider.rootObject;
         this.scheduleForIndexing(rootObject.identifier);
 
-        if (typeof SharedWorker !== 'undefined') {
-        // if (false) {
+        this.indexAnnotations();
+
+        // if (typeof SharedWorker !== 'undefined') {
+        if (false) {
             this.worker = this.startSharedWorker();
         } else {
             // we must be on iOS
         }
+    }
+
+    indexAnnotations() {
+        const theInMemorySearchProvider = this;
+        Object.values(this.openmct.objects.providers).forEach(objectProvider => {
+            if (objectProvider.getAllObjects) {
+                const allObjects = objectProvider.getAllObjects();
+                if (allObjects) {
+                    Object.values(allObjects).forEach(domainObject => {
+                        if (domainObject.type === 'annotation') {
+                            theInMemorySearchProvider.scheduleForIndexing(domainObject.identifier);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -113,7 +132,6 @@ class InMemorySearchProvider {
         const pendingQuery = this.getIntermediateResponse();
         this.pendingQueries[queryId] = pendingQuery;
 
-        // TODO remove test code here
         if (this.worker) {
             this.dispatchSearch(queryId, queryType, input, maxResults);
         } else {
@@ -350,16 +368,37 @@ class InMemorySearchProvider {
      * if we don't have SharedWorkers available (e.g., iOS)
      */
     localIndexItem(keyString, model) {
-        this.localIndexedDomainObjects[keyString] = {
+        const objectToIndex = {
             type: model.type,
             name: model.name,
             keyString
         };
-        if (model && (model.type === 'annotation')
-            && model.targets && model.targets) {
-            Object.keys(model.targets).forEach(targetID => {
-                this.localIndexedAnnotationsByDomainObject[targetID] = model;
-            });
+        if (model && (model.type === 'annotation')) {
+            if (model.targets && model.targets) {
+                Object.keys(model.targets).forEach(targetID => {
+                    if (!this.localIndexedAnnotationsByDomainObject[targetID]) {
+                        this.localIndexedAnnotationsByDomainObject[targetID] = [];
+                    }
+
+                    objectToIndex.targets = model.targets;
+                    objectToIndex.tags = model.tags;
+                    this.localIndexedAnnotationsByDomainObject[targetID].push(objectToIndex);
+                });
+            }
+
+            if (model.tags) {
+                model.tags.forEach(tagID => {
+                    if (!this.localIndexedAnnotationsByTag[tagID]) {
+                        this.localIndexedAnnotationsByTag[tagID] = [];
+                    }
+
+                    objectToIndex.targets = model.targets;
+                    objectToIndex.tags = model.tags;
+                    this.localIndexedAnnotationsByTag[tagID].push(objectToIndex);
+                });
+            }
+        } else {
+            this.localIndexedDomainObjects[keyString] = objectToIndex;
         }
     }
 
@@ -373,7 +412,7 @@ class InMemorySearchProvider {
     localSearchForObjects(queryId, searchInput, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
-        let results;
+        let results = [];
         const input = searchInput.trim().toLowerCase();
         const message = {
             request: 'searchForObjects',
@@ -413,9 +452,7 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
-            return false;
-        });
+        results = this.localIndexedAnnotationsByDomainObject[searchInput];
 
         message.total = results.length;
         message.results = results
@@ -433,10 +470,10 @@ class InMemorySearchProvider {
      * Gets search results from the indexedItems based on provided search
      * input. Returns matching results from indexedItems
      */
-    localSearchForTags(queryId, {entryId, targetKeyString}, maxResults) {
+    localSearchForTags(queryId, matchingTagKeys, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
-        let results;
+        let results = [];
         const message = {
             request: 'searchForTags',
             results: {},
@@ -444,9 +481,12 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
-            return false;
-        });
+        if (matchingTagKeys) {
+            matchingTagKeys.forEach(matchingTag => {
+                const matchingAnnotations = this.localIndexedAnnotationsByTag[matchingTag];
+                results = results.concat(matchingAnnotations);
+            });
+        }
 
         message.total = results.length;
         message.results = results
@@ -464,10 +504,10 @@ class InMemorySearchProvider {
      * Gets search results from the indexedItems based on provided search
      * input. Returns matching results from indexedItems
      */
-    localSearchForNotebookAnnotations(queryId, searchInput, maxResults) {
+    localSearchForNotebookAnnotations(queryId, {entryId, targetKeyString}, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
-        let results;
+        let results = [];
         const message = {
             request: 'searchForNotebookAnnotations',
             results: {},
@@ -475,9 +515,14 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
-            return false;
-        });
+        const matchingAnnotations = this.localIndexedAnnotationsByDomainObject[targetKeyString];
+        if (matchingAnnotations) {
+            results = matchingAnnotations.filter(matchingAnnotation => {
+                const target = matchingAnnotation.targets[targetKeyString];
+
+                return (target && target.entryId && (target.entryId === entryId));
+            });
+        }
 
         message.total = results.length;
         message.results = results

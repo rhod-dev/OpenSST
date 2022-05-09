@@ -222,9 +222,17 @@ export default class AnnotationAPI extends EventEmitter {
     }
 
     getMatchingTags(query) {
+        if (!query) {
+            return [];
+        }
+
         const allTags = availableTags.tags;
         const matchingTags = Object.keys(allTags).filter(tagKey => {
-            return allTags[tagKey].label.includes(query);
+            if (allTags[tagKey] && allTags[tagKey].label) {
+                return allTags[tagKey].label.toLowerCase().includes(query.toLowerCase());
+            }
+
+            return false;
         });
 
         return matchingTags;
