@@ -150,7 +150,6 @@ export default {
             }
         },
         annotationCreated(annotationObject) {
-            console.debug(`🍋 annotation created 🍋`, annotationObject);
             this.updateSelection(this.openmct.selection.get());
         },
         getDomainObject() {

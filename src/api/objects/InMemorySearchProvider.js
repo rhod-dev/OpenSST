@@ -44,6 +44,7 @@ class InMemorySearchProvider {
 
         this.indexedIds = {};
         this.indexedCompositions = {};
+        this.indexedTags = {};
         this.idsToIndex = [];
         this.pendingIndex = {};
         this.pendingRequests = 0;
@@ -63,6 +64,7 @@ class InMemorySearchProvider {
         this.localSearchForAnnotations = this.localSearchForAnnotations.bind(this);
         this.localSearchForTags = this.localSearchForTags.bind(this);
         this.localSearchForNotebookAnnotations = this.localSearchForNotebookAnnotations.bind(this);
+        this.onAnnotationCreation = this.onAnnotationCreation.bind(this);
         this.onerror = this.onWorkerError.bind(this);
         this.startIndexing = this.startIndexing.bind(this);
 
@@ -73,6 +75,10 @@ class InMemorySearchProvider {
                 this.worker.port.onmessage = null;
                 this.worker.port.onmessageerror = null;
                 this.worker.port.close();
+            }
+
+            if (this.stopListeningToAnnotationCreation) {
+                this.stopListeningToAnnotationCreation();
             }
 
             this.destroyObservers(this.indexedIds);
@@ -92,6 +98,9 @@ class InMemorySearchProvider {
         } else {
             // we must be on iOS
         }
+
+        this.stopListeningToAnnotationCreation = this.openmct.annotation.on('annotationCreated', this.onAnnotationCreation);
+
     }
 
     indexAnnotations() {
@@ -175,10 +184,12 @@ class InMemorySearchProvider {
             total: event.data.total
         };
         modelResults.hits = await Promise.all(event.data.results.map(async (hit) => {
-            const identifier = this.openmct.objects.parseKeyString(hit.keyString);
-            const domainObject = await this.openmct.objects.get(identifier);
+            if (hit && hit.keyString) {
+                const identifier = this.openmct.objects.parseKeyString(hit.keyString);
+                const domainObject = await this.openmct.objects.get(identifier);
 
-            return domainObject;
+                return domainObject;
+            }
         }));
 
         pendingQuery.resolve(modelResults);
@@ -252,10 +263,26 @@ class InMemorySearchProvider {
         }
     }
 
+    onAnnotationCreation(annotationObject) {
+        const provider = this;
+        console.debug(`🍋 annotation created 🍋`, annotationObject);
+
+        provider.index(annotationObject);
+    }
+
     onNameMutation(domainObject, name) {
         const provider = this;
 
         domainObject.name = name;
+        provider.index(domainObject);
+    }
+
+    onTagMutation(domainObject, newTags) {
+        console.debug(`🍉 Tag mutation `, domainObject);
+        domainObject.oldTags = domainObject.tags;
+        domainObject.tags = newTags;
+        const provider = this;
+
         provider.index(domainObject);
     }
 
@@ -295,6 +322,13 @@ class InMemorySearchProvider {
                 'composition',
                 this.onCompositionMutation.bind(this, domainObject)
             );
+            if (domainObject.type === 'annotation') {
+                this.indexedTags[keyString] = this.openmct.objects.observe(
+                    domainObject,
+                    'tags',
+                    this.onTagMutation.bind(this, domainObject)
+                );
+            }
         }
 
         if ((keyString !== 'ROOT')) {
@@ -382,20 +416,33 @@ class InMemorySearchProvider {
 
                     objectToIndex.targets = model.targets;
                     objectToIndex.tags = model.tags;
-                    this.localIndexedAnnotationsByDomainObject[targetID].push(objectToIndex);
+
+                    if (!this.localIndexedAnnotationsByDomainObject[targetID].includes(objectToIndex)) {
+                        this.localIndexedAnnotationsByDomainObject[targetID].push(objectToIndex);
+                    }
                 });
             }
 
             if (model.tags) {
+                // add new tags
                 model.tags.forEach(tagID => {
-                    if (!this.localIndexedAnnotationsByTag[tagID]) {
+                    const annotationArray = this.localIndexedAnnotationsByTag[tagID];
+                    if (!annotationArray) {
                         this.localIndexedAnnotationsByTag[tagID] = [];
                     }
 
-                    objectToIndex.targets = model.targets;
-                    objectToIndex.tags = model.tags;
-                    this.localIndexedAnnotationsByTag[tagID].push(objectToIndex);
+                    if (!annotationArray.includes(objectToIndex)) {
+                        annotationArray.push(objectToIndex);
+                    }
+
                 });
+                // remove old tags
+                if (!model.tags.length && model.oldTags) {
+                    model.oldTags.forEach(tagIDToRemove => {
+                        this.localIndexedAnnotationsByTag[tagIDToRemove] = this.localIndexedAnnotationsByTag[tagIDToRemove].
+                            filter(tagID => tagID !== tagIDToRemove);
+                    });
+                }
             }
         } else {
             this.localIndexedDomainObjects[keyString] = objectToIndex;
@@ -423,7 +470,7 @@ class InMemorySearchProvider {
 
         results = Object.values(this.localIndexedDomainObjects).filter((indexedItem) => {
             return indexedItem.name.toLowerCase().includes(input);
-        });
+        }) || [];
 
         message.total = results.length;
         message.results = results
@@ -444,7 +491,7 @@ class InMemorySearchProvider {
     localSearchForAnnotations(queryId, searchInput, maxResults) {
         // This results dictionary will have domain object ID keys which
         // point to the value the domain object's score.
-        let results;
+        let results = [];
         const message = {
             request: 'searchForAnnotations',
             results: {},
@@ -452,7 +499,7 @@ class InMemorySearchProvider {
             queryId
         };
 
-        results = this.localIndexedAnnotationsByDomainObject[searchInput];
+        results = this.localIndexedAnnotationsByDomainObject[searchInput] || [];
 
         message.total = results.length;
         message.results = results
@@ -484,7 +531,9 @@ class InMemorySearchProvider {
         if (matchingTagKeys) {
             matchingTagKeys.forEach(matchingTag => {
                 const matchingAnnotations = this.localIndexedAnnotationsByTag[matchingTag];
-                results = results.concat(matchingAnnotations);
+                if (matchingAnnotations) {
+                    results = results.concat(matchingAnnotations);
+                }
             });
         }
 
@@ -518,6 +567,10 @@ class InMemorySearchProvider {
         const matchingAnnotations = this.localIndexedAnnotationsByDomainObject[targetKeyString];
         if (matchingAnnotations) {
             results = matchingAnnotations.filter(matchingAnnotation => {
+                if (!matchingAnnotation.targets) {
+                    return false;
+                }
+
                 const target = matchingAnnotation.targets[targetKeyString];
 
                 return (target && target.entryId && (target.entryId === entryId));
