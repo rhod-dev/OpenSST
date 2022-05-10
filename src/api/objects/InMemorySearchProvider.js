@@ -426,21 +426,27 @@ class InMemorySearchProvider {
             if (model.tags) {
                 // add new tags
                 model.tags.forEach(tagID => {
-                    const annotationArray = this.localIndexedAnnotationsByTag[tagID];
-                    if (!annotationArray) {
+                    if (!this.localIndexedAnnotationsByTag[tagID]) {
                         this.localIndexedAnnotationsByTag[tagID] = [];
                     }
 
-                    if (!annotationArray.includes(objectToIndex)) {
-                        annotationArray.push(objectToIndex);
+                    if (!this.localIndexedAnnotationsByTag[tagID].includes(objectToIndex)) {
+                        this.localIndexedAnnotationsByTag[tagID].push(objectToIndex);
                     }
 
                 });
                 // remove old tags
-                if (!model.tags.length && model.oldTags) {
+                if (model.oldTags) {
                     model.oldTags.forEach(tagIDToRemove => {
-                        this.localIndexedAnnotationsByTag[tagIDToRemove] = this.localIndexedAnnotationsByTag[tagIDToRemove].
-                            filter(tagID => tagID !== tagIDToRemove);
+                        const existsInNewModel = model.tags.includes(tagIDToRemove);
+                        if (!existsInNewModel) {
+                            this.localIndexedAnnotationsByTag[tagIDToRemove] = this.localIndexedAnnotationsByTag[tagIDToRemove].
+                                filter(annotationToRemove => {
+                                    const shouldKeep = annotationToRemove.keyString !== keyString;
+
+                                    return shouldKeep;
+                                });
+                        }
                     });
                 }
             }
