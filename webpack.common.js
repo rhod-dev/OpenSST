@@ -44,13 +44,13 @@ const config = {
             "bourbon": "bourbon.scss",
             "plotly-basic": "plotly.js-basic-dist",
             "plotly-gl2d": "plotly.js-gl2d-dist",
-            "d3-scale": path.join(__dirname, "node_modules/d3-scale/build/d3-scale.min.js"),
-            "kdbush": path.join(__dirname, "node_modules/kdbush/kdbush.min.js"),
+            "d3-scale": path.join(__dirname, "node_modules/d3-scale/dist/d3-scale.min.js"),
             "printj": path.join(__dirname, "node_modules/printj/dist/printj.min.js"),
             "styles": path.join(__dirname, "src/styles"),
             "MCT": path.join(__dirname, "src/MCT"),
             "testUtils": path.join(__dirname, "src/utils/testUtils.js"),
             "objectUtils": path.join(__dirname, "src/api/objects/object-utils.js"),
+            "kdbush": path.join(__dirname, "node_modules/kdbush/kdbush.min.js"),
             "utils": path.join(__dirname, "src/utils")
         }
     },
