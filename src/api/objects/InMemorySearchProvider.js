@@ -439,7 +439,7 @@ class InMemorySearchProvider {
                 if (model.oldTags) {
                     model.oldTags.forEach(tagIDToRemove => {
                         const existsInNewModel = model.tags.includes(tagIDToRemove);
-                        if (!existsInNewModel) {
+                        if (!existsInNewModel && this.localIndexedAnnotationsByTag[tagIDToRemove]) {
                             this.localIndexedAnnotationsByTag[tagIDToRemove] = this.localIndexedAnnotationsByTag[tagIDToRemove].
                                 filter(annotationToRemove => {
                                     const shouldKeep = annotationToRemove.keyString !== keyString;
