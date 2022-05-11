@@ -32,6 +32,7 @@
         @tagAdded="tagAdded"
     />
     <button
+        v-show="!userAddingTag && !maxTagsAdded"
         class="c-tag-applier__add-btn c-icon-button c-icon-button--major icon-plus"
         title="Add new tag"
         @click="addTag"
@@ -71,12 +72,18 @@ export default {
     },
     data() {
         return {
-            addedTags: []
+            addedTags: [],
+            userAddingTag: false
         };
     },
     computed: {
         availableTags() {
             return this.openmct.annotation.getAvailableTags();
+        },
+        maxTagsAdded() {
+            const availableTags = this.openmct.annotation.getAvailableTags();
+
+            return !(availableTags && availableTags.length && (this.addedTags.length < availableTags.length));
         }
     },
     watch: {
@@ -118,6 +125,7 @@ export default {
                 newTag: true
             };
             this.addedTags.push(newTagValue);
+            this.userAddingTag = true;
         },
         async tagRemoved(tagToRemove) {
             console.debug(`removing tag ${tagToRemove}`);
@@ -131,6 +139,7 @@ export default {
             }
 
             this.tagsChanged(newAnnotation.tags);
+            this.userAddingTag = false;
         }
     }
 };
