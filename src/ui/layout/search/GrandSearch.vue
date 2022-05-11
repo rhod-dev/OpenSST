@@ -1,5 +1,8 @@
 <template>
-<div class="c-gsearch" ref="GrandSearch">
+<div
+    ref="GrandSearch"
+    class="c-gsearch"
+>
     <search
         ref="shell-search"
         class="c-gsearch__input"
@@ -57,7 +60,6 @@ export default {
             this.objectSearchResults = [];
 
             if (this.searchValue) {
-
                 await this.getSearchResults();
             } else {
                 this.searchLoading = false;
@@ -107,12 +109,13 @@ export default {
             document.body.addEventListener('click', this.handleOutsideClick);
         },
         handleOutsideClick(event) {
+            console.debug(`Handling outside click 🫥`);
             // if click event is detected outside the dropdown while the
             // dropdown is visible, this will collapse the dropdown.
             if (this.$refs.GrandSearch) {
                 const clickedInsideDropdown = this.$refs.GrandSearch.contains(event.target);
-                if (!clickedInsideDropdown && this.resultsShown) {
-                    this.resultsShown = false;
+                if (!clickedInsideDropdown && this.$refs.searchResultsDropDown._data.resultsShown) {
+                    this.$refs.searchResultsDropDown._data.resultsShown = false;
                 }
             }
         }
