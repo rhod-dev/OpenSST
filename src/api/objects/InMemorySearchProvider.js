@@ -416,8 +416,11 @@ class InMemorySearchProvider {
 
                     objectToIndex.targets = model.targets;
                     objectToIndex.tags = model.tags;
+                    const existsInIndex = this.localIndexedAnnotationsByDomainObject[targetID].some(indexedObject => {
+                        return indexedObject.keyString === objectToIndex.keyString;
+                    });
 
-                    if (!this.localIndexedAnnotationsByDomainObject[targetID].includes(objectToIndex)) {
+                    if (!existsInIndex) {
                         this.localIndexedAnnotationsByDomainObject[targetID].push(objectToIndex);
                     }
                 });
@@ -430,7 +433,11 @@ class InMemorySearchProvider {
                         this.localIndexedAnnotationsByTag[tagID] = [];
                     }
 
-                    if (!this.localIndexedAnnotationsByTag[tagID].includes(objectToIndex)) {
+                    const existsInIndex = this.localIndexedAnnotationsByTag[tagID].some(indexedObject => {
+                        return indexedObject.keyString === objectToIndex.keyString;
+                    });
+
+                    if (!existsInIndex) {
                         this.localIndexedAnnotationsByTag[tagID].push(objectToIndex);
                     }
 
