@@ -545,7 +545,11 @@ class InMemorySearchProvider {
             matchingTagKeys.forEach(matchingTag => {
                 const matchingAnnotations = this.localIndexedAnnotationsByTag[matchingTag];
                 if (matchingAnnotations) {
-                    results = results.concat(matchingAnnotations);
+                    matchingAnnotations.forEach(matchingAnnotation => {
+                        if (!results.includes(matchingAnnotation)) {
+                            results.push(matchingAnnotation);
+                        }
+                    });
                 }
             });
         }
