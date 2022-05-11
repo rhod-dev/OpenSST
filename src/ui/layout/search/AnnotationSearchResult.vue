@@ -17,11 +17,14 @@
         <ObjectPath ref="location" />
 
         <div
-            class="c-tag"
-            :style="{backgroundColor: tagBackgroundColor, color: tagForegroundColor}"
+            v-for="(tag, index) in result.fullTagModels"
+            :key="index"
+            :class="[{ searchMatched: isSearchMatched(tag) }, 'c-tag']"
+            :style="{backgroundColor: tag.backgroundColor, color: tag.foregroundColor, opacity: isSearchMatched(tag) ? 1.0: 0.3}"
         >
-            {{ resultTagLabel }}
+            {{ tag.label }}
         </div>
+
     </div>
     <div class="c-gsearch-result__more-options-button">
         <button class="c-icon-button icon-3-dots"></button>
@@ -55,9 +58,6 @@ export default {
     computed: {
         domainObject() {
             return this.result.targetModels[0];
-        },
-        resultTagLabel() {
-            return this.result.fullTagModels[0].label;
         },
         getResultName() {
             if (this.result.annotationType === this.openmct.annotation.ANNOTATION_TYPES.NOTEBOOK) {
@@ -105,6 +105,13 @@ export default {
             const objectPath = this.domainObject.originalPath;
             const resultUrl = objectPathToUrl(this.openmct, objectPath);
             this.openmct.router.navigate(resultUrl);
+        },
+        isSearchMatched(tag) {
+            if (this.result.matchingTagKeys) {
+                return this.result.matchingTagKeys.includes(tag.tagID);
+            }
+
+            return false;
         }
     }
 };

@@ -239,10 +239,17 @@ export default class AnnotationAPI extends EventEmitter {
     }
 
     addTagMetaInformationToResults(results, matchingTagKeys) {
-        const fullTagModels = matchingTagKeys.map(tagKey => availableTags.tags[tagKey]);
         const tagsAddedToResults = results.map(result => {
+            const fullTagModels = result.tags.map(tagKey => {
+                const tagModel = availableTags.tags[tagKey];
+                tagModel.tagID = tagKey;
+
+                return tagModel;
+            });
+
             return {
                 fullTagModels,
+                matchingTagKeys,
                 ...result
             };
         });
@@ -273,6 +280,7 @@ export default class AnnotationAPI extends EventEmitter {
     }
 
     async searchForTags(query, abortController) {
+        console.debug(`🦁`);
         // get matching tags first
         const matchingTagKeys = this.getMatchingTags(query);
         const searchResults = (await Promise.all(this.openmct.objects.queryUsingProvider('searchForTags', matchingTagKeys, abortController))).flat();
