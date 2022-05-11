@@ -109,7 +109,6 @@ export default {
             document.body.addEventListener('click', this.handleOutsideClick);
         },
         handleOutsideClick(event) {
-            console.debug(`Handling outside click 🫥`);
             // if click event is detected outside the dropdown while the
             // dropdown is visible, this will collapse the dropdown.
             if (this.$refs.GrandSearch) {
