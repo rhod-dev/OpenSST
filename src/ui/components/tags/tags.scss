@@ -21,6 +21,11 @@
       opacity: 1;
     }
   }
+
+  /* SEARCH RESULTS */
+  &.--is-not-search-match {
+    opacity: 0.5;
+  }
 }
 
 /******************************* TAG EDITOR */

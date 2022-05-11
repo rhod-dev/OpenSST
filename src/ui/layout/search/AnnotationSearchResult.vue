@@ -16,15 +16,17 @@
 
         <ObjectPath ref="location" />
 
-        <div
-            v-for="(tag, index) in result.fullTagModels"
-            :key="index"
-            :class="[{ searchMatched: isSearchMatched(tag) }, 'c-tag']"
-            :style="{backgroundColor: tag.backgroundColor, color: tag.foregroundColor, opacity: isSearchMatched(tag) ? 1.0: 0.3}"
-        >
-            {{ tag.label }}
+        <div class="c-gsearch-result__tags">
+            <div
+                v-for="(tag, index) in result.fullTagModels"
+                :key="index"
+                class="c-tag"
+                :class="{ '--is-not-search-match': !isSearchMatched(tag) }"
+                :style="{ backgroundColor: tag.backgroundColor, color: tag.foregroundColor }"
+            >
+                {{ tag.label }}
+            </div>
         </div>
-
     </div>
     <div class="c-gsearch-result__more-options-button">
         <button class="c-icon-button icon-3-dots"></button>
@@ -77,7 +79,7 @@ export default {
                     }
                 }
 
-                return "Could not find notebook entry";
+                return "Could not find any matching Notebook entries";
             } else {
                 return this.result.targetModels[0].name;
             }
