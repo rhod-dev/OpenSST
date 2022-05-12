@@ -397,6 +397,56 @@ class InMemorySearchProvider {
         this.worker.port.postMessage(message);
     }
 
+    localIndexTags(keyString, objectToIndex, model) {
+        // add new tags
+        model.tags.forEach(tagID => {
+            if (!this.localIndexedAnnotationsByTag[tagID]) {
+                this.localIndexedAnnotationsByTag[tagID] = [];
+            }
+
+            const existsInIndex = this.localIndexedAnnotationsByTag[tagID].some(indexedObject => {
+                return indexedObject.keyString === objectToIndex.keyString;
+            });
+
+            if (!existsInIndex) {
+                this.localIndexedAnnotationsByTag[tagID].push(objectToIndex);
+            }
+
+        });
+        // remove old tags
+        if (model.oldTags) {
+            model.oldTags.forEach(tagIDToRemove => {
+                const existsInNewModel = model.tags.includes(tagIDToRemove);
+                if (!existsInNewModel && this.localIndexedAnnotationsByTag[tagIDToRemove]) {
+                    this.localIndexedAnnotationsByTag[tagIDToRemove] = this.localIndexedAnnotationsByTag[tagIDToRemove].
+                        filter(annotationToRemove => {
+                            const shouldKeep = annotationToRemove.keyString !== keyString;
+
+                            return shouldKeep;
+                        });
+                }
+            });
+        }
+    }
+
+    localIndexAnnotation(objectToIndex, model) {
+        Object.keys(model.targets).forEach(targetID => {
+            if (!this.localIndexedAnnotationsByDomainObject[targetID]) {
+                this.localIndexedAnnotationsByDomainObject[targetID] = [];
+            }
+
+            objectToIndex.targets = model.targets;
+            objectToIndex.tags = model.tags;
+            const existsInIndex = this.localIndexedAnnotationsByDomainObject[targetID].some(indexedObject => {
+                return indexedObject.keyString === objectToIndex.keyString;
+            });
+
+            if (!existsInIndex) {
+                this.localIndexedAnnotationsByDomainObject[targetID].push(objectToIndex);
+            }
+        });
+    }
+
     /**
      * A local version of the same SharedWorker function
      * if we don't have SharedWorkers available (e.g., iOS)
@@ -409,53 +459,11 @@ class InMemorySearchProvider {
         };
         if (model && (model.type === 'annotation')) {
             if (model.targets && model.targets) {
-                Object.keys(model.targets).forEach(targetID => {
-                    if (!this.localIndexedAnnotationsByDomainObject[targetID]) {
-                        this.localIndexedAnnotationsByDomainObject[targetID] = [];
-                    }
-
-                    objectToIndex.targets = model.targets;
-                    objectToIndex.tags = model.tags;
-                    const existsInIndex = this.localIndexedAnnotationsByDomainObject[targetID].some(indexedObject => {
-                        return indexedObject.keyString === objectToIndex.keyString;
-                    });
-
-                    if (!existsInIndex) {
-                        this.localIndexedAnnotationsByDomainObject[targetID].push(objectToIndex);
-                    }
-                });
+                this.localIndexAnnotation(objectToIndex, model);
             }
 
             if (model.tags) {
-                // add new tags
-                model.tags.forEach(tagID => {
-                    if (!this.localIndexedAnnotationsByTag[tagID]) {
-                        this.localIndexedAnnotationsByTag[tagID] = [];
-                    }
-
-                    const existsInIndex = this.localIndexedAnnotationsByTag[tagID].some(indexedObject => {
-                        return indexedObject.keyString === objectToIndex.keyString;
-                    });
-
-                    if (!existsInIndex) {
-                        this.localIndexedAnnotationsByTag[tagID].push(objectToIndex);
-                    }
-
-                });
-                // remove old tags
-                if (model.oldTags) {
-                    model.oldTags.forEach(tagIDToRemove => {
-                        const existsInNewModel = model.tags.includes(tagIDToRemove);
-                        if (!existsInNewModel && this.localIndexedAnnotationsByTag[tagIDToRemove]) {
-                            this.localIndexedAnnotationsByTag[tagIDToRemove] = this.localIndexedAnnotationsByTag[tagIDToRemove].
-                                filter(annotationToRemove => {
-                                    const shouldKeep = annotationToRemove.keyString !== keyString;
-
-                                    return shouldKeep;
-                                });
-                        }
-                    });
-                }
+                this.localIndexTags(keyString, objectToIndex, model);
             }
         } else {
             this.localIndexedDomainObjects[keyString] = objectToIndex;
@@ -497,9 +505,6 @@ class InMemorySearchProvider {
     /**
      * A local version of the same SharedWorker function
      * if we don't have SharedWorkers available (e.g., iOS)
-     *
-     * Gets search results from the indexedItems based on provided search
-     * input. Returns matching results from indexedItems
      */
     localSearchForAnnotations(queryId, searchInput, maxResults) {
         // This results dictionary will have domain object ID keys which
@@ -526,9 +531,6 @@ class InMemorySearchProvider {
     /**
      * A local version of the same SharedWorker function
      * if we don't have SharedWorkers available (e.g., iOS)
-     *
-     * Gets search results from the indexedItems based on provided search
-     * input. Returns matching results from indexedItems
      */
     localSearchForTags(queryId, matchingTagKeys, maxResults) {
         // This results dictionary will have domain object ID keys which
@@ -566,9 +568,6 @@ class InMemorySearchProvider {
     /**
      * A local version of the same SharedWorker function
      * if we don't have SharedWorkers available (e.g., iOS)
-     *
-     * Gets search results from the indexedItems based on provided search
-     * input. Returns matching results from indexedItems
      */
     localSearchForNotebookAnnotations(queryId, {entryId, targetKeyString}, maxResults) {
         // This results dictionary will have domain object ID keys which

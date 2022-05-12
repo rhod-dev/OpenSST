@@ -26,7 +26,9 @@
 (function () {
     // An object composed of domain object IDs and models
     // {id: domainObject's ID, name: domainObject's name}
-    const indexedItems = {};
+    const indexedDomainObjects = {};
+    const indexedAnnotationsByDomainObject = {};
+    const indexedAnnotationsByTag = {};
 
     self.onconnect = function (e) {
         const port = e.ports[0];
@@ -57,12 +59,73 @@
         console.error('Error on feed', error);
     };
 
+    function indexAnnotation(objectToIndex, model) {
+        Object.keys(model.targets).forEach(targetID => {
+            if (!indexedAnnotationsByDomainObject[targetID]) {
+                indexedAnnotationsByDomainObject[targetID] = [];
+            }
+
+            objectToIndex.targets = model.targets;
+            objectToIndex.tags = model.tags;
+            const existsInIndex = indexedAnnotationsByDomainObject[targetID].some(indexedObject => {
+                return indexedObject.keyString === objectToIndex.keyString;
+            });
+
+            if (!existsInIndex) {
+                indexedAnnotationsByDomainObject[targetID].push(objectToIndex);
+            }
+        });
+    }
+
+    function indexTags(keyString, objectToIndex, model) {
+        // add new tags
+        model.tags.forEach(tagID => {
+            if (!indexedAnnotationsByTag[tagID]) {
+                indexedAnnotationsByTag[tagID] = [];
+            }
+
+            const existsInIndex = indexedAnnotationsByTag[tagID].some(indexedObject => {
+                return indexedObject.keyString === objectToIndex.keyString;
+            });
+
+            if (!existsInIndex) {
+                indexedAnnotationsByTag[tagID].push(objectToIndex);
+            }
+
+        });
+        // remove old tags
+        if (model.oldTags) {
+            model.oldTags.forEach(tagIDToRemove => {
+                const existsInNewModel = model.tags.includes(tagIDToRemove);
+                if (!existsInNewModel && indexedAnnotationsByTag[tagIDToRemove]) {
+                    indexedAnnotationsByTag[tagIDToRemove] = indexedAnnotationsByTag[tagIDToRemove].
+                        filter(annotationToRemove => {
+                            const shouldKeep = annotationToRemove.keyString !== keyString;
+
+                            return shouldKeep;
+                        });
+                }
+            });
+        }
+    }
+
     function indexItem(keyString, model) {
-        indexedItems[keyString] = {
+        const objectToIndex = {
             type: model.type,
             name: model.name,
             keyString
         };
+        if (model && (model.type === 'annotation')) {
+            if (model.targets && model.targets) {
+                indexAnnotation(objectToIndex, model);
+            }
+
+            if (model.tags) {
+                indexTags(keyString, objectToIndex, model);
+            }
+        } else {
+            indexedDomainObjects[keyString] = objectToIndex;
+        }
     }
 
     /**
@@ -75,7 +138,7 @@
      *           * queryId: an id identifying this query, will be returned.
      */
     function searchForObjects(data) {
-        let results;
+        let results = [];
         const input = data.input.trim().toLowerCase();
         const message = {
             request: 'searchForObjects',
