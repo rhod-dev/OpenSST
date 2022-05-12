@@ -92,8 +92,8 @@ class InMemorySearchProvider {
 
         this.indexAnnotations();
 
-        // if (typeof SharedWorker !== 'undefined') {
-        if (false) {
+        if (typeof SharedWorker !== 'undefined') {
+        // if (false) {
             this.worker = this.startSharedWorker();
         } else {
             // we must be on iOS
@@ -484,7 +484,7 @@ class InMemorySearchProvider {
         const input = searchInput.trim().toLowerCase();
         const message = {
             request: 'searchForObjects',
-            results: {},
+            results: [],
             total: 0,
             queryId
         };
@@ -512,7 +512,7 @@ class InMemorySearchProvider {
         let results = [];
         const message = {
             request: 'searchForAnnotations',
-            results: {},
+            results: [],
             total: 0,
             queryId
         };
@@ -533,12 +533,10 @@ class InMemorySearchProvider {
      * if we don't have SharedWorkers available (e.g., iOS)
      */
     localSearchForTags(queryId, matchingTagKeys, maxResults) {
-        // This results dictionary will have domain object ID keys which
-        // point to the value the domain object's score.
         let results = [];
         const message = {
             request: 'searchForTags',
-            results: {},
+            results: [],
             total: 0,
             queryId
         };
@@ -575,7 +573,7 @@ class InMemorySearchProvider {
         let results = [];
         const message = {
             request: 'searchForNotebookAnnotations',
-            results: {},
+            results: [],
             total: 0,
             queryId
         };

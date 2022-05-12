@@ -163,7 +163,12 @@ export async function getNotebookEntries(openmct, domainObject, selectedSection,
     const specificEntries = entries[selectedSection.id][selectedPage.id];
     const specificEntriesWithAnnotations = await Promise.all(Object.keys(specificEntries).map(async entryKey => {
         const entry = specificEntries[entryKey];
-        const annotation = await openmct.annotation.getNotebookAnnotation(entry.id, domainObject);
+        let annotation;
+        try {
+            annotation = await openmct.annotation.getNotebookAnnotation(entry.id, domainObject);
+        } catch (error) {
+            console.error(`Error loading notebook`, error);
+        }
 
         return {
             ...entry,

@@ -215,10 +215,8 @@ export default class AnnotationAPI extends EventEmitter {
         }
     }
 
-    async removeNotebookAnnotation(entryId, targetDomainObject) {
-        console.debug(`Going to remove annotation ${entryId}`);
-        let existingAnnotation = await this.getNotebookAnnotation(entryId, targetDomainObject);
-        console.debug(`Not implemented, so leaving this in place`, existingAnnotation);
+    removeNotebookAnnotation(entryId, targetDomainObject) {
+        console.debug(`Not implemented, so leaving this in place`, entryId);
     }
 
     getMatchingTags(query) {

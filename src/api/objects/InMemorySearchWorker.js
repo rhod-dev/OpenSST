@@ -142,14 +142,14 @@
         const input = data.input.trim().toLowerCase();
         const message = {
             request: 'searchForObjects',
-            results: {},
+            results: [],
             total: 0,
             queryId: data.queryId
         };
 
-        results = Object.values(indexedItems).filter((indexedItem) => {
+        results = Object.values(indexedDomainObjects).filter((indexedItem) => {
             return indexedItem.name.toLowerCase().includes(input);
-        });
+        }) || [];
 
         message.total = results.length;
         message.results = results
@@ -159,17 +159,15 @@
     }
 
     function searchForAnnotations(data) {
-        let results;
+        let results = [];
         const message = {
             request: 'searchForAnnotations',
-            results: {},
+            results: [],
             total: 0,
             queryId: data.queryId
         };
 
-        results = Object.values(indexedItems).filter((indexedItem) => {
-            return false;
-        });
+        results = indexedAnnotationsByDomainObject[data.input] || [];
 
         message.total = results.length;
         message.results = results
@@ -179,17 +177,26 @@
     }
 
     function searchForTags(data) {
-        let results;
+        let results = [];
         const message = {
             request: 'searchForTags',
-            results: {},
+            results: [],
             total: 0,
             queryId: data.queryId
         };
 
-        results = Object.values(indexedItems).filter((indexedItem) => {
-            return false;
-        });
+        if (data.input) {
+            data.input.forEach(matchingTag => {
+                const matchingAnnotations = indexedAnnotationsByTag[matchingTag];
+                if (matchingAnnotations) {
+                    matchingAnnotations.forEach(matchingAnnotation => {
+                        if (!results.includes(matchingAnnotation)) {
+                            results.push(matchingAnnotation);
+                        }
+                    });
+                }
+            });
+        }
 
         message.total = results.length;
         message.results = results
@@ -207,9 +214,18 @@
             queryId: data.queryId
         };
 
-        results = Object.values(indexedItems).filter((indexedItem) => {
-            return false;
-        });
+        const matchingAnnotations = indexedAnnotationsByDomainObject[data.input.targetKeyString];
+        if (matchingAnnotations) {
+            results = matchingAnnotations.filter(matchingAnnotation => {
+                if (!matchingAnnotation.targets) {
+                    return false;
+                }
+
+                const target = matchingAnnotation.targets[data.input.targetKeyString];
+
+                return (target && target.entryId && (target.entryId === data.input.entryId));
+            });
+        }
 
         message.total = results.length;
         message.results = results
