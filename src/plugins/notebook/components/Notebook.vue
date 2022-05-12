@@ -402,7 +402,7 @@ export default {
             });
         },
         removeAnnotations(entryId) {
-            this.openmct.annotation.removeNotebookAnnotation(this.domainObject, entryId);
+            this.openmct.annotation.removeNotebookAnnotation(entryId, this.domainObject);
         },
         async checkEntryPos(entry) {
             const entryPos = await getEntryPosById(this.openmct, entry.id, this.domainObject, this.selectedSection, this.selectedPage);

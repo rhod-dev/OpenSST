@@ -215,8 +215,12 @@ export default class AnnotationAPI extends EventEmitter {
         }
     }
 
-    removeNotebookAnnotation(entryId, targetDomainObject) {
-        console.debug(`Not implemented, so leaving this in place`, entryId);
+    async removeNotebookAnnotation(entryId, targetDomainObject) {
+        // just removes tags on the annotation as we can't really delete objects
+        const notebookAnnotationToRemove = await this.getNotebookAnnotation(entryId, targetDomainObject);
+        if (notebookAnnotationToRemove && notebookAnnotationToRemove.tags) {
+            this.openmct.objects.mutate(notebookAnnotationToRemove, 'tags', []);
+        }
     }
 
     getMatchingTags(query) {
