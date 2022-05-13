@@ -143,7 +143,7 @@ export async function addNotebookEntry(openmct, domainObject, notebookStorage, e
 }
 
 export async function getNotebookEntries(openmct, domainObject, selectedSection, selectedPage) {
-    if (!domainObject || !selectedSection || !selectedPage) {
+    if (!domainObject || !selectedSection || !selectedPage || !domainObject.configuration) {
         return;
     }
 
