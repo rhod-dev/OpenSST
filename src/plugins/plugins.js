@@ -38,7 +38,8 @@ define([
     './URLIndicatorPlugin/URLIndicatorPlugin',
     './telemetryMean/plugin',
     './plot/plugin',
-    './charts/plugin',
+    './charts/bar/plugin',
+    './charts/scatter/plugin',
     './telemetryTable/plugin',
     './staticRootPlugin/plugin',
     './notebook/plugin',
@@ -98,7 +99,8 @@ define([
     URLIndicatorPlugin,
     TelemetryMean,
     PlotPlugin,
-    ChartPlugin,
+    BarChartPlugin,
+    ScatterPlotPlugin,
     TelemetryTablePlugin,
     StaticRootPlugin,
     Notebook,
@@ -175,7 +177,8 @@ define([
 
     plugins.ImageryPlugin = ImageryPlugin;
     plugins.Plot = PlotPlugin.default;
-    plugins.Chart = ChartPlugin.default;
+    plugins.BarChart = BarChartPlugin.default;
+    plugins.ScatterPlot = ScatterPlotPlugin.default;
     plugins.TelemetryTable = TelemetryTablePlugin;
 
     plugins.SummaryWidget = SummaryWidget;
