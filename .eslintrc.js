@@ -241,7 +241,7 @@ module.exports = {
         ],
         "vue/max-attributes-per-line": ["error", {
             "singleline": 1,
-            "multiline": 1,
+            "multiline": 1
         }],
         "vue/first-attribute-linebreak": "error",
         "vue/multiline-html-element-content-newline": "off",
@@ -265,6 +265,12 @@ module.exports = {
                 "no-nested-ternary": "off",
                 "no-var": "off",
                 "one-var": "off"
+            }
+        },
+        {
+            "files": ["**/*.e2e.spec.js", "**/*.visual.spec.js"],
+            "rules": {
+                "no-console": "warn"
             }
         }
     ]

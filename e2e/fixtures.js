@@ -25,3 +25,43 @@ exports.test = base.test.extend({
     }
 });
 
+/**
+ * Generic console logging function for use in tests.
+ * @param {'log'|'info'|'warn'|'debug'|'error'} [severity='log'] - The severity of the message.
+ * @param  {...any} args
+ */
+function log(severity, ...args) {
+    const logTypes = ['log', 'info', 'warn', 'debug', 'error'];
+    let logFn;
+
+    // Default to log level severity if not provided
+    if (!logTypes.includes(severity)) {
+        args.unshift(severity);
+        severity = 'log';
+    }
+
+    switch (severity) {
+    case 'log':
+        logFn = console.log;
+        break;
+    case 'info':
+        logFn = console.info;
+        break;
+    case 'warn':
+        logFn = console.warn;
+        break;
+    case 'debug':
+        logFn = console.debug;
+        break;
+    case 'error':
+        logFn = console.error;
+        break;
+    default:
+        logFn = console.log;
+        break;
+    }
+
+    logFn(`${severity.toUpperCase()}:`, ...args);
+}
+
+exports.log = log;

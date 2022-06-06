@@ -26,7 +26,7 @@ suite is sharing state between tests which is considered an anti-pattern. Implim
 demonstrate some playwright for test developers. This pattern should not be re-used in other CRUD suites.
 */
 
-const { test } = require('../../../fixtures.js');
+const { test, log } = require('../../../fixtures.js');
 const { expect } = require('@playwright/test');
 
 let conditionSetUrl;
@@ -56,10 +56,10 @@ test.describe.serial('Condition Set CRUD Operations on @localStorage', () => {
 
         //Set object identifier from url
         conditionSetUrl = await page.url();
-        console.log('conditionSetUrl ' + conditionSetUrl);
+        log('conditionSetUrl ' + conditionSetUrl);
 
         getConditionSetIdentifierFromUrl = await conditionSetUrl.split('/').pop().split('?')[0];
-        console.debug('getConditionSetIdentifierFromUrl ' + getConditionSetIdentifierFromUrl);
+        log('debug', 'getConditionSetIdentifierFromUrl ' + getConditionSetIdentifierFromUrl);
     });
     test.afterAll(async ({ browser }) => {
         await browser.close();

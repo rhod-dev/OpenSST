@@ -26,7 +26,7 @@ but only assume that example imagery is present.
 */
 /* globals process */
 
-const { test } = require('../../../fixtures.js');
+const { test, log } = require('../../../fixtures.js');
 const { expect } = require('@playwright/test');
 
 test.describe('Example Imagery', () => {
@@ -101,9 +101,9 @@ test.describe('Example Imagery', () => {
         await page.mouse.move(imageCenterX, imageCenterY);
 
         //Get Diagnostic info about process environment
-        console.log('process.platform is ' + process.platform);
+        log('process.platform is ' + process.platform);
         const getUA = await page.evaluate(() => navigator.userAgent);
-        console.log('navigator.userAgent ' + getUA);
+        log('navigator.userAgent ' + getUA);
         // Pan Imagery Hints
         const expectedAltText = process.platform === 'linux' ? 'Ctrl+Alt drag to pan' : 'Alt drag to pan';
         const imageryHintsText = await page.locator('.c-imagery__hints').innerText();
@@ -347,7 +347,7 @@ test('Example Imagery in Display layout', async ({ page }) => {
         return window.getComputedStyle(el).getPropertyValue('background-image').match(/url\(([^)]+)\)/)[1];
     });
     let backgroundImageUrl1 = backgroundImageUrl.slice(1, -1); //forgive me, padre
-    console.log('backgroundImageUrl1 ' + backgroundImageUrl1);
+    log('backgroundImageUrl1 ' + backgroundImageUrl1);
 
     let backgroundImageUrl2;
     await expect.poll(async () => {
@@ -362,7 +362,7 @@ test('Example Imagery in Display layout', async ({ page }) => {
         message: "verify next image has updated",
         timeout: 6 * 1000
     }).not.toBe(backgroundImageUrl1);
-    console.log('backgroundImageUrl2 ' + backgroundImageUrl2);
+    log('backgroundImageUrl2 ' + backgroundImageUrl2);
 });
 
 test.describe('Example imagery thumbnails resize in display layouts', () => {
