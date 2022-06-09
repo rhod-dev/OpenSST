@@ -43,11 +43,11 @@
             flex: 0 0 auto;
         }
 
-        .is-in-small-container &,
-        .c-fl-frame & {
+        .--width-less-than-220 &,
+        .--width-less-than-600 & {
             [class*="__label"] {
                 // button labels
-                display: none;
+                display: none !important;
 
             }
         }
@@ -122,6 +122,9 @@
         flex: 1 1 auto;
         height: 0; // Chrome 73 overflow bug fix
         overflow: auto;
+        //To accommodate independent time conductor controls
+        display: flex;
+        flex-direction: column;
 
         .u-fills-container {
             // Expand component types that fill a container
@@ -138,6 +141,10 @@
     &.is-status--missing {
         border: $borderMissing;
     }
+
+    // Leave for debugging
+    //&.--width-less-than-600 { background: rgba(orange, 0.2) !important; }
+    //&.--width-less-than-220 { background: rgba(red, 0.2) !important; }
 }
 
 .l-angular-ov-wrapper {
@@ -146,3 +153,5 @@
     display: block;
     height: 100%;
 }
+
+

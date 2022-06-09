@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import SubobjectView from './SubobjectView.vue';
 import TelemetryView from './TelemetryView.vue';
 import BoxView from './BoxView.vue';
@@ -166,7 +166,7 @@ export default {
     },
     computed: {
         gridSize() {
-            return this.domainObject.configuration.layoutGrid;
+            return this.domainObject.configuration.layoutGrid.map(Number);
         },
         layoutItems() {
             return this.domainObject.configuration.items;
